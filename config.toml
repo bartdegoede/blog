@@ -1,0 +1,62 @@
+baseURL = "https://bart.degoe.de/"
+languageCode = "en-us"
+title = "Bart de Goede"
+MetaDataFormat = "toml"
+theme = "hyde-x"
+paginate = 10
+
+[author]
+    name = "Bart de Goede"
+
+[permalinks]
+    post = "/:title/"
+
+[taxonomies]
+    category = "categories"
+
+[params]
+    # If false display full article contents in blog index.
+    # Otherwise show description and 'read on' link to individual blog post page.
+    # Default (if omitted) is true.
+    truncate = true
+
+    # Used when a given page doesn't set its own.
+    defaultDescription = ""
+    defaultKeywords = ""
+
+    # Hide estimated reading time for posts.
+    # Default (if omitted) is false.
+    hideReadingTime = false
+
+    # Changes sidebar background and link/accent colours.
+    # See below for more colour options.
+    # This also works: "theme-base-08 layout-reverse", or just "layout-reverse".
+    theme = "theme-base-08"
+
+    # Select a syntax highight.
+    # Check the static/css/highlight directory for options.
+    highlight = "sunburst"
+
+    # Optional additional custom CSS file URL, will override other styles.
+    customCSS = ""
+
+    # Displays under the author name in the sidebar, keep it short.
+    # You can use markdown here.
+    tagline = "There are two hard things in computer science: naming things, being funny, and off-by-one errors."
+
+    # Text for the top menu link, which goes the root URL for the site.
+    # Default (if omitted) is "Blog".
+    home = "Home"
+
+    # Metadata used to drive integrations.
+    googleAnalytics = "UA-70807628-2"
+    gravatarHash = "af61db828941976309aaa8d7d76554fb"
+
+    # Sidebar social links, these must be full URLs.
+    github = "https://github.com/bartdegoede"
+    linkedin = "https://www.linkedin.com/in/bart-de-goede-597a5232/"
+    twitter = "https://twitter.com/bartdegoede"
+
+    # Other social-like sidebar links
+    rss = true  # switch to true to enable RSS icon link
+    flattr = ""  # populate with your flattr uid
