@@ -14,6 +14,11 @@ paginate = 10
 [taxonomies]
     category = "categories"
 
+[[menu.main]]
+    name = "About"
+    url = "/about/"
+    identifier = "about"
+
 [params]
     # If false display full article contents in blog index.
     # Otherwise show description and 'read on' link to individual blog post page.
@@ -26,7 +31,7 @@ paginate = 10
 
     # Hide estimated reading time for posts.
     # Default (if omitted) is false.
-    hideReadingTime = false
+    hideReadingTime = true
 
     # Changes sidebar background and link/accent colours.
     # See below for more colour options.
