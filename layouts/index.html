@@ -2,6 +2,10 @@
 <div class="content container">
   <h1>Hi!</h1>
   <p>At some point you will find some blogposts here.</p>
+  <input type="text" id="search">
+  <br> Results:
+  <ul id="results"></ul>
+
   <div class="posts">
     {{ $paginator := .Paginate (where .Data.Pages "Type" "post") }}
     {{ range $paginator.Pages }}

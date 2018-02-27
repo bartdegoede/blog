@@ -12,6 +12,7 @@ paginate = 10
     post = "/:title/"
 
 [taxonomies]
+    tag = "tags"
     category = "categories"
 
 [[menu.main]]
@@ -63,4 +64,4 @@ paginate = 10
     twitter = "https://twitter.com/bartdegoede"
 
     # Other social-like sidebar links
-    rss = true  # switch to true to enable RSS icon link
+    rss = true # switch to true to enable RSS icon link
