@@ -9,7 +9,7 @@ paginate = 10
     name = "Bart de Goede"
 
 [permalinks]
-    post = "/:title/"
+    post = "/:slug/"
 
 [taxonomies]
     tag = "tags"

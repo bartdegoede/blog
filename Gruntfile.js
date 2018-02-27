@@ -49,17 +49,10 @@ module.exports = function(grunt) {
         var processMDFile = function(abspath, filename) {
             var content = matter(grunt.file.read(abspath, filename));
             var pageIndex;
-            var href = S(abspath).chompLeft(CONTENT_PATH_PREFIX).chompLeft('/post').chompRight('.md').s;
-             // href for index.md files stops at the folder name
-            if (filename === 'index.md') {
-                href = S(abspath).chompLeft(CONTENT_PATH_PREFIX).chompRight(filename).s;
-            }
-            conzole.log(abspath, href);
-
             return {
                 title: content.data.title,
                 tags: content.data.categories,
-                href: href,
+                href: content.data.slug,
                 content: S(content.content).trim().stripTags().stripPunctuation().s
             };
         };
