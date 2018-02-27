@@ -1,7 +1,7 @@
 ---
 title: "Doing some bubble sorting in Python"
 date: 2018-02-27T18:58:17+01:00
-draft: false
+draft: true
 slug: "doing-some-bubble-sorting-in-python"
 categories: [ "python", "sort" ]
 ---
