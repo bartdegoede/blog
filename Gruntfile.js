@@ -48,6 +48,10 @@ module.exports = function(grunt) {
 
         var processMDFile = function(abspath, filename) {
             var content = matter(grunt.file.read(abspath, filename));
+            if (content.data.draft) {
+                conzole.log('Draft; do not index', abspath);
+                return;
+            }
             var pageIndex;
             return {
                 title: content.data.title,
