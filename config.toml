@@ -12,7 +12,7 @@ paginate = 10
     post = "/:slug/"
 
 [taxonomies]
-    category = "categories"
+    categories = "categories"
 
 [[menu.main]]
     name = "About"

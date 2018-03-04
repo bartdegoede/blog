@@ -55,7 +55,7 @@ module.exports = function(grunt) {
             var pageIndex;
             return {
                 title: content.data.title,
-                tags: content.data.categories,
+                categories: content.data.categories,
                 href: content.data.slug,
                 content: S(content.content).trim().stripTags().stripPunctuation().s
             };

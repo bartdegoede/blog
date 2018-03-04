@@ -1,12 +1,12 @@
 var searchIndex, $results, pagesIndex;
 
 function initSearchIndex() {
-  $.getJSON('js/search/index.json')
+  $.getJSON('/js/search/index.json')
   .done(function(documents) {
     pagesIndex = documents;
     searchIndex = lunr(function() {
       this.field('title');
-      this.field('tags');
+      this.field('categories');
       this.field('content');
       this.ref('href');
 
@@ -25,14 +25,14 @@ function initUI() {
   $results = $('.posts');
   $('#search').keyup(function() {
     $results.empty();
-      // only search when query has 2 characters or more
-      var query = $(this).val();
-      if (query.length < 2) {
-        return;
-      }
-      var results = searchSite(query);
-      renderResults(results);
-    });
+    // only search when query has 2 characters or more
+    var query = $(this).val();
+    if (query.length < 2) {
+      return;
+    }
+    var results = searchSite(query);
+    renderResults(results);
+  });
 }
 
 function searchSite(query_string) {
