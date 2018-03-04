@@ -12,7 +12,6 @@ paginate = 10
     post = "/:slug/"
 
 [taxonomies]
-    tag = "tags"
     category = "categories"
 
 [[menu.main]]
@@ -44,7 +43,7 @@ paginate = 10
     highlight = "sunburst"
 
     # Optional additional custom CSS file URL, will override other styles.
-    customCSS = ""
+    customCSS = "/css/bart.degoe.de.css"
 
     # Displays under the author name in the sidebar, keep it short.
     # You can use markdown here.
