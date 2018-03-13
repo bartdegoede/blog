@@ -1,5 +1,6 @@
 {{ if isset .Site.Params "highlight" }}<script src="{{ "/js/highlight.pack.js" | absURL }}"></script>
 <script>hljs.initHighlightingOnLoad();</script>{{ end }}
 {{ partial "search_scripts.html" . }}
+{{- range .Params.include_js }}<script src="/js/posts/{{ . }}"></script>{{- end }}
 </body>
 </html>
