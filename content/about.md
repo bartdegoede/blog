@@ -8,4 +8,6 @@ slug: "about"
 
 Hi! My name is Bart de Goede, and I write software for a living. Besides that, I like a lot of other things, such as traveling, eating (nice) food or go for a drink with my friends.
 
+Most of the posts I write are about things related to tech and programming, or anything else I find interesting.
+
 Find me on [GitHub](https://github.com/bartdegoede), [LinkedIn](https://www.linkedin.com/in/bart-de-goede-597a5232/) or [Twitter](https://twitter.com/bartdegoede).
