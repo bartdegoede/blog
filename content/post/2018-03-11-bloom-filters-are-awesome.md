@@ -102,7 +102,7 @@ Out[5]: 4
 In [6]: mmh3.hash('world', 2) % 15
 Out[6]: 8
 ```
-We can actually [compute the probability](https://en.wikipedia.org/wiki/Bloom_filter#Probability_of_false_positives) of our Bloom filter returning a false positive, as it is a function of the number of bits used in the bit array divided by the length of the bit array (`m`) to the power of hash functions we're using `k`. The more values we add, the higher the probability of false positives becomes.
+We can actually [compute the probability](https://en.wikipedia.org/wiki/Bloom_filter#Probability_of_false_positives) of our Bloom filter returning a false positive, as it is a function of the number of bits used in the bit array divided by the length of the bit array (`m`) to the power of hash functions we're using `k` (we'll leave that for a future post though). The more values we add, the higher the probability of false positives becomes.
 
 <a name="interactive_example"></a>Interactive example
 -------------------
