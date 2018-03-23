@@ -1,7 +1,7 @@
 ---
 title: "Bloom filters, using bit arrays for recommendations, caches and Bitcoin"
-date: 2018-03-21T18:14:33+01:00
-draft: true
+date: 2018-03-23T15:00:00+01:00
+draft: false
 slug: "bloom-filters-bit-arrays-recommendations-caches-bitcoin"
 categories: ["python", "bloom filter", "how-to"]
 include_js: [ "2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoin/murmurhash3js.min.js", "2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoin/bloomfilters.js" ]
