@@ -64,7 +64,7 @@ $(function() {
     $('#bloom_input_test').keydown(function(e) {
         if (e.keyCode == '13') {
             e.preventDefault();
-            $('#add_value_to_bloom_filter').click();
+            $('#test_value_in_bloom_filter').click();
         }
     });
 });

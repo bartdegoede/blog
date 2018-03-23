@@ -1,4 +1,4 @@
-baseURL = "http://bart.degoe.de/"
+baseURL = "//bart.degoe.de/"
 languageCode = "en-us"
 title = "Bart de Goede"
 MetaDataFormat = "toml"
