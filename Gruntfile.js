@@ -52,6 +52,7 @@ module.exports = function(grunt) {
                 conzole.log('Draft; do not index', abspath);
                 return;
             }
+            conzole.log('Indexing', abspath);
             var pageIndex;
             return {
                 title: content.data.title,
