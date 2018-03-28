@@ -3,7 +3,7 @@ title: "Searching your Hugo site with Lunr"
 date: 2018-03-04T23:38:44+01:00
 draft: false
 slug: "searching-your-hugo-site-with-lunr"
-categories: ["hugo", "search", "lunr", "javascript"]
+categories: ["hugo", "search", "lunr", "javascript", "how-to"]
 ---
 
 Like many software engineers, I figured I needed a blog of sorts, because it would give me a place for my own notes on "How To Do Things™", let me have a URL to give people, and share my ramblings about Life, the Universe and Everything Else with whoever wants to read them.<!--more-->
@@ -21,14 +21,14 @@ There are three options if you want to add search functionality to a static webs
 3. **Search client-side**:
 <br>Having a static side, it makes sense to move all the user interaction to the client. We depend on the users' browser to run Javascript[^my_users] and download the searchable data in order to run queries against it, but the upside is that you can control how data is processed and how that data is queried. Fortunately for us, [Atwood's Law](https://blog.codinghorror.com/the-principle-of-least-power/) holds true; there's a full-text search library inspired by Lucene/Solr written in Javascript we can use to implement our search engine: [Lunr.js](https://lunrjs.com/).
 
-Relevance
---------
+# Relevance
+
 When thinking about search, the most important question is what users want to find. This sounds very much like an open door, but you'd be surprised how often this gets overlooked; what are we looking for (tweets, products, (the fastest route to) a destination?), who is doing the search (lawyers, software engineers, my mom?), what do we hope to get out of it (money, page views?). 
 
 In our case, we're searching blog posts that have titles, tags and content (in decreasing order of value to relevance); queries matching titles should be more important than matches in post content[^relevance].
 
-Indexing
---------
+# Indexing
+
 The project folder for my blog[^github] looks roughly like this:
 
 ```
@@ -127,8 +127,8 @@ To run this task, simply run `grunt search-index` in the directory where `Gruntf
 ]
 ```
 
-Querying
---------
+# Querying
+
 Now we've built the index, we need a way of obtaining it client-side, and then query it. To do that, I have two partials that include [the markup for the search input box](https://github.com/bartdegoede/blog/blob/master/layouts/partials/search.html) and the links to the [relevant Javascript](https://github.com/bartdegoede/blog/blob/master/layouts/partials/search_scripts.html):
 
 ```

@@ -7,18 +7,18 @@ categories: ["python", "bloom filter", "how-to"]
 include_js: [ "2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoin/murmurhash3js.min.js", "2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoin/bloomfilters.js" ]
 ---
 
-Bloom filters are cool. In my experience, it's a somewhat underestimated data structure that sounds more complex than it actually is. In this post I'll go over what they are, how they work (I've hacked together an [interactive example](#interactive_example) to help visualise what happens behind the scenes) and go over some of their usecases in the wild.
+Bloom filters are cool. In my experience, it's a somewhat underestimated data structure that sounds more complex than it actually is. In this post I'll go over what they are, how they work (I've hacked together an [interactive example](#interactive_example) to help visualise what happens behind the scenes) and go over some of their usecases in the wild.<!--more-->
 
-What is a Bloom filter?
------------------------
+# What is a Bloom filter?
+
 A Bloom filter is a data structure designed to quickly tell you whether an element is not in a set. What's even nicer, it does so within the memory constraints you specify. It doesn't actually store the data itself, only trimmed down version of it. This gives it the desirable property that it has a _constant time complexity_[^BigO] for both adding a value to the filter _and_ for checking whether a value is present in the filter. The cool part is that this is _independent_ of how many elements already in the filter.
 
 Like with most things that offer great benefits, there is a trade-off: Bloom filters are probabilistic in nature. On rare occassions, it will respond with _yes_ to the question if the element is in the set (_false positives_ are a possibility), although it will never respond with _no_ if the value is actually present (_false negatives_ can't happen).
 
 You can actually control how rare those occassions are, by setting the size of the Bloom filter bit array and the amount of hash functions depending on the amount of elements you expect to add[^optimal_hash_functions]. Also, note that you can't remove items from a Bloom filter.
 
-How does it work?
------------------
+# How does it work?
+
 An empty Bloom filter is a bit array of a particular size (let's call that size _m_) where all the bits are set to 0. In addition, there must be a number (let's call the number _k_) of hashing functions defined. Each of these functions hashes a value to one of the positions in our array _m_, distributing the values uniformly over the array.
 
 We'll do a very simple Python implementation[^bloom_gist] of a Bloom filter. For simplicity's sake, we'll use a bit array[^bitarraydisclaimer] with 15 bits (`m=15`) and 3 hashing functions (`k=3`) for the running example.
@@ -94,8 +94,8 @@ Out[6]: 9
 ```
 We can actually [compute the probability](https://en.wikipedia.org/wiki/Bloom_filter#Probability_of_false_positives) of our Bloom filter returning a false positive, as it is a function of the number of bits used in the bit array divided by the length of the bit array (`m`) to the power of hash functions we're using `k` (we'll leave that for a future post though). The more values we add, the higher the probability of false positives becomes.
 
-<a name="interactive_example"></a>Interactive example
--------------------
+# <a name="interactive_example"></a>Interactive example
+
 To further drive home how Bloom filters work, I've hacked together a Bloom filter in JavaScript that uses the cells in the table below as a "bit array" to visualise how adding more values will fill up the filter and increase the probability of a false positive (a full Bloom filter will always return "yes" for whatever value you throw at it).
 
 <table id="bitvector" border="1">
@@ -124,8 +124,8 @@ To further drive home how Bloom filters work, I've hacked together a Bloom filte
 </div>
 <hr>
 
-What can I use it for?
-----------------------
+# What can I use it for?
+
 Given that a Bloom filter is really good at telling you whether something is in a set or not, caching is a prime candidate for using a Bloom filter. CDN providers like Akamai[^akamai_ref] use it to optimise their disk caches; nearly 75% of the URLs that are accessed in their web caches is accessed only once and then never again. To prevent caching these "one-hit wonders" and massively saving disk space requirements, Akamai uses a Bloom filter to store all URLs that are accessed. If a URL is found in the Bloom filter, it means it was requested before, and should be stored in their disk cache.
 
 Blogging platform Medium [uses Bloom filters](https://blog.medium.com/what-are-bloom-filters-1ec2a50c68ff)[^medium_bloom] to filter out posts that users have already read from their personalised reading lists. They create a Bloom filter for every user, and add every article they read to the filter. When a reading list is generated, they can check the filter whether the user has seen the article. The trade-off for false positives (i.e. an article they _haven't_ read before) is more than acceptable, because in that case the user won't be shown an article that they haven't read yet (so they will never know).
@@ -134,8 +134,7 @@ Quora does something similar to filter out stories users have seen before, and [
 
 Bitcoin relies strongly on a peer-to-peer style of communication, instead of a client-server architecture in the examples above. Every node in the network is a server, and everyone in the network has a copy of everone else's transactions. For big beefy servers in a data center that's fine, but what if you don't necessarily care about _all_ transactions? Think of a mobile wallet application for example, you don't want all transactions on the blockchain, especially when you have to download them on a mobile connection. To address this, Bitcoin has an option called [Simplified Payment Verification](https://en.bitcoin.it/wiki/Scalability#Simplified_payment_verification) (SPV) which lets your (mobile) node request only the transactions it's interested in (i.e. payments from or to your wallet address). The SPV client calculates a Bloom filter for the transactions it cares about, so the "full node" has an efficient way to answer "is this client interested in this transation?". The cost of false positives (i.e. a client is actually _not_ interested in a transaction) is minimal, because when the client processes the transactions returned by the full node it can simply discard the ones it doesn't care about.
 
-Closing thoughts
-----------------
+# Closing thoughts
 
 There are [a lot more applications](https://www.quora.com/What-are-the-best-applications-of-Bloom-filters) for Bloom filters out there, and I can't list them all here. I hope a gave you a whirlwind overview of how Bloom filters work and how they might be useful to you.
 
