@@ -106,7 +106,7 @@ To further drive home how Bloom filters work, I've hacked together a Bloom filte
     </tbody>
 </table>
 <div class="input-container">
-    <input placeholder="Add an element" id="bloom_input" class="input">
+    <input placeholder="Add an element" id="bloom_input" class="input" aria-label="Add an element to the bloom filter">
     <button id="add_value_to_bloom_filter">Add</button>
 </div>
 <div id="hashes">
@@ -117,7 +117,7 @@ To further drive home how Bloom filters work, I've hacked together a Bloom filte
     <b>Probability of false positives:</b> <span id="false_positive_probability">0%</span>
 </div>
 <div class="input-container">
-    <input placeholder="Element in filter?" id="bloom_input_test" class="input">
+    <input placeholder="Element in filter?" id="bloom_input_test" class="input" aria-label="Does the filter contain the element">
     <button id="test_value_in_bloom_filter">Test</button>
 </div>
 <div id="in_bloom_filter">
