@@ -11,7 +11,7 @@ keywords: ["ssl", "hugo", "github pages", "https", "free ssl", "cloudflare"]
 
 You basically set up a specific repository (you have to name it `<your_username>.github.io`), you push your HTML there, and they will be available at `https://<your_username>.github.io`. Did I mention that this is free?
 
-While you can perfectly write and push HTML files straight to your GitHub repository, there's a whole [bunch](https://jekyllrb.com/docs/home/) of open source [static](https://gohugo.io/) [site](http://hyde.github.io/) generators available that provide a structured way of organising content, in formats ([Markdown](https://daringfireball.net/projects/markdown/) 🙌) that are easier to work with[^staticsitegenerators]. GitHub even supports one of them ([Jekyll](https://github.com/jekyll/jekyll)) out of the box, so you can just push your project as is and they'll take care of building of your HTML too[^jekyllvshugo].
+While you can perfectly write and push HTML files straight to your GitHub repository, there's a whole [bunch](https://jekyllrb.com/docs/home/) of open source [static](https://gohugo.io/) [site](https://hyde.github.io/) generators available that provide a structured way of organising content, in formats ([Markdown](https://daringfireball.net/projects/markdown/) 🙌) that are easier to work with[^staticsitegenerators]. GitHub even supports one of them ([Jekyll](https://github.com/jekyll/jekyll)) out of the box, so you can just push your project as is and they'll take care of building of your HTML too[^jekyllvshugo].
 
 You can even set up your own custom domain! Register your domain at your favourite registrar, and change a setting for your repository:
 
