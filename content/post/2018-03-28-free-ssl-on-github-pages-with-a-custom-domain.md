@@ -4,6 +4,7 @@ date: 2018-03-28T23:55:40+02:00
 draft: false
 slug: "free-ssl-on-github-pages-with-a-custom-domain"
 categories: ["ssl", "hugo", "how-to", "gh-pages", "https"]
+keywords: ["ssl", "hugo", "github pages", "https", "free ssl", "cloudflare"]
 ---
 
 [GitHub Pages](https://pages.github.com/) is pretty awesome. It lets you push a bunch of static HTML (and/or CSS and Javascript) to a GitHub repository, and they'll host and serve it for you. For free!<!--more-->

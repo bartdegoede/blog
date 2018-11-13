@@ -27,8 +27,8 @@ disqusShortname = "bartdegoede"
     truncate = true
 
     # Used when a given page doesn't set its own.
-    defaultDescription = ""
-    defaultKeywords = ""
+    defaultDescription = "Random ramblings about programming, tech, and anything else really."
+    defaultKeywords = "tech, programming, python, elasticsearch, search, ssl"
 
     # Hide estimated reading time for posts.
     # Default (if omitted) is false.

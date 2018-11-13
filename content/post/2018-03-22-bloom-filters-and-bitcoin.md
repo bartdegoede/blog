@@ -4,6 +4,7 @@ date: 2018-03-23T15:00:00+01:00
 draft: false
 slug: "bloom-filters-bit-arrays-recommendations-caches-bitcoin"
 categories: ["python", "bloom filter", "how-to"]
+keywords: ["python", "bloom filter"]
 include_js: [ "2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoin/murmurhash3js.min.js", "2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoin/bloomfilters.js" ]
 ---
 
@@ -138,7 +139,7 @@ Bitcoin relies strongly on a peer-to-peer style of communication, instead of a c
 
 There are [a lot more applications](https://www.quora.com/What-are-the-best-applications-of-Bloom-filters) for Bloom filters out there, and I can't list them all here. I hope a gave you a whirlwind overview of how Bloom filters work and how they might be useful to you.
 
-Feel free to [drop me a line](/about/) or comment below if you have nice examples of where they're used, or if you have any feedback, comments, or just want to say hi :-) 
+Feel free to [drop me a line](/about/) or comment below if you have nice examples of where they're used, or if you have any feedback, comments, or just want to say hi :-)
 
 [^BigO]: The runtime for both inserting and checking is defined by the number of hash functions (`k`) we have to execute. So, `O(k)`. Space complexity is more difficult to quantify, because that depends on how many false positives you're willing to tolerate; allocating more space will lower the false positive rate.
 [^optimal_hash_functions]: Going over the math is a bit much for this post, so check [Wikipedia](https://en.wikipedia.org/wiki/Bloom_filter#Optimal_number_of_hash_functions) for all the formulas 😄.

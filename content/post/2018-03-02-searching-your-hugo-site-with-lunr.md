@@ -4,6 +4,7 @@ date: 2018-03-04T23:38:44+01:00
 draft: false
 slug: "searching-your-hugo-site-with-lunr"
 categories: ["hugo", "search", "lunr", "javascript", "how-to"]
+keywords: ["hugo", "search", "lunr", "javascript"]
 ---
 
 Like many software engineers, I figured I needed a blog of sorts, because it would give me a place for my own notes on "How To Do Things™", let me have a URL to give people, and share my ramblings about Life, the Universe and Everything Else with whoever wants to read them.<!--more-->
@@ -14,16 +15,16 @@ In my day job I work on our search engine, so the first thing that I wanted to h
 
 There are three options if you want to add search functionality to a static website, each with their pros and cons:
 
-1. **Third-party service (i.e. Google CSE):** 
+1. **Third-party service (i.e. Google CSE):**
 <br>There are a bunch of services that provide basic search widgets for your site, such as [Google Custom Search Engine (CSE)](https://cse.google.com/cse/). Those are difficult to customise, break your UI with their Google-styled widgets, and (in some cases) will display ads on your website[^google_ads].
-2. **Run a server-side search engine:** 
+2. **Run a server-side search engine:**
 <br>You can set up a backend that indexes your data and can process the queries your users submit in the search box on your website. The obvious downside is that you throw away all the benefits of having a static site (free hosting, complex infrastructure).
 3. **Search client-side**:
 <br>Having a static side, it makes sense to move all the user interaction to the client. We depend on the users' browser to run Javascript[^my_users] and download the searchable data in order to run queries against it, but the upside is that you can control how data is processed and how that data is queried. Fortunately for us, [Atwood's Law](https://blog.codinghorror.com/the-principle-of-least-power/) holds true; there's a full-text search library inspired by Lucene/Solr written in Javascript we can use to implement our search engine: [Lunr.js](https://lunrjs.com/).
 
 # Relevance
 
-When thinking about search, the most important question is what users want to find. This sounds very much like an open door, but you'd be surprised how often this gets overlooked; what are we looking for (tweets, products, (the fastest route to) a destination?), who is doing the search (lawyers, software engineers, my mom?), what do we hope to get out of it (money, page views?). 
+When thinking about search, the most important question is what users want to find. This sounds very much like an open door, but you'd be surprised how often this gets overlooked; what are we looking for (tweets, products, (the fastest route to) a destination?), who is doing the search (lawyers, software engineers, my mom?), what do we hope to get out of it (money, page views?).
 
 In our case, we're searching blog posts that have titles, tags and content (in decreasing order of value to relevance); queries matching titles should be more important than matches in post content[^relevance].
 
@@ -55,7 +56,7 @@ blog/ <= Hugo project root folder
 |- ...
 ```
 
-The idea is that we build an index on site generation time, and fetch that file when a user loads the page. 
+The idea is that we build an index on site generation time, and fetch that file when a user loads the page.
 
 I use [`Gruntjs`](https://gruntjs.com/)[^grunt_to_go] to build the index file, and some dependencies that make life a little easier. Install them with `npm`:
 
@@ -146,7 +147,7 @@ This function fetches the index file we've generated with the Grunt task, initia
 
 ```
 function initSearchIndex() {
-  // this file is built by the Grunt task, and 
+  // this file is built by the Grunt task, and
   $.getJSON('js/search/index.json')
     .done(function(documents) {
       pagesIndex = documents;
@@ -157,7 +158,7 @@ function initSearchIndex() {
         this.ref('href');
 
         // This will add all the documents to the index. This is
-        // different compared to older versions of Lunr, where 
+        // different compared to older versions of Lunr, where
         // documents could be added after index initialisation
         for (var i = 0; i < documents.length; ++i) {
           this.add(documents[i])
@@ -202,8 +203,8 @@ The `searchSite` function will take the `query_string` the user typed in and bui
 ```
 // this function will parse the query_string, which will you
 // to run queries like "title:lunr" (search the title field),
-// "lunr^10" (boost hits with this term by a factor 10) or 
-// "lunr~2" (will match anything within an edit distance of 2, 
+// "lunr^10" (boost hits with this term by a factor 10) or
+// "lunr~2" (will match anything within an edit distance of 2,
 // i.e. "losr" will also match)
 function simpleSearchSite(query_string) {
   return searchIndex.search(query_string).map(function(result) {
@@ -230,7 +231,7 @@ function searchSite(query_string) {
 }
 ```
 
-The snippet above lists two methods. The first shows an example of a search using the default `lunr.Index#search` method, which uses the `lunr` query syntax.  
+The snippet above lists two methods. The first shows an example of a search using the default `lunr.Index#search` method, which uses the `lunr` query syntax.
 
 In my case, I want to support a typeahead search, where we show the user results for partial queries too; if the user types `"pyth"`, we should display results that have the word `"python"` in the post. To do that, we tell Lunr to combine two queries: the first `q.term` provides _exact matches_ with a high boost to relevance (because we it's likely that these matches are relevant to the user), the second appends a trailing wildcard to the query[^trie], providing prefix matches with a (lower) boost.
 
