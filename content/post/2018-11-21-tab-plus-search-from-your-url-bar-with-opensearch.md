@@ -1,7 +1,7 @@
 ---
 title: "Custom OpenSearch: search from your URL bar"
-date: 2018-11-21T12:00:00-08:00
-draft: true
+date: 2018-11-21T11:00:00-08:00
+draft: false
 slug: "tab-plus-search-from-your-url-bar-with-opensearch"
 categories: ["search", "opensearch", "how-to"]
 keywords: ["search", "opensearch", "how-to"]
