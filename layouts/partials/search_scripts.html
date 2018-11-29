@@ -1,3 +1,6 @@
-<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
-<script type="text/javascript" src="/js/vendor/lunr.min.js"></script>
-<script type="text/javascript" src="/js/search/search.js"></script>
+{{ $jquery := resources.Get "js/vendor/jquery-2.1.3.min.js" }}
+{{ $lunr := resources.Get "js/vendor/lunr.min.js" }}
+{{ $search := resources.Get "js/search/search.js" }}
+{{ $js := slice $jquery $lunr $search | resources.Concat "search.js" | minify | fingerprint }}
+
+<script type="text/javascript" src="{{ $js.Permalink }}" integrity="{{ $js.Data.Integrity }}"></script>
