@@ -17,7 +17,7 @@
   {{ $hydeX := resources.Get "css/hyde-x.css" }}
   {{ $highlight := resources.Get (printf "css/highlight/%s.css" (.Site.Params.highlight)) }}
   {{ $customCSS := resources.Get .Site.Params.customCSS }}
-  {{ $style := slice $pool $hyde $poolOverrides $hydeX $highlight $customCSS | resources.Concat "bundle.css" | minify | fingerprint }}
+  {{ $style := slice $pool $hyde $poolOverrides $hydeOverrides $hydeX $highlight $customCSS | resources.Concat "bundle.css" | minify | fingerprint }}
 
   <link rel="stylesheet" href="{{ $style.Permalink }}">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
