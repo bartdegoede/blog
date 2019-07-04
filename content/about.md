@@ -6,7 +6,7 @@ type: "page"
 slug: "about"
 ---
 
-Hi! My name is Bart de Goede, and I write software for a living. Besides that, I like a lot of other things, such as traveling, eating (nice) food or go for a drink with my friends.
+Hi! My name is Bart de Goede, and I write software for a living. I live in the Bay Area and I'm a software engineer at [Scribd](https://www.scribd.com/) on the search team, helping you find the things you want to read. In the two and a half years before that, I was an engineer on the search team at [Catawiki](https://www.catawiki.com/), helping you find your unique and special objects. Besides tinkering with software, I like a lot of other things, such as traveling, eating (nice) food or go for a drink with my friends.
 
 Most of the posts I write are about things related to tech and programming, or anything else I find interesting.
 
