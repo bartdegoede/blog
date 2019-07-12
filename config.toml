@@ -21,6 +21,10 @@ assetDir = "static"
     url = "/about/"
     identifier = "about"
 
+[outputs]
+    home = ["HTML", "JSON"]
+    page = ["HTML"]
+
 [params]
     # If false display full article contents in blog index.
     # Otherwise show description and 'read on' link to individual blog post page.
