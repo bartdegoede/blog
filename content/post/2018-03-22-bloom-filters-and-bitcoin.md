@@ -10,7 +10,7 @@ include_js: [ "2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoi
 
 Bloom filters are cool. In my experience, it's a somewhat underestimated data structure that sounds more complex than it actually is. In this post I'll go over what they are, how they work (I've hacked together an [interactive example](#interactive_example) to help visualise what happens behind the scenes) and go over some of their usecases in the wild.<!--more-->
 
-{{< audio src="/audio/2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoin.mp3" type="mp3" backup_src="/audio/2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoin.ogg" backup_type="ogg">}}
+{{<audio src="/audio/2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoin.mp3" type="mp3" backup_src="/audio/2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoin.ogg" backup_type="ogg">}}
 
 # What is a Bloom filter?
 

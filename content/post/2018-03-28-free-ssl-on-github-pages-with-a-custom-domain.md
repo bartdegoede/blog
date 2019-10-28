@@ -9,7 +9,7 @@ keywords: ["ssl", "hugo", "github pages", "https", "free ssl", "cloudflare"]
 
 [GitHub Pages](https://pages.github.com/) is pretty awesome. It lets you push a bunch of static HTML (and/or CSS and Javascript) to a GitHub repository, and they'll host and serve it for you. For free!<!--more-->
 
-{{< audio src="/audio/2018-03-28-free-ssl-on-github-pages-with-a-custom-domain.mp3" type="mp3" backup_src="/audio/2018-03-28-free-ssl-on-github-pages-with-a-custom-domain.ogg" backup_type="ogg">}}
+{{<audio src="/audio/2018-03-28-free-ssl-on-github-pages-with-a-custom-domain.mp3" type="mp3" backup_src="/audio/2018-03-28-free-ssl-on-github-pages-with-a-custom-domain.ogg" backup_type="ogg">}}
 
 You basically set up a specific repository (you have to name it `<your_username>.github.io`), you push your HTML there, and they will be available at `https://<your_username>.github.io`. Did I mention that this is free?
 

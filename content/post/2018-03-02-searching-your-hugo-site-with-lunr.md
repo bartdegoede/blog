@@ -9,7 +9,7 @@ keywords: ["hugo", "search", "lunr", "javascript"]
 
 Like many software engineers, I figured I needed a blog of sorts, because it would give me a place for my own notes on "How To Do Things™", let me have a URL to give people, and share my ramblings about Life, the Universe and Everything Else with whoever wants to read them.<!--more-->
 
-{{< audio src="/audio/2018-03-02-searching-your-hugo-site-with-lunr.mp3" type="mp3" backup_src="/audio/2018-03-02-searching-your-hugo-site-with-lunr.ogg" backup_type="ogg">}}
+{{<audio src="/audio/2018-03-02-searching-your-hugo-site-with-lunr.mp3" type="mp3" backup_src="/audio/2018-03-02-searching-your-hugo-site-with-lunr.ogg" backup_type="ogg">}}
 
 Because I'm trying to get more familiar with [Go](https://golang.org/), I opted to use the awesome [Hugo](https://gohugo.io/)[^hugo] framework to build myself a static site hosted on [Github Pages](https://pages.github.com/).
 

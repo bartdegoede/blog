@@ -9,7 +9,7 @@ keywords: ["search", "hugo", "lunr", "how-to"]
 
 [I've been using Lunr.js]({{< ref "/post/2018-03-02-searching-your-hugo-site-with-lunr.md" >}}) to enable some basic site search on this blog. Lunr.js requires an [index file](/index.json) that contains all the content you want to make available for search. In order to generate that file, I had a kind of hacky setup, depending on running a [Grunt script](https://github.com/bartdegoede/blog/blob/7eccae434335c6ab6ec5e10240dbc89884a194ad/Gruntfile.js) on [every deploy](https://github.com/bartdegoede/blog/commit/335d19e81016633823ccfb6fbb2038c891182bbb#diff-60254338249f657a0a83f98258a56bfeL9), which introduces a dependency on node, and nobody really wants any of that for just a static HTML website.<!--more-->
 
-{{< audio src="/audio/2019-07-12-use-output-format-for-index-generation.mp3" type="mp3" backup_src="/audio/2019-07-12-use-output-format-for-index-generation.ogg" backup_type="ogg">}}
+{{<audio src="/audio/2019-07-12-use-output-format-for-index-generation.mp3" type="mp3" backup_src="/audio/2019-07-12-use-output-format-for-index-generation.ogg" backup_type="ogg">}}
 
 I have been wanting forever to have Hugo build that file for me instead[^gh_issue]. As it turns out, [Output Formats](https://gohugo.io/templates/output-formats/#output-formats-for-pages)[^hugo] make building that index file _very_ easy. Output formats let you generate your content in other formats than HTML, such as AMP or [XML for an RSS feed](https://bart.degoe.de/index.xml), and it also speaks JSON.
 
