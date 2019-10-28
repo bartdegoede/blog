@@ -22,7 +22,7 @@ There are three options if you want to add search functionality to a static webs
 2. **Run a server-side search engine:**
 <br>You can set up a backend that indexes your data and can process the queries your users submit in the search box on your website. The obvious downside is that you throw away all the benefits of having a static site (free hosting, complex infrastructure).
 3. **Search client-side**:
-<br>Having a static side, it makes sense to move all the user interaction to the client. We depend on the users' browser to run Javascript[^my_users] and download the searchable data in order to run queries against it, but the upside is that you can control how data is processed and how that data is queried. Fortunately for us, [Atwood's Law](https://blog.codinghorror.com/the-principle-of-least-power/) holds true; there's a full-text search library inspired by Lucene/Solr written in Javascript we can use to implement our search engine: [Lunr.js](https://lunrjs.com/).
+<br>Having a static site, it makes sense to move all the user interaction to the client. We depend on the users' browser to run Javascript[^my_users] and download the searchable data in order to run queries against it, but the upside is that you can control how data is processed and how that data is queried. Fortunately for us, [Atwood's Law](https://blog.codinghorror.com/the-principle-of-least-power/) holds true; there's a full-text search library inspired by Lucene/Solr written in Javascript we can use to implement our search engine: [Lunr.js](https://lunrjs.com/).
 
 # Relevance
 
