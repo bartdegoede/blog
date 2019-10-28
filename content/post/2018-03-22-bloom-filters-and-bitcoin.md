@@ -10,6 +10,8 @@ include_js: [ "2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoi
 
 Bloom filters are cool. In my experience, it's a somewhat underestimated data structure that sounds more complex than it actually is. In this post I'll go over what they are, how they work (I've hacked together an [interactive example](#interactive_example) to help visualise what happens behind the scenes) and go over some of their usecases in the wild.<!--more-->
 
+{{< audio src="/audio/2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoin.mp3" type="mp3" backup_src="/audio/2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoin.ogg" backup_type="ogg">}}
+
 # What is a Bloom filter?
 
 A Bloom filter is a data structure designed to quickly tell you whether an element is not in a set. What's even nicer, it does so within the memory constraints you specify. It doesn't actually store the data itself, only trimmed down version of it. This gives it the desirable property that it has a _constant time complexity_[^BigO] for both adding a value to the filter _and_ for checking whether a value is present in the filter. The cool part is that this is _independent_ of how many elements already in the filter.

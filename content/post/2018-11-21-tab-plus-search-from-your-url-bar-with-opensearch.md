@@ -9,6 +9,8 @@ keywords: ["search", "opensearch", "how-to"]
 
 Almost all modern browsers enable websites to customize the built-in search feature to let the user access their search features directly, without going to your website first and finding the search input box. If your website has search functionality accessible through a basic GET request, it's surprisingly simple to enable this for your website too.<!--more-->
 
+{{< audio src="/audio/2018-11-21-tab-plus-search-from-your-url-bar-with-opensearch.mp3" type="mp3" backup_src="/audio/2018-11-20-tab-plus-search-from-your-url-bar-with-opensearch.ogg" backup_type="ogg">}}
+
 {{< figure src="/img/2018-11-20-tab-plus-search-from-your-url-bar-with-opensearch/opensearch-on-bart-degoe-de.png" title="Typing 'bart' and hitting tab in my Chrome browser lets me search the website directly." >}}
 
 # Some browsers do it automatically

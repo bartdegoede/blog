@@ -9,7 +9,7 @@ keywords: ["ssl", "hugo", "github pages", "https", "free ssl", "cloudflare", "le
 
 [GitHub Pages](https://pages.github.com/) has just become even more awesome. Since yesterday[^yesterday], GitHub Pages [supports HTTPS for custom domains](https://blog.github.com/2018-05-01-github-pages-custom-domains-https/). And yes, it is still free!<!--more-->
 
-<iframe scrolling="no" height="250px" width="100%" data-appid="NVPuC2FcfXlJ2ef" class="app-ep-iframe" frameborder="0" src="https://play.ht/embed/?article_url=https://bart.degoe.de/github-pages-and-lets-encrypt/&voice=Matthew" article-url="https://bart.degoe.de/github-pages-and-lets-encrypt/" allowfullscreen=""></iframe>
+{{< audio src="/audio/2018-05-02-free-ssl-on-github-pages-with-a-custom-domain-part-2.mp3" type="mp3" backup_src="/audio/2018-05-02-free-ssl-on-github-pages-with-a-custom-domain-part-2.ogg" backup_type="ogg">}}
 
 # Let's Encrypt
 GitHub has partnered with [Let's Encrypt](https://letsencrypt.org/), which is a free, open and automated certificate authority (CA). It is run by the [Internet Security Research Group (ISRG)](https://letsencrypt.org/isrg/), which is a public benefit corporation[^pbccalifornia] [funded](https://letsencrypt.org/sponsors/) by donations and a bunch of large corporations and non-profits.
