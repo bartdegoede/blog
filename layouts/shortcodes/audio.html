@@ -1,0 +1,26 @@
+<div id="player">
+    <div class="listen">Listen to this article instead</div>
+    <div id="waveform">
+        {{ $waveform := resources.Get "img/waveform.svg" | minify }}
+        <img src="{{ $waveform.Permalink }}" alt="waveform">
+    </div>
+    <audio controls
+        class="audio_controls {{ .Get "class" }}"
+        {{ with .Get "id" }}id="{{ . }}"{{ end }}
+        {{ with .Get "preload" }}preload="{{ . }}"{{ else }}preload="metadata"{{ end }}
+
+        style="{{ with .Get "style" }}{{ . | safeCSS }}; {{ end }}"
+        {{ with .Get "title" }}data-info-title="{{ . }}"{{ end }}
+    >
+        {{ if .Get "src" }}
+        <source {{ with .Get "src" }}src="{{ . }}"{{ end }}
+            {{ with .Get "type" }}type="audio/{{ . }}"{{ end }}>
+        {{ else if .Get "backup_src" }}
+            <source src="{{ .Get "backup_src" }}"
+                {{ with .Get "backup_type" }}type="audio/{{ . }}"{{ end }}
+                {{ with .Get "backup_codec" }}codecs="{{ . }}"{{ end }}
+            >
+        {{ end }}
+        Your browser does not support the audio element
+    </audio>
+</div>
