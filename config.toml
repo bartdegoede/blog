@@ -22,7 +22,7 @@ assetDir = "static"
     identifier = "about"
 
 [outputs]
-    home = ["HTML", "JSON"]
+    home = ["HTML", "JSON", "RSS"]
     page = ["HTML"]
 
 [params]
