@@ -4,7 +4,6 @@ title = "Bart de Goede"
 MetaDataFormat = "toml"
 theme = "hyde-x"
 paginate = 10
-disqusShortname = "bartdegoede"
 assetDir = "static"
 
 [author]
