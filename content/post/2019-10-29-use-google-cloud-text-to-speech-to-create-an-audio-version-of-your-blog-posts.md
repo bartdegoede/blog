@@ -213,7 +213,7 @@ $ python scripts/text_to_speech.py content/post/2019-10-29-use-google-cloud-text
 
 # Include audio in the post
 
-With this, we end up with a bunch of audio files a directory. In order to display them properly to our users so that they can actually consumee thee content, we have to do a little more work. [Hugo provides `shortcodes`](https://gohugo.io/content-management/shortcodes/), which are effectively parameterized macro's that expand into snippets of HTML that get embedded in your posts. There are many shortcodes included with standard Hugo (like `figure`, `gist` or `tweet`), but you can also create your own. We'll leverage that to include [some swanky HTML5 audio tags](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio) in our blog posts[^compatibility].
+With this, we end up with a bunch of audio files a directory. In order to display them properly to our users so that they can actually consume the content, we have to do a little more work. [Hugo provides `shortcodes`](https://gohugo.io/content-management/shortcodes/), which are effectively parameterized macro's that expand into snippets of HTML that get embedded in your posts. There are many shortcodes included with standard Hugo (like `figure`, `gist` or `tweet`), but you can also create your own. We'll leverage that to include [some swanky HTML5 audio tags](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio) in our blog posts[^compatibility].
 
 ```html
 <audio controls
@@ -259,4 +259,4 @@ This will include an audio player looking like this in your blog post. I've adde
 [^stillfree]: Don't worry, the API is free for the first 4 million characters per month for standard voices, or 1 million characters for fancy WaveNet voices.
 [^prs_welcome]: [Pull requests](https://github.com/bartdegoede/blog) are always welcome! 😄
 [^ffmpeg]: [`pydub`](https://github.com/jiaaro/pydub#dependencies) requires `ffmpeg` or `libav` to be installed to open, convert and save non-WAV files (such as MP3 or OGG)
-[^compatibility]: Not all browswers support all file types and audio codecs, which is why we've generated the OGG files as backup.
+[^compatibility]: Not all browsers support all file types and audio codecs, which is why we've generated the OGG files as backup.
