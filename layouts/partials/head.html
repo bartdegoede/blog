@@ -23,7 +23,7 @@
   {{ $style := slice $pool $hyde $poolOverrides $hydeOverrides $hydeX $highlight $customCSS | resources.Concat "bundle.css" | minify | fingerprint }}
 
   <link rel="stylesheet" href="{{ $style.Permalink }}">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface&display=swap">
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
   <link rel="search" href="https://bart.degoe.de/opensearch.xml" type="application/opensearchdescription+xml" title="Search bart.degoe.de">
 
