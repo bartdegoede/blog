@@ -1,5 +1,6 @@
 .sidebar-about h1 {
     padding-bottom: 4rem;
+    font-weight: 500;
 }
 
 figcaption h4 {
@@ -64,6 +65,7 @@ figcaption h4 {
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
     border-left-style: none;
+    border: 1px solid rgba(0,0,0,.15);
     cursor: pointer;
     margin-top: 1rem;
     margin-bottom: 1rem;

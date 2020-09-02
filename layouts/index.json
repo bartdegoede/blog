@@ -1,13 +1,11 @@
-[{{ range $index, $page := .Site.Pages }}
-    {{- if eq $page.Type "post" -}}
-        {{- if $page.Plain -}}
-        {{- if and $index (gt $index 0) -}},{{- end }}
-            {
-                "href": "{{ $page.Permalink }}",
-                "title": "{{ htmlEscape $page.Title }}",
-                "categories": [{{ range $tindex, $tag := $page.Params.categories }}{{ if $tindex }}, {{ end }}"{{ $tag| htmlEscape }}"{{ end }}],
-                "content": {{$page.Plain | jsonify}}
-            }
-        {{- end -}}
+[{{ range $index, $page := (where .Site.Pages "Type" "post") }}
+    {{- if $page.Plain -}}
+    {{- if and $index (gt $index 1) -}},{{- end }}
+        {
+            "href": "{{ $page.Permalink }}",
+            "title": "{{ htmlEscape $page.Title }}",
+            "categories": [{{ range $tindex, $tag := $page.Params.categories }}{{ if $tindex }}, {{ end }}"{{ $tag| htmlEscape }}"{{ end }}],
+            "content": {{$page.Plain | jsonify}}
+        }
     {{- end -}}
 {{- end -}}]

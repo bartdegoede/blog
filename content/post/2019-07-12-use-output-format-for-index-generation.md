@@ -5,6 +5,7 @@ draft: false
 slug: "use-hugo-output-formats-to-generate-lunr-index-files"
 categories: ["hugo", "search", "lunr", "how-to"]
 keywords: ["search", "hugo", "lunr", "how-to"]
+description: I've been using Lunr.js to enable some basic site search on this blog. Lunr.js requires an index file that contains all the content you want to make available for search. In order to generate that file, I had a kind of hacky setup, depending on running a Grunt script on every deploy, which introduces a dependency on node, and nobody really wants any of that for just a static HTML website.
 ---
 
 [I've been using Lunr.js]({{< ref "/post/2018-03-02-searching-your-hugo-site-with-lunr.md" >}}) to enable some basic site search on this blog. Lunr.js requires an [index file](/index.json) that contains all the content you want to make available for search. In order to generate that file, I had a kind of hacky setup, depending on running a [Grunt script](https://github.com/bartdegoede/blog/blob/7eccae434335c6ab6ec5e10240dbc89884a194ad/Gruntfile.js) on [every deploy](https://github.com/bartdegoede/blog/commit/335d19e81016633823ccfb6fbb2038c891182bbb#diff-60254338249f657a0a83f98258a56bfeL9), which introduces a dependency on node, and nobody really wants any of that for just a static HTML website.<!--more-->
