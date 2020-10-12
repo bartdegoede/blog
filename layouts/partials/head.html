@@ -28,8 +28,10 @@
   <link rel="search" href="https://bart.degoe.de/opensearch.xml" type="application/opensearchdescription+xml" title="Search bart.degoe.de">
 
   <!-- Icons -->
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{ "/touch-icon-144-precomposed.png" | absURL }}">
-  <link href="{{ "/favicon.png" | absURL }}" rel="icon">
+  {{ $touchIcon := resources.Get "touch-icon-144-precomposed.png" }}
+  {{ $favicon := resources.Get "favicon.png" }}
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{ $touchIcon.Permalink }}">
+  <link href="{{ $favicon.Permalink}}" rel="icon">
 
   <!-- RSS -->
   {{ $siteTitle := .Site.Title }}

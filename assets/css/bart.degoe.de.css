@@ -99,3 +99,7 @@ input[type="search"] {
 #player audio {
     width: 100%;
 }
+
+code.language-python {
+    font-size: 14px;
+}
