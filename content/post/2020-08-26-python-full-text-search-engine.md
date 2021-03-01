@@ -1,30 +1,34 @@
 ---
-title: "How to implement a full-text search engine in less than 150 lines of Python code"
-date: 2020-09-02T22:51:12-07:00
+title: "Building a full-text search engine in 150 lines of Python code"
+date: 2020-12-10T17:00:12-07:00
 draft: true
-slug: "how-to-implement-a-full-text-search-engine-100-lines-of-code"
-categories: ["how-to", "search", "python"]
-keywords: ["how-to", "search", "python"]
+slug: "building-a-full-text-search-engine-150-lines-of-code"
+categories: ["how-to", "search", "full-text search", "python"]
+keywords: ["how-to", "search", "full-text search", "python"]
 description: Full-text search is everywhere. From finding a book on Scribd, a movie on Netflix, toilet paper on Amazon, or anything else on the web through Google (like [how to do your job as a software engineer](https://localghost.dev/2019/09/everything-i-googled-in-a-week-as-a-professional-software-engineer/)), you've searched vast amounts of unstructured data multiple times today. What's even more amazing, is that you've even though you searched millions (or [billions](https://www.worldwidewebsize.com/)) of records, you got a response in milliseconds. In this post, we are going to build a basic full-text search engine that can search across millions of documents and rank them according to their relevance to the query in milliseconds, in less than 150 lines of code!
 ---
 
-Full-text search is everywhere. From finding a book on Scribd, a movie on Netflix, toilet paper on Amazon, or anything else on the web through Google (like [how to do your job as a software engineer](https://localghost.dev/2019/09/everything-i-googled-in-a-week-as-a-professional-software-engineer/)), you've searched vast amounts of unstructured data multiple times today. What's even more amazing, is that you've even though you searched millions (or [billions](https://www.worldwidewebsize.com/)) of records, you got a response in milliseconds. In this post, we are going to build a basic full-text search engine that can search across millions of documents and rank them according to their relevance to the query in milliseconds, in less than 150 lines of code!<!-- more -->
+Full-text search is everywhere. From finding a book on Scribd, a movie on Netflix, toilet paper on Amazon, or anything else on the web through Google (like [how to do your job as a software engineer](https://localghost.dev/2019/09/everything-i-googled-in-a-week-as-a-professional-software-engineer/)), you've searched vast amounts of unstructured data multiple times today. What's even more amazing, is that you've even though you searched millions (or [billions](https://www.worldwidewebsize.com/)) of records, you got a response in milliseconds. In this post, we are going to go over the basic components of a full-text search engine, and use them to build one that can search across millions of documents and rank them according to their relevance in milliseconds, in less than 150 lines of code!<!-- more -->
 
-We are going to be searching abstracts of articles from the English Wikipedia, which is currently a gzipped XML file of about 780mb and contains about 6.1 million abstracts. We'll be focusing on the abstracts here because we'll keep our data in-memory, and my laptop can only handle so much 😅[^wikipedia_dump].
+# Data
+All the code you in this blog post can be found on [Github](https://github.com/bartdegoede/python-searchengine/). I'll provide links with the code snippets here, so you can try running this yourself should you want to.
 
-# Data preparation
+Before we're jumping into building a search engine, we first need some full-text, unstructured data to search. We are going to be searching abstracts of articles from the English Wikipedia, which is currently a gzipped XML file of about 785mb and contains about 6.2 million abstracts[^wikipedia_dump]. I've written [a simple function to download](https://github.com/bartdegoede/python-searchengine/blob/master/download.py) the gzipped XML, but you can also just manually download the file.
 
-One abstract in this file is contained by a `<doc>` element, and looks like this:
+## Data preparation
+
+The file is one large XML file that contains all abstracts. One abstract in this file is contained by a `<doc>` element, and looks roughly like this (I've omitted elements we're not interested in):
 
 ```xml
 <doc>
-    <title>Wikipedia: Full-text search</title>
-    <url>https://en.wikipedia.org/wiki/Full-text_search</url>
-    <abstract>In text retrieval, full-text search refers to techniques for searching a single computer-stored document or a collection in a full-text database. Full-text search is distinguished from searches based on metadata or on parts of the original texts represented in databases (such as titles, abstracts, selected sections, or bibliographical references).</abstract>
+    <title>Wikipedia: London Beer Flood</title>
+    <url>https://en.wikipedia.org/wiki/London_Beer_Flood</url>
+    <abstract>The London Beer Flood was an accident at Meux & Co's Horse Shoe Brewery, London, on 17 October 1814. It took place when one of the  wooden vats of fermenting porter burst.</abstract>
+    ...
 </doc>
 ```
 
-The bits were interested in are the `title`, the `url` and the `abstract` itself. In order to access the data efficiently, we're going to stream through the gzipped file document by document and create a simple [Python dataclass](https://realpython.com/python-data-classes/) for convenient access to the data, without loading the entire XML file into memory first[^xml_memory_note]. We'll add a property that concatenates the title and the contents of the abstract.
+The bits were interested in are the `title`, the `url` and the `abstract` text itself. We'll represent documents with a [Python dataclass](https://realpython.com/python-data-classes/) for convenient data access. We'll add a property that concatenates the title and the contents of the abstract. You can find the code [here](https://github.com/bartdegoede/python-searchengine/blob/master/search/documents.py).
 
 ```python
 from dataclasses import dataclass
@@ -42,15 +46,17 @@ class Abstract:
         return ' '.join([self.title, self.abstract])
 ```
 
-Then, we'll want to load the data into memory, so we can actually search the text:
+Then, we'll want to extract the abstracts data from the XML and parse it so we can create instances of our `Abstract` object. We are going to stream through the gzipped XML without loading the entire file into memory first[^xml_memory_note]. We'll assign each document an ID in order of loading (ie the first document will have ID=1, the second one will have ID=2, etcetera).
 
 ```python
 import gzip
 from lxml import etree
 
+from search.documents import Abstract
+
 def load_documents():
     # open a filehandle to the gzipped Wikipedia dump
-    with gzip.open('enwiki.latest-abstract.xml.gz', 'rb') as f:
+    with gzip.open('data/enwiki.latest-abstract.xml.gz', 'rb') as f:
         doc_id = 1
         # iterparse will yield the entire `doc` element once it finds the
         # closing `</doc>` tag
@@ -67,90 +73,91 @@ def load_documents():
             element.clear()
 ```
 
-We'll assign each document an ID in order of loading (ie the first document will have ID=1, the second one will have ID=2, etcetera).
+## Indexing
 
+We are going to store this in a data structure known as an ["inverted index" or a "postings list"](https://en.wikipedia.org/wiki/Inverted_index). Think of it as the index in the back of a book that has an alphabetized list of relevant words and concepts, and on what page number a reader can find them.
+
+{{< figure src="/img/2020-10-17-building-a-full-text-search-engine-150-lines-of-code/book-index-1080x675.png" title="Back of the book index" >}}
+
+Practically, what this means is that we're going to create a dictionary where we map all the words in our corpus to the IDs of the documents they occur in. That looks like this:
+
+```json
+{
+    ...
+    "london": [5245250, 2623812, 133455, 3672401, ...],
+    "beer": [1921376, 4411744, 684389, 2019685, ...],
+    "flood": [3772355, 2895814, 3461065, 5132238, ...],
+    ...
+}
 ```
-In [1] documents = list(load_documents())
-...
-...
-# this will take a while
-...
-...
-Out[1] [Abstract(ID=1, title='Wikipedia: Autism', abstract='| onset         = By age two or three', url='https://en.wikipedia.org/wiki/Autism'), Abstract(ID=2, title='Wikipedia: Albedo', abstract="Albedo () (, meaning 'whiteness') is the measure of the diffuse reflection of solar radiation out of the total solar radiation and measured on a scale from 0, corresponding to a black body that absorbs all incident radiation, to 1, corresponding to a body that reflects all incident radiation.", url='https://en.wikipedia.org/wiki/Albedo'), ...]
 
-In [2] len(documents)
-Out[2] 6153201
-```
+Note that in the example above the words in the dictionary are lowercased; before building the index we are going to break down or `analyze` the raw text into a list of words or `tokens`. The idea is that we first break up or `tokenize` the text into words, and then apply zero or more `filters` (such as lowercasing) on each token to improve the odds of matching queries to text.
 
-Finally, in order to determine how fast our search is, we'll want something like this decorator to time how long it takes to run our query through our search engine. I made a [`@timing` decorator]() I can easily wrap my functions with.
+{{< figure src="/img/2020-10-17-building-a-full-text-search-engine-150-lines-of-code/tokenization.png" title="Tokenization" >}}
 
-# Substring search
+We are going to apply very simple tokenization, by just splitting the text on whitespace. Then, we are going to apply a couple of filters on each of the tokens: we are going to lowercase each token, remove any punctuation, remove the 25 most common words in the English language (and the word "wikipedia" because it occurs in every title in every abstract) and apply [stemming](https://en.wikipedia.org/wiki/Stemming) to every word (ensuring that different forms of a word map to the same stem, like _brewery_ and _breweries_).
 
-Now that we have all the text in memory, the simplest way of searching is to see if any of these documents contain a given substring. We'll just loop over each document in our collection and see if the query occurs somewhere in the document:
+The tokenization and lowercase filter are very simple:
 
 ```python
-@timing
-def substring_search(documents, query):
-    results = []
-    for document in documents:
-        if query in document.fulltext:
-            results.append(document)
-    return results
+def tokenize(text):
+    return text.split()
+
+def lowercase_filter(text):
+    return [token.lower() for token in tokens]
 ```
 
-Easy enough, but our implementation has some drawbacks. First, on my laptop searching 6.1 million documents takes about 4 seconds, which is not _too_ bad, but we can definitely do better.
+Punctuation requires a regular expression on the set of punctuation:
 
 ```python
-In [27]: substring_search(docs, 'full-text search')
-substring_search took 4.1284661293029785 seconds
-Out[27]:
-[Abstract(ID=398143, title='Wikipedia: Full-text search', abstract='In text retrieval, full-text search refers to techniques for searching a single computer-stored document or a collection in a full-text database. Full-text search is distinguished from searches based on metadata or on parts of the original texts represented in databases (such as titles, abstracts, selected sections, or bibliographical references).', url='https://en.wikipedia.org/wiki/Full-text_search'),
- Abstract(ID=734329, title='Wikipedia: Inverted index', abstract='In computer science, an inverted index (also referred to as a postings file or inverted file) is a database index storing a mapping from content, such as words or numbers, to its locations in a table, or in a document or a set of documents (named in contrast to a forward index, which maps from documents to content).  The purpose of an inverted index is to allow fast full-text searches, at a cost of increased processing when a document is added to the database.', url='https://en.wikipedia.org/wiki/Inverted_index')]
+import re
+import string
+
+PUNCTUATION = re.compile('[%s]' % re.escape(string.punctuation))
+
+def punctuation_filter(tokens):
+    return [PUNCTUATION.sub('', token) for token in tokens]
 ```
 
-Second, we're looking for an exact substring match. If we'd change the query by capitalizing the first word, we lose one of the results that seem relevant.
+Stopwords are words that are very common and we would expect to occcur in (almost) every document in the corpus. As such, they won't contribute much when we search for them (i.e. (almost) every document will match when we search for those terms) and will just take up space, so we will filter them out at index time. The Wikipedia abstract corpus includes the word "Wikipedia" in every title, so we'll add that word to the stopword list as well.
 
 ```python
-In [28]: substring_search(docs, 'Full-text search')
-substring_search took 4.044554948806763 seconds
-Out[28]: [Abstract(ID=398143, title='Wikipedia: Full-text search', abstract='In text retrieval, full-text search refers to techniques for searching a single computer-stored document or a collection in a full-text database. Full-text search is distinguished from searches based on metadata or on parts of the original texts represented in databases (such as titles, abstracts, selected sections, or bibliographical references).', url='https://en.wikipedia.org/wiki/Full-text_search')]
+# top 25 most common words in English and "wikipedia":
+# https://en.wikipedia.org/wiki/Most_common_words_in_English
+STOPWORDS = set(['the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have',
+                 'I', 'it', 'for', 'not', 'on', 'with', 'he', 'as', 'you',
+                 'do', 'at', 'this', 'but', 'his', 'by', 'from', 'wikipedia'])
+
+def stopword_filter(tokens):
+    return [token for token in tokens if token not in STOPWORDS]
 ```
 
-Finally, because we do substring matching, we'll find results that have words that contain the substring, such as `research` or `search_worst`.
+```python
+def analyze(text):
+    tokens = tokenize(text)
+    tokens = lowercase_filter(tokens)
+    tokens = punctuation_filter(tokens)
+    tokens = stopword_filter(tokens)
+    tokens = stem_filter(tokens)
+
+    return [token for token in tokens if token]
+```
 
 ```python
-In [29]: substring_search(docs, 'search')
-substring_search took 4.1888110637664795 seconds
-Out[29]:
-[Abstract(ID=678, title='Wikipedia: Arizona State University', abstract='| type = Public research university', url='https://en.wikipedia.org/wiki/Arizona_State_University'),
- Abstract(ID=829, title='Wikipedia: AVL tree', abstract='|search_worst=O(\\log n)', url='https://en.wikipedia.org/wiki/AVL_tree'),
- Abstract(ID=1264, title='Wikipedia: Assassination', abstract='Assassination is the act of deliberately killing a prominent person,Black\'s Law Dictionary "the act of deliberately killing someone especially a public figure, usually for money or for political reasons" (Legal Research, Analysis and Writing by William H. Putman p.', url='https://en.wikipedia.org/wiki/Assassination'),
- ...
- ```
+class Index:
+    def __init__(self):
+        self.index = {}
+        self.documents = {}
 
-In order to improve our search function, we want to improve [`precision`](https://en.wikipedia.org/wiki/Precision_and_recall#Precision) (how many results that were found are correct[^information_need] results) and [`recall`](https://en.wikipedia.org/wiki/Precision_and_recall#Recall) (how many of the total number of correct[^information_need] results in the data set did we find).
+    def index_document(self, document):
+        if document.ID not in self.documents:
+            self.documents[document.ID] = document
 
-We can improve our `recall` by making our search function case-insensitive so that both `Full-text search` and `full-text search` match the same result. We can improve our `precision` by matching on word boundaries rather than substrings, so that we won't return irrelevant results like `research` for a query like `search`.
-
-# Regex search
-
-
-# Full-text search intro
-- what is it
-- scale, fast, lucene, ES
-- search wikipedia abstracts
-- implement in python, "slow language"
-
-# Naive implementations
-- substring match (grep)
-- regex search (word boundaries yo)
-- doesn't scale (linear with number of docs)
-
-# Indexing ftw
-- book analogy => inverted index
-- fast lookup, scalable extensible
-- text analysis; tokenize, token filters
-- build boolean search (and/or)
+        for token in analyze(document.fulltext):
+            if token not in self.index:
+                self.index[token] = set()
+            self.index[token].add(document.ID)
+```
 
 # Extending with scoring like tf-idf; order by relevancy
 - idea of relevancy
@@ -162,24 +169,6 @@ We can improve our `recall` by making our search function case-insensitive so th
 - we assume each field has same value (ie fulltext); but what about weighting matches in titles more
 - all of this is in memory on my laptop; Lucene has very efficient disk structure => scales to multiple machines, like ES
 
-# DATA
-## subset
-Loads of stdout about parsing XML, takes ±30 seconds on my laptop
-Parsing XML took 32.68613815307617 seconds
-Loads of stdout about indexing data, takes ±30 seconds on my laptop
-index_documents took 25.253756046295166 seconds
-substring_search took 0.40305519104003906 seconds
-regex_search took 2.7608580589294434 seconds
-search took 0.050067901611328125 milliseconds
-run took 61.108176946640015 seconds
-## full data set
-index_documents took 487.53364872932434 seconds
-substring_search took 3.651111125946045 seconds
-regex_search took 25.815366983413696 seconds
-search took 0.23889541625976562 milliseconds
-search took 0.05960679054260254 seconds
-search took 0.003979921340942383 seconds
-search took 0.43673086166381836 seconds
 
-[^wikipedia_dump]: The [entire dataset](https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-abstract.xml.gz) is currently about ±780mb of gzipped XML. There's smaller dumps with a subset of articles available if you want to experiment and mess with the code yourself; parsing XML and indexing will take a while, and require a substantial amount of memory.
+[^wikipedia_dump]: An abstract is generally the first paragraph or the first couple of sentences of a Wikipedia article. The [entire dataset](https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-abstract.xml.gz) is currently about ±786mb of gzipped XML. There's smaller dumps with a subset of articles available if you want to experiment and mess with the code yourself; parsing XML and indexing will take a while, and require a substantial amount of memory.
 [^xml_memory_note]: We're going to have the entire dataset and index in memory as well, so we may as well skip keeping the raw data in memory.
