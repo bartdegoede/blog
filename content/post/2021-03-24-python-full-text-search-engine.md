@@ -111,7 +111,7 @@ STEMMER = Stemmer.Stemmer('english')
 def tokenize(text):
     return text.split()
 
-def lowercase_filter(text):
+def lowercase_filter(tokens):
     return [token.lower() for token in tokens]
 
 def stem_filter(tokens):
