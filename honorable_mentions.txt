@@ -1,0 +1,11 @@
+# https://bart.degoe.de/building-a-full-text-search-engine-150-lines-of-code/
+- #4 hackernews
+- [Pycoders newsletter #466](https://pycoders.com/issues/466)
+- [DBWeekly newsletter #348](https://dbweekly.com/issues/348)
+- [RealPython podcast](https://realpython.com/podcasts/rpp/56/#t=827)
+- [PyChina newsletter #466](https://weekly.pychina.org/issue/issue-466.html)
+- [Statuscode newsletter #310](https://weekly.statuscode.com/issues/310)
+- [Chinese translation](https://www.infoq.cn/article/csLDkKhaVF0JUHVKux1w)
+- [Russian translation](https://m.habr.com/en/company/skillfactory/blog/551000/)
+
+#
