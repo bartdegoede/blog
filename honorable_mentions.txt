@@ -7,5 +7,6 @@
 - [Statuscode newsletter #310](https://weekly.statuscode.com/issues/310)
 - [Chinese translation](https://www.infoq.cn/article/csLDkKhaVF0JUHVKux1w)
 - [Russian translation](https://m.habr.com/en/company/skillfactory/blog/551000/)
+- [Part of Introduction to Object-Oriented Analysis and Design curriculum at Zhejiang Normal University](http://lanlab.org/course/2021f/ooad/index.html)
 
 #
