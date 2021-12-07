@@ -6,7 +6,7 @@ type: "page"
 slug: "about"
 ---
 
-Hi! My name is Bart de Goede, and I write software for a living. I live in the Bay Area and I'm a software engineer at [Instacart](https://www.instacart.com/) on the growth team. Before that, I was at [Scribd](https://www.scribd.com/) on the search team and then on the web foundations team, helping you find the things you want to read. And before _that_, I was an engineer on the search and data science team at [Catawiki](https://www.catawiki.com/), helping you find your unique and special objects. For the complete professional bio, please refer to my [LinkedIn](https://www.linkedin.com/in/bart-de-goede-597a5232/) profile or my [resume](/pdf/2021-11-30-cv.pdf).
+Hi! My name is Bart de Goede, and I write software for a living. I live in the Bay Area and I'm a software engineer at [Instacart](https://www.instacart.com/) on the growth team. Before that, I was at [Scribd](https://www.scribd.com/) on the search team and then on the web foundations team, helping you find the things you want to read. And before _that_, I was an engineer on the search and data science team at [Catawiki](https://www.catawiki.com/), helping you find your unique and special objects. For the complete professional bio, please refer to my [LinkedIn](https://www.linkedin.com/in/bart-de-goede-597a5232/) profile or my [resume](/pdf/2021-12-07-cv.pdf).
 
 Besides tinkering with software, I like a lot of other things, such as traveling, eating (nice) food, playing D&D or going for a drink with friends.
 
