@@ -1,0 +1,252 @@
+/* Custom styles for bart.degoe.de */
+/* These extend PaperMod's default styling */
+
+/* Text rendering optimization */
+body {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Audio Player Styling - Theme aware */
+#player {
+    padding: 1.5rem;
+    margin: 2rem 0;
+    border-radius: 8px;
+    background: var(--entry);
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.theme-dark #player {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+#player .listen {
+    color: var(--primary);
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+#player #waveform {
+    margin-bottom: 1rem;
+}
+
+#player #waveform img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    opacity: 0.8;
+}
+
+#player audio {
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+/* Audio controls styling for better theme integration */
+audio::-webkit-media-controls-panel {
+    background-color: var(--entry);
+}
+
+/* Figure and Image Styling */
+.post-content figure {
+    margin: 2.5rem 0;
+    text-align: center;
+}
+
+.post-content figure img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.theme-dark .post-content figure img {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.post-content figure img:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.theme-dark .post-content figure img:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.post-content figcaption {
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    font-style: italic;
+    color: var(--secondary);
+    line-height: 1.5;
+}
+
+figcaption h4 {
+    font-size: 0.875rem;
+    font-weight: normal;
+    font-style: italic;
+    color: var(--secondary);
+    margin: 0;
+}
+
+/* Regular images not in figures */
+.post-content img:not(#waveform img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 2rem auto;
+    display: block;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.theme-dark .post-content img:not(#waveform img) {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Code block adjustments */
+code.language-python {
+    font-size: 14px;
+}
+
+/* Ensure proper spacing for embedded content */
+.post-content #player {
+    margin: 2rem 0;
+}
+
+/* Search input styling (for custom search if needed) */
+input[type="search"] {
+    -webkit-appearance: textfield;
+}
+
+/* Responsive adjustments for audio player */
+@media (max-width: 768px) {
+    #player {
+        padding: 1rem;
+        margin: 1.5rem 0;
+    }
+
+    #player .listen {
+        font-size: 0.85rem;
+    }
+}
+
+/* Bloom Filter Interactive Example Styling */
+#bitvector {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0 1.5rem 0;
+    background: var(--entry);
+    border: 1px solid var(--border);
+}
+
+#bitvector td {
+    padding: 1rem;
+    text-align: center;
+    border: 1px solid var(--border);
+    transition: background-color 0.3s ease;
+}
+
+#bits td {
+    background-color: var(--entry);
+    min-width: 40px;
+    height: 40px;
+}
+
+#bits td.set {
+    background-color: #ac4142 !important;
+    animation: pulse 0.3s ease;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+#labels td {
+    font-weight: 600;
+    color: var(--secondary);
+    font-size: 0.9rem;
+}
+
+.input-container {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+}
+
+.input-container .input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--entry);
+    color: var(--primary);
+}
+
+.input-container button {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    color: var(--theme);
+    background-color: var(--primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 600;
+}
+
+.input-container button:hover {
+    opacity: 0.8;
+    transform: translateY(-1px);
+}
+
+.input-container button:active {
+    transform: translateY(0);
+}
+
+#hashes, #in_bloom_filter {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: var(--entry);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    line-height: 1.8;
+}
+
+#hashes b, #in_bloom_filter b {
+    color: var(--primary);
+}
+
+#in_bloom_filter span {
+    color: #ac4142;
+    font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #bitvector td {
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    #bits td {
+        min-width: 25px;
+        height: 25px;
+    }
+
+    .input-container {
+        flex-direction: column;
+    }
+
+    .input-container button {
+        width: 100%;
+    }
+}

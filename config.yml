@@ -1,0 +1,104 @@
+baseURL: 'https://bart.degoe.de/'
+languageCode: 'en-us'
+title: 'Bart de Goede'
+theme: 'PaperMod'
+
+pagination:
+  pagerSize: 10
+
+# Preserve exact permalink structure from old site
+permalinks:
+  post: '/:slug/'
+
+# Enable JSON output for search functionality
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+
+taxonomies:
+  category: categories
+  tag: tags
+
+menu:
+  main:
+    - name: About
+      url: /about/
+      weight: 10
+
+params:
+  env: production
+  title: Bart de Goede
+  description: "Random ramblings about programming, tech, and anything else really."
+  keywords: [tech, programming, python, elasticsearch, search, ssl]
+  author: Bart de Goede
+
+  # Images for SEO
+  images: ["https://www.gravatar.com/avatar/af61db828941976309aaa8d7d76554fb"]
+
+  # Show reading time (was hidden in old config, enabling for modern UX)
+  ShowReadingTime: true
+  ShowShareButtons: true
+  ShowPostNavLinks: false
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
+  ShowWordCount: false
+  ShowRssButtonInSectionTermList: true
+  UseHugoToc: true
+  disableSpecial1stPost: true
+  disableScrollToTop: false
+  comments: false
+  hidemeta: false
+  hideSummary: false
+  showtoc: false
+  tocopen: false
+
+  # Use List Mode (content-first, similar to current site)
+  # Not enabling profileMode or homeInfoParams - just show post list
+
+  # Social icons
+  socialIcons:
+    - name: github
+      url: "https://github.com/bartdegoede"
+    - name: linkedin
+      url: "https://www.linkedin.com/in/bart-de-goede/"
+    - name: twitter
+      url: "https://twitter.com/bartdegoede"
+    - name: rss
+      url: "/index.xml"
+
+  # Cover image settings
+  cover:
+    linkFullImages: true
+    responsiveImages: true
+
+  # Search configuration (Fuse.js)
+  fuseOpts:
+    isCaseSensitive: false
+    shouldSort: true
+    location: 0
+    distance: 1000
+    threshold: 0.4
+    minMatchCharLength: 0
+    keys: ["title", "permalink", "summary", "content"]
+
+  # Enable syntax highlighting
+  assets:
+    disableHLJS: false
+    disableFingerprinting: false
+
+# Google Analytics (GA4)
+services:
+  googleAnalytics:
+    ID: G-6JBRP5YVDB
+
+# Markup settings (preserve from old config)
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+  highlight:
+    style: monokai
+    lineNos: false
+    noClasses: false
