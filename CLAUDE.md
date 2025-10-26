@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a personal blog built with Hugo (v0.147.8+extended), using the hyde-x theme. The blog includes custom client-side search functionality using Lunr.js and a text-to-speech generation script for blog posts. The site is deployed to GitHub Pages at bart.degoe.de.
+This is a personal blog built with Hugo (v0.147.8+extended), using the PaperMod theme. The blog includes custom client-side search functionality using Fuse.js and a text-to-speech generation script for blog posts. The site is deployed to GitHub Pages at bart.degoe.de.
 
 ## Build and Development Commands
 
@@ -24,7 +24,12 @@ Starts a local development server with live reload. The site will be available a
 ```bash
 ./deploy.sh ["optional commit message"]
 ```
-Builds the site, commits the output in the `public/` folder, and pushes to GitHub Pages. The `public/` directory is a separate git repository.
+Builds the site, commits the output in the `public/` folder, and pushes to GitHub Pages. The `public/` directory is a separate git repository. The script includes:
+- Automatic submodule initialization if needed
+- Build verification and error handling
+- Change detection (skips deployment if no changes)
+- Colored output for better visibility
+- Success confirmation with site URL
 
 ### Generate audio versions of blog posts
 ```bash
@@ -37,31 +42,40 @@ Uses Google Cloud Text-to-Speech API to convert blog post markdown to MP3 and OG
 
 ## Architecture
 
+**Note on Migration:** This blog was migrated from hyde-x theme to PaperMod in October 2025. Some legacy files remain in the repository for reference (e.g., `assets/css/bart.degoe.de.css`, old search partials). The current implementation uses PaperMod's extension system (`extend_head.html`, `extend_footer.html`) and modern practices.
+
 ### Directory Structure
 
 - **content/**: Blog content in markdown format
   - `content/post/`: Individual blog posts, named with date prefix (e.g., `2018-03-02-searching-your-hugo-site-with-lunr.md`)
   - `content/about.md`: About page
 
-- **layouts/**: Custom Hugo templates that override the theme
-  - `layouts/index.html`: Homepage template
+- **layouts/**: Custom Hugo templates that override the PaperMod theme
+  - `layouts/index.html`: Homepage template with integrated search UI
   - `layouts/index.json`: JSON output format for search index (generates `/index.json`)
-  - `layouts/partials/`: Template partials
-    - `head.html`: Custom head section with asset pipeline for CSS
-    - `search.html`: Search UI component
-    - `search_scripts.html`: Loads Lunr.js and search functionality
+  - `layouts/partials/`: Template partials using PaperMod's extension system
+    - `extend_head.html`: Extends theme's head section with OpenSearch integration and custom JS support
+    - `extend_footer.html`: Extends theme's footer with Fuse.js search implementation (inline)
+    - `footer.html`: Custom footer with "Buy Me a Coffee" widget
   - `layouts/_default/`: Default templates for pages
+    - `single.html`: Custom single post template
 
 - **assets/**: Source files processed by Hugo Pipes
-  - `assets/css/bart.degoe.de.css`: Custom CSS styles
-  - `assets/js/search/search.js`: Client-side search implementation using Lunr.js
-  - `assets/js/vendor/lunr.min.js`: Lunr.js library for search
-  - Hugo concatenates, minifies, and fingerprints these assets
+  - `assets/css/extended/custom.css`: Custom CSS styles (PaperMod's extension system automatically loads this)
+  - `assets/css/bart.degoe.de.css`: Legacy CSS file (kept for reference)
+  - `assets/js/posts/`: Post-specific JavaScript files (e.g., bloom filter visualization)
+  - Hugo concatenates, minifies, and fingerprints these assets as needed
 
 - **static/**: Static files served directly (not processed)
-  - `static/audio/`: Generated audio versions of blog posts
+  - `static/audio/`: Generated audio versions of blog posts (MP3 and OGG formats)
+  - `static/img/`: Images used in blog posts
+  - `static/pdf/`: Resume PDFs
+  - `static/favicon.*`: Favicon files
+  - `static/opensearch.xml`: OpenSearch descriptor for browser search integration
 
-- **themes/hyde-x/**: Base theme (with a backup in themes/hyde-x.bak/)
+- **themes/**: Hugo themes
+  - `themes/PaperMod/`: Current theme (git submodule)
+  - `themes/hyde-x/`: Legacy theme (kept for reference)
 
 - **public/**: Generated site output (separate git repository for GitHub Pages)
 
@@ -70,32 +84,45 @@ Uses Google Cloud Text-to-Speech API to convert blog post markdown to MP3 and OG
 
 ### Search Functionality
 
-The blog implements client-side full-text search using Lunr.js:
+The blog implements client-side full-text search using Fuse.js (v7.1.0 via CDN):
 
 1. **Index Generation**: `layouts/index.json` generates a JSON feed at `/index.json` containing all blog posts with title, categories, href, and content
-2. **Search Engine**: `assets/js/search/search.js` loads the JSON index and creates a Lunr search index with fields: title, categories, and content
-3. **Search Strategy**:
-   - Exact matches get highest boost (100x)
-   - Prefix matches get medium boost (10x)
-   - Results are limited to top 10
-4. **UI Integration**: Search box updates results dynamically on keyup
+2. **Search Engine**: `layouts/partials/extend_footer.html` contains inline JavaScript that loads Fuse.js from CDN and initializes search on the homepage
+3. **Search Configuration** (Fuse.js options):
+   - Case-insensitive fuzzy matching
+   - Threshold: 0.4 (moderate fuzziness)
+   - Minimum match length: 2 characters
+   - Weighted fields: title (0.8), content (0.5), categories (0.3)
+4. **UI Integration**:
+   - Search box on homepage updates results dynamically on input
+   - Shows top 10 results
+   - ESC key clears search
+   - Toggles between search results and full post list
 
 ### Hugo Configuration
 
-- **config.toml**: Main configuration file
-  - Base URL: bart.degoe.de
-  - Theme: hyde-x with customizations
+- **config.yml**: Main configuration file (YAML format)
+  - Base URL: https://bart.degoe.de
+  - Theme: PaperMod with customizations
   - Multiple output formats: HTML, JSON (for search), and RSS
-  - Google Analytics integrated (G-6JBRP5YVDB)
-  - Social links: GitHub, LinkedIn, Twitter
-  - Permalink structure: `/:slug/`
+  - Google Analytics GA4 integrated (G-6JBRP5YVDB)
+  - Social links: GitHub, LinkedIn, Twitter, RSS
+  - Permalink structure: `/:slug/` (preserved from legacy site for URL compatibility)
+  - PaperMod features enabled:
+    - Reading time display
+    - Share buttons
+    - Breadcrumbs
+    - Code copy buttons
+    - Syntax highlighting (Monokai style)
 
 ### Asset Pipeline
 
-Hugo Pipes are used extensively for asset processing:
-- CSS files are concatenated, minified, and fingerprinted for cache-busting
-- JavaScript files (Lunr.js + search.js) are bundled, minified, and fingerprinted
-- Subresource Integrity (SRI) hashes are generated automatically
+Hugo Pipes and PaperMod's built-in asset handling:
+- Custom CSS in `assets/css/extended/custom.css` is automatically loaded by PaperMod
+- PaperMod's theme assets are processed, minified, and fingerprinted
+- Post-specific JavaScript files can be included via `include_js` front matter field (see `extend_head.html`)
+- Search functionality uses Fuse.js from CDN (no build step required)
+- Syntax highlighting handled by Hugo's built-in Chroma highlighter
 
 ### Blog Post Format
 
@@ -108,13 +135,24 @@ draft: false
 slug: "url-slug"
 categories: ["category1", "category2"]
 keywords: ["keyword1", "keyword2"]
+description: "Optional: Post description for SEO and summary"
 ---
 ```
+
+**Optional Features:**
 
 Posts may include an audio player shortcode for text-to-speech versions:
 ```
 {{<audio src="/audio/post-name.mp3" type="mp3" backup_src="/audio/post-name.ogg" backup_type="ogg">}}
 ```
+
+Posts can include custom JavaScript files via front matter:
+```yaml
+---
+include_js: ["posts/2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoin/bloomfilters.js"]
+---
+```
+These files are automatically loaded from the `assets/js/` directory.
 
 ## Text-to-Speech Script
 
