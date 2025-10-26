@@ -102,3 +102,11 @@ markup:
     style: monokai
     lineNos: false
     noClasses: false
+
+# Minify HTML output for better performance
+minify:
+  disableHTML: false
+  minifyOutput: true
+  tdewolff:
+    html:
+      keepWhitespace: false
