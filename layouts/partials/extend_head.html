@@ -1,0 +1,13 @@
+{{- /* OpenSearch integration for browser search bar */ -}}
+<link rel="search" href="/opensearch.xml" type="application/opensearchdescription+xml" title="Search bart.degoe.de">
+
+{{- /* Support for include_js front matter field */ -}}
+{{- if .Params.include_js }}
+  {{- range .Params.include_js }}
+    {{- $jsPath := printf "js/posts/%s" . }}
+    {{- $js := resources.Get $jsPath }}
+    {{- if $js }}
+      <script src="{{ $js.RelPermalink }}"></script>
+    {{- end }}
+  {{- end }}
+{{- end }}

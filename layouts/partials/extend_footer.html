@@ -1,0 +1,103 @@
+{{- /* Homepage inline search functionality */ -}}
+{{- if .IsHome }}
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.1.0"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    const allPosts = document.getElementById('allPosts');
+
+    if (!searchInput) return;
+
+    let searchIndex = null;
+    let pagesIndex = null;
+
+    // Load search index
+    fetch('/index.json')
+        .then(response => response.json())
+        .then(data => {
+            pagesIndex = data;
+
+            // Initialize Fuse.js for fuzzy search
+            const fuseOptions = {
+                isCaseSensitive: false,
+                shouldSort: true,
+                location: 0,
+                distance: 1000,
+                threshold: 0.4,
+                minMatchCharLength: 2,
+                keys: [
+                    { name: 'title', weight: 0.8 },
+                    { name: 'content', weight: 0.5 },
+                    { name: 'categories', weight: 0.3 }
+                ]
+            };
+
+            searchIndex = new Fuse(data, fuseOptions);
+        })
+        .catch(error => console.error('Error loading search index:', error));
+
+    // Handle search input
+    searchInput.addEventListener('input', function(e) {
+        const query = e.target.value.trim();
+
+        if (query.length < 2) {
+            // Show all posts if query is too short
+            searchResults.innerHTML = '';
+            searchResults.style.display = 'none';
+            allPosts.style.display = 'block';
+            return;
+        }
+
+        if (!searchIndex) {
+            searchResults.innerHTML = '<p style="color: var(--secondary);">Loading search index...</p>';
+            searchResults.style.display = 'block';
+            return;
+        }
+
+        // Perform search
+        const results = searchIndex.search(query);
+
+        // Hide all posts section
+        allPosts.style.display = 'none';
+        searchResults.style.display = 'block';
+
+        if (results.length === 0) {
+            searchResults.innerHTML = '<p style="color: var(--secondary); padding: 1rem 0;">No results found for "' + query + '"</p>';
+            return;
+        }
+
+        // Display results
+        let html = '<div style="margin-bottom: 1.5rem; color: var(--secondary); font-size: 0.95rem;">Found ' + results.length + ' result' + (results.length === 1 ? '' : 's') + '</div>';
+
+        results.slice(0, 10).forEach(result => {
+            const item = result.item;
+            const snippet = item.content ? item.content.substring(0, 150).replace(/\n/g, ' ').trim() + '...' : '';
+
+            html += `
+                <article class="post-entry">
+                    <header class="entry-header">
+                        <h2 class="entry-hint-parent">${item.title}</h2>
+                    </header>
+                    ${snippet ? `<div class="entry-content"><p>${snippet}</p></div>` : ''}
+                    ${item.categories && item.categories.length > 0 ? `<footer class="entry-footer">${item.categories.join(', ')}</footer>` : ''}
+                    <a class="entry-link" aria-label="post link to ${item.title}" href="${item.href}"></a>
+                </article>
+            `;
+        });
+
+        searchResults.innerHTML = html;
+    });
+
+    // Clear search on ESC key
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            searchInput.value = '';
+            searchResults.innerHTML = '';
+            searchResults.style.display = 'none';
+            allPosts.style.display = 'block';
+        }
+    });
+});
+</script>
+{{- end }}
