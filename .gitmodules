@@ -5,3 +5,6 @@
 	path = public
 	url = git@github.com:bartdegoede/bartdegoede.github.io.git
 	branch = master
+[submodule "themes/PaperMod"]
+	path = themes/PaperMod
+	url = https://github.com/adityatelange/hugo-PaperMod.git
