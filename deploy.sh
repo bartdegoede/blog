@@ -4,8 +4,8 @@ set -e  # Exit on error
 
 echo -e "\033[0;32mDeploying updates to GitHub...\033[0m"
 
-# Check if public submodule is initialized
-if [ ! -d "public/.git" ]; then
+# Check if public submodule is initialized (check for file or directory)
+if [ ! -e "public/.git" ]; then
     echo -e "\033[0;33mInitializing public submodule...\033[0m"
     git submodule update --init --recursive public
 fi
