@@ -120,7 +120,8 @@ The blog implements client-side full-text search using Fuse.js (v7.1.0 via CDN):
 Hugo Pipes and PaperMod's built-in asset handling:
 - Custom CSS in `assets/css/extended/custom.css` is automatically loaded by PaperMod
 - PaperMod's theme assets are processed, minified, and fingerprinted
-- Post-specific JavaScript files can be included via `include_js` front matter field (see `extend_head.html`)
+- Post-specific JavaScript files can be included via `include_js` front matter field (loaded from `assets/js/`)
+- External CDN scripts can be included via `include_cdn` front matter field (loaded after local JS)
 - Search functionality uses Fuse.js from CDN (no build step required)
 - Syntax highlighting handled by Hugo's built-in Chroma highlighter
 
@@ -152,7 +153,22 @@ Posts can include custom JavaScript files via front matter:
 include_js: ["posts/2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoin/bloomfilters.js"]
 ---
 ```
-These files are automatically loaded from the `assets/js/` directory.
+These files are loaded from the `assets/js/` directory.
+
+Posts can include external CDN scripts (loaded after local JS):
+```yaml
+---
+include_cdn: ["https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"]
+---
+```
+
+For MathJax support, use both together (config must load before the library):
+```yaml
+---
+include_js: ["mathjax-config.js"]
+include_cdn: ["https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"]
+---
+```
 
 ## Text-to-Speech Script
 

@@ -8,10 +8,17 @@
 {{- /* Support for include_js front matter field */ -}}
 {{- if .Params.include_js }}
   {{- range .Params.include_js }}
-    {{- $jsPath := printf "js/posts/%s" . }}
+    {{- $jsPath := printf "js/%s" . }}
     {{- $js := resources.Get $jsPath }}
     {{- if $js }}
       <script src="{{ $js.RelPermalink }}"></script>
     {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- /* Support for include_cdn front matter field */ -}}
+{{- if .Params.include_cdn }}
+  {{- range .Params.include_cdn }}
+    <script src="{{ . }}"></script>
   {{- end }}
 {{- end }}

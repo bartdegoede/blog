@@ -5,7 +5,7 @@ draft: false
 slug: "bloom-filters-bit-arrays-recommendations-caches-bitcoin"
 categories: ["python", "bloom filter", "how-to"]
 keywords: ["python", "bloom filter"]
-include_js: [ "2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoin/murmurhash3js.min.js", "2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoin/bloomfilters.js" ]
+include_js: [ "posts/2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoin/murmurhash3js.min.js", "posts/2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoin/bloomfilters.js" ]
 ---
 
 Bloom filters are cool. In my experience, it's a somewhat underestimated data structure that sounds more complex than it actually is. In this post I'll go over what they are, how they work (I've hacked together an [interactive example](#interactive_example) to help visualise what happens behind the scenes) and go over some of their usecases in the wild.<!--more-->
