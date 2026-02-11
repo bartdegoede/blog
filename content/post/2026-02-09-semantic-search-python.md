@@ -8,6 +8,8 @@ keywords: ["python", "semantic search", "embeddings", "sentence-transformers", "
 description: "Our keyword search engine can't find 'alcoholic beverage disaster in England' even though the London Beer Flood is right there. In this post, we add semantic search using sentence-transformers embeddings and cosine similarity to find documents by meaning, not just matching words."
 include_js: ["mathjax-config.js"]
 include_cdn: ["https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"]
+cover:
+    image: "/img/2026-02-09-semantic-search-python/cover-image.jpeg"
 ---
 
 {{<audio src="/audio/2026-02-09-semantic-search-python.mp3" type="mp3">}}
