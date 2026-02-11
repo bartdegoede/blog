@@ -5,6 +5,8 @@ draft: false
 slug: "building-a-full-text-search-engine-150-lines-of-code"
 categories: ["how-to", "search", "full-text search", "python"]
 keywords: ["how-to", "search", "full-text search", "python"]
+cover:
+    image: "/img/2021-03-24-building-a-full-text-search-engine-150-lines-of-code/cover.jpg"
 description: Full-text search is everywhere. From finding a book on Scribd, a movie on Netflix, toilet paper on Amazon, or anything else on the web through Google (like [how to do your job as a software engineer](https://localghost.dev/2019/09/everything-i-googled-in-a-week-as-a-professional-software-engineer/)), you've searched vast amounts of unstructured data multiple times today. What's even more amazing, is that you've even though you searched millions (or [billions](https://www.worldwidewebsize.com/)) of records, you got a response in milliseconds. In this post, we are going to build a basic full-text search engine that can search across millions of documents and rank them according to their relevance to the query in milliseconds, in less than 150 lines of code!
 ---
 

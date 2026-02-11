@@ -9,7 +9,7 @@ description: "Our keyword search engine can't find 'alcoholic beverage disaster 
 include_js: ["mathjax-config.js"]
 include_cdn: ["https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"]
 cover:
-    image: "/img/2026-02-09-semantic-search-python/cover-image.jpeg"
+    image: "/img/2026-02-09-semantic-search-python/cover.jpg"
 ---
 
 {{<audio src="/audio/2026-02-09-semantic-search-python.mp3" type="mp3">}}
