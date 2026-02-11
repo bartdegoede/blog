@@ -1,3 +1,16 @@
+{{- /* Prevent flash of light theme in dark mode. PaperMod adds .dark to
+       <body> in header.html, but by then the browser may have already painted
+       a white frame. This sets .dark on <html> in <head> so the CSS variables
+       activate before first paint. PaperMod's script still adds it to <body>
+       for selectors like .dark.list. */ -}}
+<script>
+    if (localStorage.getItem("pref-theme") === "dark" ||
+        (localStorage.getItem("pref-theme") !== "light" &&
+         window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+        document.documentElement.classList.add("dark");
+    }
+</script>
+
 {{- /* Preconnect to external CDNs for faster resource loading */ -}}
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
