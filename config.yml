@@ -34,8 +34,8 @@ params:
   keywords: [tech, programming, python, elasticsearch, search, ssl]
   author: Bart de Goede
 
-  # Images for SEO
-  images: ["https://www.gravatar.com/avatar/af61db828941976309aaa8d7d76554fb"]
+  # Default OG/Twitter image when a post doesn't set cover.image
+  images: ["/img/default-cover.jpg"]
 
   # Show reading time (was hidden in old config, enabling for modern UX)
   ShowReadingTime: true
