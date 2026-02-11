@@ -42,10 +42,24 @@ def text_to_speech(filename):
     text = clean_text(data)
     # initialize the API client
     client = texttospeech.TextToSpeechClient()
-    # we can send up to 5000 characters per request, so split up the text
-    step = 5000
-    for j, i in enumerate(range(0, len(text), step)):
-        synthesis_input = texttospeech.types.SynthesisInput(text=text[i:i+step])
+    # The API limit is 5000 bytes (not characters). Split on word
+    # boundaries to avoid cutting mid-word or mid-multibyte character.
+    chunks = []
+    current = []
+    current_bytes = 0
+    for word in text.split():
+        word_bytes = len((word + ' ').encode('utf-8'))
+        if current_bytes + word_bytes > 4900 and current:  # leave margin
+            chunks.append(' '.join(current))
+            current = []
+            current_bytes = 0
+        current.append(word)
+        current_bytes += word_bytes
+    if current:
+        chunks.append(' '.join(current))
+
+    for j, chunk in enumerate(chunks):
+        synthesis_input = texttospeech.types.SynthesisInput(text=chunk)
         voice = texttospeech.types.VoiceSelectionParams(
             language_code='en-US',
             name='en-US-Wavenet-B'
