@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a personal blog built with Hugo (v0.147.8+extended), using the PaperMod theme. The blog includes custom client-side search functionality using Fuse.js and a text-to-speech generation script for blog posts. The site is deployed to GitHub Pages at bart.degoe.de.
+This is a personal blog built with Hugo, using the PaperMod theme. The blog includes custom client-side search functionality using Fuse.js and a text-to-speech generation script for blog posts. The site is deployed to GitHub Pages at bart.degoe.de.
 
 ## Build and Development Commands
 
@@ -42,92 +42,51 @@ Uses Google Cloud Text-to-Speech API to convert blog post markdown to MP3 and OG
 
 ## Architecture
 
-**Note on Migration:** This blog was migrated from hyde-x theme to PaperMod in October 2025. Some legacy files remain in the repository for reference (e.g., `assets/css/bart.degoe.de.css`, old search partials). The current implementation uses PaperMod's extension system (`extend_head.html`, `extend_footer.html`) and modern practices.
+**Important:** The `public/` directory is a **separate git repository** (not a submodule of this repo). It tracks the `master` branch of the GitHub Pages deployment repo. Do not treat it as part of the main repo's git history. The `deploy.sh` script handles committing and pushing within `public/` independently.
 
-### Directory Structure
+**Note on Migration:** This blog was migrated from hyde-x theme to PaperMod in October 2025. Legacy files remain for reference:
+- `layouts/partials/search.html`, `search_scripts.html`, `sidebar/footer.html` — old search/sidebar partials
+- `assets/css/bart.degoe.de.css` — old theme CSS
+- `assets/js/search/search.js`, `assets/js/vendor/lunr.min.js` — old Lunr.js search
+- `themes/hyde-x/` — old theme directory
 
-- **content/**: Blog content in markdown format
-  - `content/post/`: Individual blog posts, named with date prefix (e.g., `2018-03-02-searching-your-hugo-site-with-lunr.md`)
-  - `content/about.md`: About page
+### Key Customizations Over PaperMod
 
-- **layouts/**: Custom Hugo templates that override the PaperMod theme
-  - `layouts/index.html`: Homepage template with integrated search UI
-  - `layouts/index.json`: JSON output format for search index (generates `/index.json`)
-  - `layouts/partials/`: Template partials using PaperMod's extension system
-    - `extend_head.html`: Extends theme's head section with OpenSearch integration and custom JS support
-    - `extend_footer.html`: Extends theme's footer with Fuse.js search implementation (inline)
-    - `footer.html`: Custom footer with "Buy Me a Coffee" widget
-  - `layouts/_default/`: Default templates for pages
-    - `single.html`: Custom single post template
+The site extends PaperMod via its extension system rather than forking the theme:
 
-- **assets/**: Source files processed by Hugo Pipes
-  - `assets/css/extended/custom.css`: Custom CSS styles (PaperMod's extension system automatically loads this)
-  - `assets/css/bart.degoe.de.css`: Legacy CSS file (kept for reference)
-  - `assets/js/posts/`: Post-specific JavaScript files (e.g., bloom filter visualization)
-  - Hugo concatenates, minifies, and fingerprints these assets as needed
-
-- **static/**: Static files served directly (not processed)
-  - `static/audio/`: Generated audio versions of blog posts (MP3 and OGG formats)
-  - `static/img/`: Images used in blog posts
-  - `static/pdf/`: Resume PDFs
-  - `static/favicon.*`: Favicon files
-  - `static/opensearch.xml`: OpenSearch descriptor for browser search integration
-
-- **themes/**: Hugo themes
-  - `themes/PaperMod/`: Current theme (git submodule)
-  - `themes/hyde-x/`: Legacy theme (kept for reference)
-
-- **public/**: Generated site output (separate git repository for GitHub Pages)
-
-- **scripts/**: Utility scripts
-  - `text_to_speech.py`: Converts markdown blog posts to audio using Google Cloud TTS
+- **`layouts/partials/extend_head.html`**: Dark mode flash prevention (sets `.dark` on `<html>` before paint), OpenSearch integration, and `include_js`/`include_cdn` front matter support
+- **`layouts/partials/extend_footer.html`**: Inline Fuse.js search engine (loads index from `/index.json`, fuzzy matching with weighted fields)
+- **`layouts/index.html`**: Custom homepage with search bar + paginated post list
+- **`layouts/_default/single.html`**: Custom post template with Buy Me a Coffee button
+- **`layouts/index.json`**: Generates JSON search index at `/index.json` with title, categories, href, content
+- **`assets/css/extended/custom.css`**: Custom styles (PaperMod auto-loads from this path)
 
 ### Search Functionality
 
-The blog implements client-side full-text search using Fuse.js (v7.1.0 via CDN):
+Client-side full-text search using Fuse.js (v7.1.0 via CDN):
 
-1. **Index Generation**: `layouts/index.json` generates a JSON feed at `/index.json` containing all blog posts with title, categories, href, and content
-2. **Search Engine**: `layouts/partials/extend_footer.html` contains inline JavaScript that loads Fuse.js from CDN and initializes search on the homepage
-3. **Search Configuration** (Fuse.js options):
-   - Case-insensitive fuzzy matching
-   - Threshold: 0.4 (moderate fuzziness)
-   - Minimum match length: 2 characters
-   - Weighted fields: title (0.8), content (0.5), categories (0.3)
-4. **UI Integration**:
-   - Search box on homepage updates results dynamically on input
-   - Shows top 10 results
-   - ESC key clears search
-   - Toggles between search results and full post list
+1. `layouts/index.json` generates a JSON feed at `/index.json` with all posts
+2. `layouts/partials/extend_footer.html` contains inline JS that initializes Fuse.js on the homepage
+3. Fuse.js config: case-insensitive, threshold 0.4, weighted fields (title 0.8, content 0.5, categories 0.3)
+4. Search box on homepage shows top 10 results dynamically, ESC clears
 
 ### Hugo Configuration
 
-- **config.yml**: Main configuration file (YAML format)
-  - Base URL: https://bart.degoe.de
-  - Theme: PaperMod with customizations
-  - Multiple output formats: HTML, JSON (for search), and RSS
-  - Google Analytics GA4 integrated (G-6JBRP5YVDB)
-  - Social links: GitHub, LinkedIn, Twitter, RSS
-  - Permalink structure: `/:slug/` (preserved from legacy site for URL compatibility)
-  - PaperMod features enabled:
-    - Reading time display
-    - Share buttons
-    - Breadcrumbs
-    - Code copy buttons
-    - Syntax highlighting (Monokai style)
+- **`config.yml`**: YAML format, base URL `https://bart.degoe.de`
+- Output formats: HTML, JSON (for search), RSS
+- Permalink structure: `/:slug/` (preserved from legacy site for URL compatibility)
+- Goldmark renderer with `unsafe: true` (allows raw HTML in markdown)
+- HTML minification enabled
 
 ### Asset Pipeline
 
-Hugo Pipes and PaperMod's built-in asset handling:
-- Custom CSS in `assets/css/extended/custom.css` is automatically loaded by PaperMod
-- PaperMod's theme assets are processed, minified, and fingerprinted
-- Post-specific JavaScript files can be included via `include_js` front matter field (loaded from `assets/js/`)
-- External CDN scripts can be included via `include_cdn` front matter field (loaded after local JS)
-- Search functionality uses Fuse.js from CDN (no build step required)
-- Syntax highlighting handled by Hugo's built-in Chroma highlighter
+- Custom CSS: `assets/css/extended/custom.css` (auto-loaded by PaperMod)
+- Post-specific JS via `include_js` front matter field (loaded from `assets/js/`)
+- External CDN scripts via `include_cdn` front matter field (loaded after local JS)
+- Syntax highlighting: Hugo's built-in Chroma (Monokai style)
 
 ### Blog Post Format
 
-Blog posts use Hugo front matter with the following structure:
 ```yaml
 ---
 title: "Post Title"
@@ -140,34 +99,27 @@ description: "Optional: Post description for SEO and summary"
 ---
 ```
 
-**Optional Features:**
+**Optional front matter features:**
 
-Posts may include an audio player shortcode for text-to-speech versions:
+Audio player shortcode for text-to-speech versions:
 ```
 {{<audio src="/audio/post-name.mp3" type="mp3" backup_src="/audio/post-name.ogg" backup_type="ogg">}}
 ```
 
-Posts can include custom JavaScript files via front matter:
+Custom JavaScript (loaded from `assets/js/`):
 ```yaml
----
 include_js: ["posts/2018-03-22-bloom-filters-bit-arrays-recommendations-caches-bitcoin/bloomfilters.js"]
----
 ```
-These files are loaded from the `assets/js/` directory.
 
-Posts can include external CDN scripts (loaded after local JS):
+External CDN scripts (loaded after local JS):
 ```yaml
----
 include_cdn: ["https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"]
----
 ```
 
-For MathJax support, use both together (config must load before the library):
+For MathJax, use both (config must load before the library):
 ```yaml
----
 include_js: ["mathjax-config.js"]
 include_cdn: ["https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"]
----
 ```
 
 ## Text-to-Speech Script
