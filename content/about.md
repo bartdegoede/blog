@@ -6,7 +6,7 @@ type: "page"
 slug: "about"
 ---
 
-Hi! My name is Bart de Goede. I live in New York City and I'm the Engineering Manager for Search & Discovery at [StubHub](https://www.stubhub.com), helping find tickets to their favorite live events.
+Hi! My name is Bart de Goede. I live in New York City and I'm the Engineering Manager for AI Commerce & Search at [StubHub](https://www.stubhub.com), helping fans find tickets to their favorite live events.
 
 I've also been a member of the technical staff at [Perplexity AI](https://www.perplexity.ai/), building the most powerful knowledge tool on the web, search engineering lead at [OnFrontiers](https://www.onfrontiers.com/), where I helped organizations understand the knowledge and expertise their employees accrue, a software engineer at [Instacart](https://www.instacart.com/), on the search team at [Scribd](https://www.scribd.com/), and an engineer on the search and data science team at [Catawiki](https://www.catawiki.com/). I've also run my own business helping other companies build search engines.
 
