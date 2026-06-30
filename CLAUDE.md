@@ -35,7 +35,7 @@ Builds the site, commits the output in the `public/` folder, and pushes to GitHu
 ```bash
 python scripts/text_to_speech.py content/post/[filename].md
 ```
-Uses Google Cloud Text-to-Speech API to convert blog post markdown to MP3 and OGG audio files. Requires:
+Uses Google Cloud Text-to-Speech API to convert blog post markdown to an MP3 audio file. Requires:
 - Python dependencies in `requirements.txt`
 - Google Cloud credentials configured
 - Outputs to `static/audio/`
@@ -103,7 +103,7 @@ description: "Optional: Post description for SEO and summary"
 
 Audio player shortcode for text-to-speech versions:
 ```
-{{<audio src="/audio/post-name.mp3" type="mp3" backup_src="/audio/post-name.ogg" backup_type="ogg">}}
+{{<audio src="/audio/post-name.mp3" type="mp3">}}
 ```
 
 Custom JavaScript (loaded from `assets/js/`):
@@ -131,7 +131,7 @@ The `scripts/text_to_speech.py` script:
 4. Splits text into 5000-character chunks (API limit)
 5. Calls Google Cloud Text-to-Speech API for each chunk
 6. Stitches MP3 segments together using pydub
-7. Exports final audio as both MP3 and OGG formats
+7. Exports final audio as MP3
 8. Cleans up intermediate files
 
 Dependencies are specified in `requirements.txt` (beautifulsoup4, markdown, pydub, google-cloud-texttospeech).

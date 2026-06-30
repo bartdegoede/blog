@@ -83,8 +83,6 @@ def text_to_speech(filename):
 
     logging.info(f'Exporting {name}.mp3')
     audio.export(f'static/audio/{name}.mp3', format='mp3')
-    logging.info(f'Exporting {name}.ogg')
-    audio.export(f'static/audio/{name}.ogg', format='ogg')
 
     logging.info('Removing intermediate files')
     for f in mp3_segments:
