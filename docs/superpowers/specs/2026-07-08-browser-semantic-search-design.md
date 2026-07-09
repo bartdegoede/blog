@@ -86,7 +86,23 @@ than the index it searches. Chunk size is therefore a quality knob, not a size c
 4. **Row magnitude is the stopword weighting.** model2vec mean-pools *unnormalized* token
    vectors and normalizes only the result. Zipf/SIF weighting is baked into each row's
    magnitude — that is how the model downweights "the" without a stopword list.
-   Quantization must therefore use a **per-row scale**, never a single global scale.
+
+   **Measured, 2026-07-09.** The mechanism is real. Sorting `potion-base-8M`'s 29,528 rows by
+   L2 norm, the smallest are `a`, `.`, `,`, `-`, `)`, `the`, `to`, `and`, `of`, `in`; the
+   largest are `turkmenistan`, `seychelles`, `guantanamo`, `hemingway`, `vanuatu`. Identical
+   ordering in `potion-base-2M`. You can read the model's stopword list off the matrix.
+
+   **But the practical consequence is much smaller than expected, and the spec used to
+   overclaim it.** Quantizing the real table with a single *global* scale zeroes exactly two
+   rows — `.` and `a` — and the aggregate query-vector cosine against fp32 is still 0.9998.
+   Row norms span only ~1.5× from median to max; the spread lives in a short left tail of
+   ~20 rows, and those are precisely the tokens the model already decided contribute nothing.
+   A global scale is, in effect, an implicit stopword list.
+
+   We still use a **per-row scale**: it costs 118 KB on a 7.5 MB table (1.54%), makes the
+   low-norm tail exact, and removes a class of reasoning we would otherwise have to redo for
+   every new model. But it is cheap insurance, not the load-bearing correctness property this
+   document originally claimed. The blog post should say so.
 
 5. **Semantic search will lose to keyword search on this corpus, for some queries.** A blog
    search box receives many single proper nouns: `pydub`, `lunr`, `certbot`, `mmh3`. These
@@ -253,11 +269,17 @@ tokenizer that disagrees with the build-time one silently poisons every query ve
 
 #### Quantization
 
-int8 values with a **per-row fp32 scale** (see key insight 4). Fidelity is verified by
-measuring cosine similarity between the fp32 and int8 query vectors across the eval set;
-expected ≥ 0.999, and the measured number goes in the post.
+int8 values with a **per-row fp32 scale** (see key insight 4 for the measured, and partly
+deflating, justification). 118 KB of scales on a 7.5 MB table.
 
-Document vectors are already L2-normalized, so they use a single global scale.
+Fidelity is verified by measuring cosine similarity between the fp32 and int8 query vectors.
+Measured on real `potion-base-2M` weights over 50 random mean-pools: **0.999968** per-row,
+against **0.999845** for a single global scale. Both clear the bar. The number goes in the post,
+along with the fact that the global scale does nearly as well.
+
+Document vectors are already L2-normalized, so they use a single global scale of 127.
+`quantize_unit` asserts that precondition rather than silently clipping — an unnormalized vector
+would lose information with no signal, which is a worse failure than an exception.
 
 ### Ranking: hybrid via Reciprocal Rank Fusion
 
@@ -380,7 +402,10 @@ Transformers.js and ternlight load from CDN via the `include_cdn` front-matter f
 2. Why running a transformer in the browser costs 23 MB.
 3. The reveal: a static embedding model *is* a lookup table (model2vec's `_encode_batch`).
 4. Build time: chunking, stripping code, the cache that never pays for itself.
-5. Quantization: int8 with per-row scales, and why row magnitude *is* the stopword weighting.
+5. Quantization: int8 with per-row scales. The model's stopword list is its row norms — the
+   smallest are `a`, `.`, `the`, `and`; the largest are `vanuatu` and `guantanamo`. Then the
+   deflating measurement: a global scale zeroes only `.` and `a`, and still hits 0.9998. Keep
+   per-row anyway at 1.54% overhead. A section about being wrong for the right reason.
 6. WordPiece in 80 lines, and its three traps.
 7. 155 dot products, and why an ANN index would be absurd here.
 8. Hybrid retrieval and RRF.
