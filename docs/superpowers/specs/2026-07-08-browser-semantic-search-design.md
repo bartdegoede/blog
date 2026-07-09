@@ -277,6 +277,26 @@ Measured on real `potion-base-2M` weights over 50 random mean-pools: **0.999968*
 against **0.999845** for a single global scale. Both clear the bar. The number goes in the post,
 along with the fact that the global scale does nearly as well.
 
+### Measured 2026-07-09: the shipped table reproduces the model
+
+The central premise, verified end to end. Quantize the table, gather rows by token id, mean-pool,
+L2-normalize — then compare against `StaticModel.encode()`:
+
+| Model | dims | min cosine vs `encode()` | table + scales | + vocab = first-query download |
+|---|---|---|---|---|
+| `potion-base-8M` | 256 | 0.999958 | 7.68 MB | **7.99 MB** |
+| `potion-base-8M` | 128 | 0.999970 | 3.90 MB | **4.21 MB** |
+| `potion-retrieval-32M` | 512 | 0.999945 | 32.55 MB | ~33 MB |
+
+Probes included `pydub` (out-of-vocabulary, shattered into subwords), `café naïve` (accent
+stripping), `the` (lowest-norm row), and `vanuatu` (highest-norm row).
+
+`StaticModel(dimensionality=128)` truncates PCA components *before* the final normalize, so its
+output is still unit-norm and `quantize_unit` accepts it. The 128-dim arm is safe to ship.
+
+The 13-post corpus yields **181 chunks** and a **46 KB** `docs.bin`. The token table is 173× the
+size of the index it searches.
+
 Document vectors are already L2-normalized, so they use a single global scale of 127.
 `quantize_unit` asserts that precondition rather than silently clipping — an unnormalized vector
 would lose information with no signal, which is a worse failure than an exception.
