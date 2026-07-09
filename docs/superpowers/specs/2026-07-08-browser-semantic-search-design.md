@@ -105,10 +105,30 @@ than the index it searches. Chunk size is therefore a quality knob, not a size c
    document originally claimed. The blog post should say so.
 
 5. **Semantic search will lose to keyword search on this corpus, for some queries.** A blog
-   search box receives many single proper nouns: `pydub`, `lunr`, `certbot`, `mmh3`. These
+   search box receives many single proper nouns: `pydub`, `lunr`, `mmh3`, `hnsw`. These
    are not in the 29,528-token vocabulary, so WordPiece shatters them into meaningless
-   subword fragments and there is no attention layer to reassemble them. Fuse.js finds
-   them instantly. Replacing keyword search would be a visible regression.
+   subword fragments and there is no attention layer to reassemble them.
+
+   **The original claim — "Fuse.js finds them instantly" — was false, and finding out why
+   fixed a live bug. Measured 2026-07-09.** The blog's Fuse config set `location: 0,
+   distance: 1000` with no `ignoreLocation`. Fuse's location-aware scoring only rewards
+   matches near the *start* of a field, and `pydub` first appears at character 3,712 of the
+   TTS post's 14,803-character body. So the shipped search box returned **zero results** for
+   `pydub`, `mmh3`, and `hnsw` — words that are in the posts. `lunr` and `opensearch` worked
+   only because they also appear in a *title*, where `location: 0` is satisfied.
+
+   Fixed in `layouts/partials/extend_footer.html` with `ignoreLocation: true` and
+   `threshold: 0.2` (0.4 with `ignoreLocation` makes `pydub` fuzzy-match 10 of 13 posts).
+   After the fix: `pydub` → the TTS post, `mmh3` → the bloom filter post, and the conceptual
+   query "find documents by what they mean" still returns nothing.
+
+   **The eval's keyword arm uses the corrected config.** Benchmarking semantic search against
+   a keyword baseline that cannot find literal words in body text would be beating a strawman,
+   and the resulting chart would be dishonest. The as-shipped bug is a footnote in the post,
+   not a measured arm.
+
+   Replacing keyword search would still be a visible regression — but only now that keyword
+   search actually works.
 
 ## Architecture
 
@@ -313,6 +333,10 @@ careful: accumulate into a `Float32Array`, never an `Int8Array`.
 
 ### Ranking: hybrid via Reciprocal Rank Fusion
 
+The keyword arm runs the real Fuse.js with the site's **corrected** configuration
+(`ignoreLocation: true`, `threshold: 0.2`) — see key insight 5. The eval must measure the
+engine that ships, not the one that was misconfigured.
+
 Fuse.js returns a fuzzy-match **distance** in [0,1], lower is better, on a scale that
 depends on query length and field weights. The vector index returns a **cosine similarity**
 in [-1,1], higher is better, realistically banded around 0.3–0.8 for English prose. These
@@ -464,6 +488,9 @@ Transformers.js and ternlight load from CDN via the `include_cdn` front-matter f
 8. Hybrid retrieval and RRF.
 8b. The anchor verifier, and the difference between testing a function and testing a pipeline.
    A check that builds its own expected value passed 93/93 while a dead link sat in the index.
+8c. "Before I could benchmark semantic search, I had to admit my keyword search was broken."
+   `location: 0, distance: 1000` meant the search box returned zero results for `pydub`,
+   `mmh3`, and `hnsw`. Benchmarking against that would have been beating a strawman.
 9. The benchmark: the pre-registered rule, the numbers, the per-family breakdown, the widget.
 10. What shipped.
 
