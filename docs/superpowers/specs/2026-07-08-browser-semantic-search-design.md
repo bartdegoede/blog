@@ -359,8 +359,31 @@ UI change plus per-post capping, with no index rebuild and no re-embedding.
 The risk of indexing a field nothing reads is that it silently rots — Goldmark's anchor
 slugification can drift, and no one would notice. So the build script **verifies** anchors
 rather than trusting them: after `hugo` runs, assert that every `anchor` in `chunks.json`
-appears as an `id="..."` in the corresponding `public/<slug>/index.html`. A wrong anchor
+appears as an `id=` attribute in the corresponding `public/<slug>/index.html`. A wrong anchor
 fails the build instead of producing a dead link the day we turn the feature on.
+
+**Two things this actually caught, 2026-07-09.** Both belong in the blog post.
+
+*Hugo is configured with `minify.minifyOutput: true`, so it emits unquoted id attributes.* A
+regex matching only `id="..."` finds **2 ids on a page that has 30** — `moon` and `sun`, which
+survive quoted only because they are SVG attributes the minifier left alone. Every heading
+anchor would have been reported missing. `extract_ids` must handle `id="x"`, `id='x'`, and bare
+`id=x`.
+
+*The verifier immediately found a real anchor bug that a narrower check had already passed.* An
+earlier task compared `github_anchor(text)` against Hugo's ids for all 93 headings and got 93
+matches — but it took the heading text from the *rendered HTML*, where Goldmark had already
+turned `_most definitely_` into `<em>most definitely</em>` and the tag had been stripped. The
+real pipeline slugifies **raw markdown**, so `## It _most definitely_ needs supervision` produced
+`it-_most-definitely_-needs-supervision` against Hugo's `it-most-definitely-needs-supervision`.
+One dead link, invisible to a test that validated the slugifier against pre-cleaned input.
+
+The fix is `strip_inline_emphasis` in `markdown.py`, applied inside `to_prose` — `github_anchor`
+was innocent, it was being fed markup. It must preserve intraword `_`, because CommonMark forbids
+intraword emphasis and `free_ssl` is a real heading word on this blog.
+
+The moral, and the reason the verifier is worth its weight: **a check that constructs its own
+expected value tests the function; only a check against the real artifact tests the pipeline.**
 
 ## Evaluation
 
@@ -437,8 +460,10 @@ Transformers.js and ternlight load from CDN via the `include_cdn` front-matter f
    deflating measurement: a global scale zeroes only `.` and `a`, and still hits 0.9998. Keep
    per-row anyway at 1.54% overhead. A section about being wrong for the right reason.
 6. WordPiece in 80 lines, and its three traps.
-7. 155 dot products, and why an ANN index would be absurd here.
+7. 181 dot products, and why an ANN index would be absurd here.
 8. Hybrid retrieval and RRF.
+8b. The anchor verifier, and the difference between testing a function and testing a pipeline.
+   A check that builds its own expected value passed 93/93 while a dead link sat in the index.
 9. The benchmark: the pre-registered rule, the numbers, the per-family breakdown, the widget.
 10. What shipped.
 
