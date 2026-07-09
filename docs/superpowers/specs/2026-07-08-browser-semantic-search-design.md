@@ -281,6 +281,16 @@ Document vectors are already L2-normalized, so they use a single global scale of
 `quantize_unit` asserts that precondition rather than silently clipping — an unnormalized vector
 would lose information with no signal, which is a worse failure than an exception.
 
+**Consequence for the browser, measured 2026-07-09:** because cosine similarity is invariant to
+a per-row positive scale, and the document matrix uses one global scale, the browser **never has
+to dequantize `docs.bin`**. A float32 query dotted against the raw int8 rows produces the same
+ranking, to within 1e-6, as against dequantized float32 rows. Only the *query* must be float.
+
+The corresponding hazard: `int8 @ int8` wraps around silently. A 300-dim dot product whose true
+value is 3,000,000 comes back as `-64`, with no exception and no NaN. `cosine_scores` now raises
+`TypeError` on a non-floating query rather than returning garbage. The JS port must be equally
+careful: accumulate into a `Float32Array`, never an `Int8Array`.
+
 ### Ranking: hybrid via Reciprocal Rank Fusion
 
 Fuse.js returns a fuzzy-match **distance** in [0,1], lower is better, on a scale that
