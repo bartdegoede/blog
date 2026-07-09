@@ -294,7 +294,7 @@ stripping), `the` (lowest-norm row), and `vanuatu` (highest-norm row).
 `StaticModel(dimensionality=128)` truncates PCA components *before* the final normalize, so its
 output is still unit-norm and `quantize_unit` accepts it. The 128-dim arm is safe to ship.
 
-The 13-post corpus yields **181 chunks** and a **46 KB** `docs.bin`. The token table is 173× the
+The 13-post corpus yields **179 chunks** and a **46 KB** `docs.bin`. The token table is 173× the
 size of the index it searches.
 
 Document vectors are already L2-normalized, so they use a single global scale of 127.
@@ -460,7 +460,7 @@ Transformers.js and ternlight load from CDN via the `include_cdn` front-matter f
    deflating measurement: a global scale zeroes only `.` and `a`, and still hits 0.9998. Keep
    per-row anyway at 1.54% overhead. A section about being wrong for the right reason.
 6. WordPiece in 80 lines, and its three traps.
-7. 181 dot products, and why an ANN index would be absurd here.
+7. 179 dot products, and why an ANN index would be absurd here.
 8. Hybrid retrieval and RRF.
 8b. The anchor verifier, and the difference between testing a function and testing a pipeline.
    A check that builds its own expected value passed 93/93 while a dead link sat in the index.
