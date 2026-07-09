@@ -2,3 +2,4 @@ public/*
 .DS_Store
 .hugo_build.lock
 text-to-speech-*.json
+docs/plans/
