@@ -96,6 +96,42 @@ than the index it searches. Chunk size is therefore a quality knob, not a size c
 
 ## Architecture
 
+### Two repositories
+
+The pipeline and the eval are **not blog code**. They live in
+`github.com/bartdegoede/static-site-search-eval` and are published to PyPI as
+`static-site-search-eval` (importing as `sss_eval`). The corpus directory and the query
+set are CLI arguments, so the tool runs against any static site, not just this one.
+
+The blog depends on a **pinned exact version** and keeps a thin
+`scripts/build_search_index.py` that calls into it.
+
+This exists to close a specific hole. The eval concludes something like "chunk size 1000
+with title prefixes and `potion-base-8M` wins." That conclusion only describes the blog if
+the blog chunks text *identically*. Two copies of `chunk.py` that drift by one
+sentence-boundary rule would make the eval a measurement of a system nobody runs, and
+nothing would ever report the discrepancy.
+
+So: one source of truth, pinned. `manifest.json` records `sss_eval_version`, which makes a
+mismatch between the artifacts and the installed package **detectable** rather than silent.
+
+```
+static-site-search-eval/          blog/
+  src/sss_eval/                     scripts/build_search_index.py   -> imports sss_eval
+    markdown.py  chunk.py           static/search/                  -> live artifacts
+    anchors.py   quantize.py        static/search-benchmark/        -> frozen artifacts
+    rank.py      metrics.py         assets/js/semantic/             -> browser runtime
+    artifacts.py evaluate.py
+  node/                             pyproject.toml:
+    build_minilm.mjs                  static-site-search-eval==0.1.0
+    build_ternlight.mjs
+    rank_fuse.mjs
+  examples/degoe-de/queries.yaml
+```
+
+The blog post links to the repo, and its closing section — "run this on your own site" — is
+then a true statement rather than an aspiration.
+
 ### Two artifact sets, different lifecycles
 
 **`static/search/` — live.** The winning arm only. Regenerated whenever a post is added or
@@ -103,7 +139,7 @@ edited.
 
 ```
 static/search/
-  manifest.json        # model id, dims, chunker params, quantization, artifact hashes
+  manifest.json        # model id, dims, chunker params, sss_eval_version, artifact hashes
   chunks.<hash>.json   # per-chunk metadata, parallel to docs.bin row order
   docs.<hash>.bin      # int8 chunk vectors, ~39 KB
   tokens.<hash>.bin    # int8 token table
@@ -138,26 +174,34 @@ model changes.
 
 ### Build pipeline
 
-Python under `uv`, matching `scripts/text_to_speech.py`. The chunker reads markdown source
-directly rather than Hugo's `.Plain`, as the TTS script does.
+Python under `uv`, in the `static-site-search-eval` repo. The chunker reads markdown source
+directly rather than Hugo's `.Plain`, as `scripts/text_to_speech.py` does.
 
-```
-scripts/
-  embed/
-    chunk.py           # markdown -> chunks (shared by all arms)
-    quantize.py        # fp32 -> int8 + per-row fp32 scales
-    cache.py           # content-hash embedding cache
-    build_potion.py    # model2vec arm; also the live pipeline
-    eval.py            # recall@3, MRR@10 over labeled queries
-  benchmark/
-    build_minilm.mjs      # transformers.js in Node (ONNX q8 parity with browser)
-    build_ternlight.mjs   # ternlight in Node
-  queries.yaml         # 30 labeled eval queries
-```
+| Module | Responsibility |
+|---|---|
+| `markdown.py` | Strip front matter, fenced code, Hugo shortcodes, raw HTML. |
+| `anchors.py` | Goldmark GitHub-style heading slugs + duplicate disambiguation. |
+| `post.py` | Parse a markdown file into a `Post` of anchored `Section`s. |
+| `chunk.py` | Sections → overlapping, sentence-snapped `Chunk`s. |
+| `quantize.py` | fp32 ↔ int8 with per-row scales. |
+| `cache.py` | Content-hash embedding cache. |
+| `rank.py` | Cosine scoring, chunk→post rollup, RRF fusion. |
+| `metrics.py` | recall@k, MRR@k. |
+| `artifacts.py` | On-disk vector format + `manifest.json`. |
+| `build.py` | Corpus → potion vectors → artifacts. The live blog pipeline calls this. |
+| `build_arms.py` | Assemble every benchmark arm. |
+| `evaluate.py` | Score arms, apply the ship rule. |
+| `verify_anchors.py` | Assert indexed anchors exist in rendered HTML. |
+| `node/*.mjs` | MiniLM (transformers.js), ternlight, and the real Fuse.js baseline. |
+
+Corpus path and query file are **arguments**, never constants — the package must run against
+any static site.
 
 Each arm's document vectors must come from the same implementation that will embed its
 queries in the browser, or the two halves of the comparison live in different vector
-spaces.
+spaces. That is why MiniLM is embedded with transformers.js in Node rather than
+`sentence-transformers` in Python: the browser will run the ONNX q8 weights, so the build
+must too.
 
 **Chunking:** ~1000 chars, 200 overlap, snapped to sentence boundaries. Fenced code blocks
 are **stripped**. `import numpy as np` mean-pooled into a static embedding is noise that
@@ -307,8 +351,8 @@ alternative is picking a winner and reverse-engineering a justification, which i
   and `description` front matter only, never from body prose. The exact-token and
   navigational families are unaffected, since their whole point is to use words the corpus
   does or does not contain.
-- `scripts/queries.yaml` is committed, so anyone can inspect the eval set and disagree with
-  it.
+- `examples/degoe-de/queries.yaml` is committed to a public repo, so anyone can inspect the
+  eval set and disagree with it.
 
 ## The live demo
 
