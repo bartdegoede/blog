@@ -18,13 +18,16 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             pagesIndex = data;
 
-            // Initialize Fuse.js for fuzzy search
+            // Initialize Fuse.js for fuzzy search.
+            // ignoreLocation is required: with the default location/distance scoring,
+            // a match more than ~1000 characters into a field scores too poorly to
+            // survive the threshold, so terms appearing only in the body of a long
+            // post (pydub, mmh3, hnsw) were unfindable.
             const fuseOptions = {
                 isCaseSensitive: false,
                 shouldSort: true,
-                location: 0,
-                distance: 1000,
-                threshold: 0.4,
+                ignoreLocation: true,
+                threshold: 0.2,
                 minMatchCharLength: 2,
                 keys: [
                     { name: 'title', weight: 0.8 },
