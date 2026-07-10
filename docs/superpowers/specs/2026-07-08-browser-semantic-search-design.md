@@ -427,8 +427,9 @@ MiniLM q8. Plus RRF-hybrid on top of each semantic arm.
 
 **Knobs swept:** chunk size {600, 1000, 1500}, title-prefix {on, off}.
 
-**Metrics:** recall@3 and MRR@10, reported **per family**. The aggregate number hides the
-entire story.
+**Metrics:** recall@3, MRR@10, and **precision@3**, reported **per family**. The aggregate
+number hides the entire story, and precision is what stops a high-recall degenerate config
+(see the threshold table below) from looking like a win.
 
 ### Ship rule, fixed in advance
 
@@ -438,6 +439,47 @@ entire story.
 This is registered here, before any numbers exist, and stated as such in the post. The
 alternative is picking a winner and reverse-engineering a justification, which is how most
 "we chose X" engineering posts are written and why none of them are trustworthy.
+
+### The baseline must be pre-registered too, and nearly wasn't
+
+The ship rule governs which *semantic arm* wins. It says nothing about how strong the keyword
+baseline is allowed to be — and Fuse's `threshold` is a dial that moves the baseline enormously.
+Measured over the 30 eval queries, with `ignoreLocation: true`:
+
+| threshold | exact | conceptual | navigational | overall | hits for `papermod` |
+|---|---|---|---|---|---|
+| 0.2 | 0.900 | 0.000 | 0.100 | 0.333 | 1 of 13 |
+| 0.3 | 0.900 | 0.000 | 0.133 | 0.344 | 2 of 13 |
+| 0.4 | 0.850 | 0.200 | 0.550 | 0.533 | 4 of 13 |
+| 0.5 | 0.800 | **0.800** | 0.850 | **0.817** | **13 of 13** |
+
+Read naively, `threshold: 0.5` says a fuzzy string matcher answers paraphrase queries as well
+as embeddings do, and the entire premise of this project collapses. It is a mirage. At 0.5 the
+query *"find documents by what they mean instead of which words they contain"* returns 10 posts
+whose scores span **0.9916 to 0.9930** — the correct one wins by four ten-thousandths of noise.
+`papermod` matches all 13 posts. recall@3 rewards a config that returns most of the corpus.
+
+**`threshold: 0.2` is chosen because it is what ships on the live site**, not because it makes
+semantic search look good. It is also the precise setting: exactly one hit for `pydub`, `mmh3`,
+and `papermod`. Reporting **precision@3 alongside recall@3** makes this checkable by a reader
+rather than something they have to take on faith.
+
+The general hazard, worth its own paragraph in the post: a pre-registered rule for choosing the
+winner does nothing if you are free to tune the loser afterwards.
+
+### A content bug the eval surfaced
+
+`hnsw` was dropped from the `exact` family. It appears once in the corpus, inside the footnote
+`[^faiss]` of the semantic-search post — and that footnote is **defined but never referenced**,
+so Goldmark silently drops it. It renders nowhere, and is therefore absent from Hugo's `.Plain`
+and from `index.json`.
+
+The semantic arm reads markdown source and sees it. The keyword arm reads `.Plain` and cannot.
+Asking both to find it would have understated the keyword baseline by 0.1 recall@3. Replaced
+with `papermod`, which both engines can see.
+
+Separately: that footnote is invisible on the published post. Worth fixing in the blog, but
+*after* the eval, since the corpus snapshot is frozen at a commit.
 
 ### Honesty caveats (belong in the post, not a footnote)
 
