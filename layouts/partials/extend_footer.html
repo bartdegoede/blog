@@ -39,13 +39,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const modeToggle = document.createElement('div');
     modeToggle.className = 'search-modes';
-    modeToggle.setAttribute('role', 'radiogroup');
-    modeToggle.setAttribute('aria-label', 'Search mode');
     // Hidden until a query is active, so it never pushes #allPosts down.
     modeToggle.style.display = 'none';
-    modeToggle.innerHTML = MODES.map(function(m) {
-        return '<button type="button" data-mode="' + m + '" role="radio" aria-checked="' + (m === mode) + '">' + m + '</button>';
-    }).join('');
+    // The label sits outside the radiogroup and names it, so assistive tech
+    // reads exactly three radios rather than a stray span among them.
+    modeToggle.innerHTML =
+        '<span class="search-modes-label" id="search-mode-label">Search mode:</span>' +
+        '<div class="search-modes-options" role="radiogroup" aria-labelledby="search-mode-label">' +
+        MODES.map(function(m) {
+            return '<button type="button" data-mode="' + m + '" role="radio" aria-checked="' + (m === mode) + '">' + m + '</button>';
+        }).join('') +
+        '</div>';
     searchResults.parentNode.insertBefore(modeToggle, searchResults);
 
     function updateToggleUI() {
