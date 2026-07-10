@@ -246,6 +246,31 @@ uv run python -m sss_eval.evaluate --json build/results.json
 
 ---
 
+## What int8 quantization actually costs, measured on the shipped index
+
+The browser reconstructs each token row as `tokens[id*dims+d] * scales[id]` from the int8 table.
+`StaticModel.encode()` reads the fp32 table. Worst-case query-vector cosine between them, across
+the 30 eval queries: **0.999966**.
+
+That fidelity is not free of consequences, and the consequences land exactly where you'd want:
+
+| | changed by quantization |
+|---|---|
+| top-1 result | **0 / 30** |
+| top-3 results | 1 / 30 |
+| full ranking order | 4 / 30 |
+
+Quantization never moves the answer. It reshuffles near-ties four ranks down, where nobody looks.
+The divergences are 1e-4-sized score gaps between posts that were already neck and neck.
+
+**This matters for testing.** A parity gate asserting `js_ranking == rank(model.encode(q))` fails
+on those four queries **against a correct implementation**, because the browser can never reach a
+reference computed from weights it does not have. The correct reference is Python reconstructing
+its query vector from the same shipped int8 bytes -- under which JavaScript agrees **30/30**.
+
+The hand-written JS WordPiece tokenizer separately reproduces Python's token ids on 16/16 probe
+strings, including `日本語のみ`, `naïve café 3.14`, `C++ vs C#`, and `tf-idf`.
+
 ## What Part 2 ships
 
 ```bash
