@@ -1,0 +1,13 @@
+{{- /*
+  Three-arm in-browser semantic search benchmark widget.
+
+  This is an ES module (dynamic imports of transformers.js / ternlight from
+  CDN, plus static imports of the sibling assets/js/semantic/*.js files), so
+  it can't be loaded via the classic include_js front-matter mechanism -
+  esbuild has to bundle the local imports while leaving the CDN import()
+  calls untouched, exactly like extend_footer.html already does for the
+  homepage's semantic search.
+*/ -}}
+{{- $js := resources.Get "js/posts/browser-semantic-search/benchmark.js" | js.Build (dict "minify" true "target" "es2017" "format" "esm") | fingerprint -}}
+<div id="ss-benchmark"><!-- widget mounts here on DOMContentLoaded --></div>
+<script type="module" src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>

@@ -333,3 +333,131 @@ input[type="search"] {
         width: 100%;
     }
 }
+
+/* Three-arm in-browser semantic search benchmark widget */
+.ss-benchmark {
+    margin: 2rem 0;
+}
+
+.ss-benchmark-query-label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--secondary);
+}
+
+.ss-benchmark-query {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--entry);
+    color: var(--primary);
+    margin-bottom: 1.25rem;
+    box-sizing: border-box;
+}
+
+.ss-benchmark-table-wrap,
+.ss-benchmark {
+    overflow-x: auto;
+}
+
+.ss-benchmark-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--entry);
+    border: 1px solid var(--border);
+    font-size: 0.9rem;
+}
+
+.ss-benchmark-table th,
+.ss-benchmark-table td {
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+}
+
+.ss-benchmark-table thead th {
+    background: var(--code-bg);
+    font-weight: 600;
+}
+
+.ss-benchmark-subhead {
+    font-weight: normal;
+    font-size: 0.75rem;
+    color: var(--secondary);
+}
+
+.ss-benchmark-arm {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.ss-benchmark-run {
+    padding: 0.45rem 1.1rem;
+    font-size: 0.85rem;
+    color: var(--theme);
+    background-color: var(--primary);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+    white-space: nowrap;
+}
+
+.ss-benchmark-run:hover:not(:disabled) {
+    opacity: 0.85;
+}
+
+.ss-benchmark-run:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.ss-benchmark-top3 {
+    margin: 0;
+    padding-left: 1.1rem;
+}
+
+.ss-benchmark-top3 li {
+    margin: 0.15rem 0;
+}
+
+.ss-benchmark-score {
+    color: var(--secondary);
+    font-size: 0.8rem;
+}
+
+.ss-benchmark-empty {
+    color: var(--secondary);
+    font-style: italic;
+}
+
+.ss-benchmark-row-error {
+    background: rgba(172, 65, 66, 0.08);
+}
+
+.ss-benchmark-error {
+    color: #ac4142;
+}
+
+.ss-benchmark-note {
+    margin-top: 0.9rem;
+    font-size: 0.85rem;
+    color: var(--secondary);
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .ss-benchmark-table {
+        font-size: 0.8rem;
+    }
+
+    .ss-benchmark-table th,
+    .ss-benchmark-table td {
+        padding: 0.5rem 0.6rem;
+    }
+}
