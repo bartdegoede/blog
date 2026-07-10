@@ -4,7 +4,7 @@
 {{- $js := resources.Get "js/semantic/index.js" | js.Build (dict "minify" true "target" "es2017" "format" "esm") | fingerprint -}}
 <script type="module" src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
 <script type="module">
-import { loadIndex, searchSemantic, searchHybrid, getChunks } from "{{ $js.RelPermalink }}";
+import { loadIndex, searchSemantic, searchHybrid, getChunks, MIN_SCORE } from "{{ $js.RelPermalink }}";
 
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
@@ -139,8 +139,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Rendering ---------------------------------------------------
 
-    function renderCountHtml(n) {
-        return '<div style="margin-bottom: 1.5rem; color: var(--secondary); font-size: 0.95rem;">Found ' + n + ' result' + (n === 1 ? '' : 's') + '</div>';
+    // At most this many result cards. Semantic search ranks all 13 posts; the
+    // reader wants the top of that ranking, not a re-ordered table of contents.
+    const MAX_RESULTS = 8;
+
+    function renderCountHtml(shown, total) {
+        const label = shown < total
+            ? 'Top ' + shown + ' of ' + total + ' ranked'
+            : 'Found ' + shown + ' result' + (shown === 1 ? '' : 's');
+        return '<div style="margin-bottom: 1.5rem; color: var(--secondary); font-size: 0.95rem;">' + label + '</div>';
+    }
+
+    // Footnote markers (`[^faiss]`) survive into chunk snippets by design -- the
+    // downstream WordPiece tokenizer drops the brackets, so they cost the
+    // embedding nothing. They just look like debris to a reader.
+    function cleanSnippet(text, max) {
+        return text.replace(/\[\^[^\]]+\]/g, '').replace(/\s+/g, ' ').trim().substring(0, max) + '...';
     }
 
     function showNoResults(query) {
@@ -158,9 +172,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderKeywordHtml(results) {
         if (results.length === 0) return null;
 
-        let html = renderCountHtml(results.length);
+        let html = renderCountHtml(Math.min(results.length, MAX_RESULTS), results.length);
 
-        results.slice(0, 10).forEach(result => {
+        results.slice(0, MAX_RESULTS).forEach(result => {
             const item = result.item;
             const snippet = item.content ? item.content.substring(0, 150).replace(/\n/g, ' ').trim() + '...' : '';
 
@@ -195,13 +209,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (ranked.length === 0) return null;
 
         const chunks = await getChunks();
-        let html = renderCountHtml(ranked.length);
+        let html = renderCountHtml(Math.min(ranked.length, MAX_RESULTS), ranked.length);
 
-        ranked.slice(0, 10).forEach(([slug]) => {
+        ranked.slice(0, MAX_RESULTS).forEach(([slug]) => {
             const chunk = chunks.find(c => c.post === slug);
             if (!chunk) return;
 
-            const snippet = chunk.snippet ? chunk.snippet.substring(0, 180).replace(/\n/g, ' ').trim() + '...' : '';
+            const snippet = chunk.snippet ? cleanSnippet(chunk.snippet, 180) : '';
 
             html += `
                 <article class="post-entry">
@@ -267,12 +281,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         let ranked;
         if (effectiveMode === 'semantic') {
-            ranked = await searchSemantic(query);
+            ranked = await searchSemantic(query, { minScore: MIN_SCORE });
         } else {
             const keywordRanking = searchIndex
                 ? searchIndex.search(query).map(r => slugFromHref(r.item.href))
                 : [];
-            ranked = await searchHybrid(query, keywordRanking);
+            ranked = await searchHybrid(query, keywordRanking, { minScore: MIN_SCORE });
         }
         if (myToken !== searchToken) return;
 

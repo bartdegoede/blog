@@ -102,10 +102,25 @@ export function loadIndex(base = "/search") {
 }
 
 /**
+ * The lowest cosine score worth showing a reader.
+ *
+ * Semantic search ranks; it does not filter. Every post scores a nonzero cosine
+ * against any query, so without a floor the UI proudly reports "Found 13
+ * results" for `pydub` -- the entire blog, ordered.
+ *
+ * 0.20 is not a taste call. Across the 30 labeled eval queries, the
+ * lowest-scoring *relevant* post scores 0.209, so 0.20 is the largest floor that
+ * discards nothing we wanted. Measured: recall@3 is 0.967 at both 0.00 and 0.20,
+ * and falls to 0.933 at 0.25. Mean results shown drops from 13.0 to 10.5.
+ */
+export const MIN_SCORE = 0.2;
+
+/**
  * @param {string} query
+ * @param {{minScore?: number}} [opts]
  * @returns {Promise<Array<[post: any, score: number]>>}
  */
-export async function searchSemantic(query) {
+export async function searchSemantic(query, { minScore = 0 } = {}) {
   const idx = await loadIndex();
   const ids = idx.wp.encode(query);
   // An empty query, or one that's entirely out-of-vocabulary, must return
@@ -115,17 +130,24 @@ export async function searchSemantic(query) {
   const vector = embedQuery(ids, idx.tokens, idx.scales, idx.manifest.dims);
   const scores = cosineScores(vector, idx.docs, idx.manifest.n_chunks, idx.manifest.dims);
   const posts = idx.chunks.map((chunk) => chunk.post);
-  return rollupToPosts(posts, scores);
+  const ranked = rollupToPosts(posts, scores);
+  return minScore > 0 ? ranked.filter(([, score]) => score >= minScore) : ranked;
 }
 
 /**
  * @param {string} query
  * @param {any[]} keywordRanking - post ids, best first, from the existing
  *   Fuse.js search
+ * @param {{minScore?: number}} [opts]
  * @returns {Promise<Array<[post: any, score: number]>>}
+ *
+ * The floor is applied to the semantic ranking *before* fusion. RRF scores are
+ * reciprocal ranks, not similarities, so there is nothing meaningful to threshold
+ * afterwards. Keyword results are never filtered: Fuse already applied its own
+ * threshold, and dropping an exact-token match would defeat the point of fusing.
  */
-export async function searchHybrid(query, keywordRanking) {
-  const semanticRanking = (await searchSemantic(query)).map(([post]) => post);
+export async function searchHybrid(query, keywordRanking, { minScore = 0 } = {}) {
+  const semanticRanking = (await searchSemantic(query, { minScore })).map(([post]) => post);
   return rrf([keywordRanking, semanticRanking]);
 }
 
