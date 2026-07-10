@@ -25,6 +25,31 @@ numbers.
 a 5–7 MB WASM bundle containing model, tokenizer, and engine. It reports 0.844 Spearman
 against its teacher.
 
+**Verified 2026-07-09.** It is a monorepo; the npm packages are `@ternlight/base` and
+`@ternlight/mini`, both 0.1.0, both with a Node export condition and a synchronous
+`embed(text) → Float32Array`. `engineInfo()` reports:
+
+```
+tern-engine v1 | embedding_format=int4 | vocab=30522 d_model=384 n_layers=2 ... max_seq_len=128
+```
+
+Two corrections to what this document originally assumed. **`@ternlight/mini` outputs 384
+dimensions, not 256** — 256 is its internal `d_model`, not its `output_dim`. And its vocabulary
+is 30,522 (`bert-base-uncased`), not potion's 29,528, so the two tokenize differently.
+
+**`max_seq_len=128` is the finding that matters.** Ternlight silently truncates input at 128
+WordPiece tokens. Our 1000-character chunks have a median of **204** tokens, p90 255, max 323.
+So **73.2% of chunks exceed the cap**, and ternlight sees a mean of **72%** of each chunk's
+tokens. MiniLM's tokenizer reports `model_max_length = 512` and truncates **0 of 179** chunks.
+
+Proven empirically, not inferred from the docs: appending 200 filler words to an 82-token chunk
+drops its cosine to **0.2168** (the tail was read), while appending the same filler to a
+243-token chunk gives cosine **1.000000** (the tail was never reached).
+
+This makes the chunk-size sweep sharper rather than useless: at 600 characters (~122 tokens)
+ternlight sees nearly the whole chunk, at 1500 it sees about a third. The arm should therefore
+*prefer* small chunks, and the sweep will show it.
+
 Following that thread led to [model2vec / potion](https://github.com/MinishLab/model2vec),
 which is more interesting. A model2vec "model" is a lookup table. Its entire forward pass,
 from `model2vec/model.py::_encode_batch`, is:
@@ -496,6 +521,30 @@ The navigational row is the surprise: 9 of 10 empty. Fuse is a fuzzy *substring*
 bag-of-words engine like BM25, so a long natural-language query has no near-substring anywhere
 in the corpus and matches nothing. Worth saying plainly in the post — "keyword search" on this
 blog was never doing what most readers assume that phrase means.
+
+### What the models actually know, measured before the eval ran
+
+A sanity probe on short phrases, before any retrieval numbers exist. Cosine similarity:
+
+| pair | MiniLM-q8 | tern-base | tern-mini | potion-8M | potion-ret32M |
+|---|---|---|---|---|---|
+| `reset my password` / `I forgot my password` | 0.837 | 0.884 | 0.907 | 0.775 | 0.676 |
+| ↳ against `bloom filter` | 0.055 | 0.062 | 0.090 | 0.108 | 0.036 |
+| `semantic search` / `find documents by meaning` | 0.547 | 0.587 | 0.451 | 0.398 | 0.209 |
+| ↳ against `text to speech audio` | 0.113 | 0.191 | 0.286 | 0.108 | 0.087 |
+| `bloom filter` / `probabilistic set membership` | 0.174 | **0.061** | **0.054** | -0.009 | **0.007** |
+| ↳ against `free ssl certificate` | 0.101 | 0.108 | 0.100 | -0.054 | 0.019 |
+
+Every model handles conversational paraphrase and separates it cleanly from a distractor. But
+`bloom filter ↔ probabilistic set membership` sits **at noise level** for both ternlight tiers
+and for `potion-retrieval-32M` — the related pair scores *below* the unrelated one. Small models
+distilled on general text never learned that the term names the concept.
+
+This is not an integration bug: ternlight's own README examples reproduce exactly (0.8844,
+0.8218). It is a capability ceiling, and it directly foreshadows the conceptual eval query
+*"a probabilistic structure for testing whether an item is in a set"*. Chunk-level context may
+rescue it. If it doesn't, that is a result about small static embeddings on technical jargon —
+which is what a programming blog is made of — not a failure of the experiment.
 
 ### A content bug the eval surfaced
 
