@@ -448,16 +448,28 @@ Measured over the 30 eval queries, with `ignoreLocation: true`:
 
 | threshold | exact | conceptual | navigational | overall | hits for `papermod` |
 |---|---|---|---|---|---|
-| 0.2 | 0.900 | 0.000 | 0.100 | 0.333 | 1 of 13 |
-| 0.3 | 0.900 | 0.000 | 0.133 | 0.344 | 2 of 13 |
-| 0.4 | 0.850 | 0.200 | 0.550 | 0.533 | 4 of 13 |
-| 0.5 | 0.800 | **0.800** | 0.850 | **0.817** | **13 of 13** |
+| 0.2 | **1.000** | 0.000 | 0.100 | 0.367 | 1 of 13 |
+| 0.3 | 1.000 | 0.000 | 0.133 | 0.378 | 2 of 13 |
+| 0.4 | 0.950 | 0.200 | 0.550 | 0.567 | 4 of 13 |
+| 0.5 | 0.900 | **0.800** | 0.850 | **0.850** | **13 of 13** |
 
 Read naively, `threshold: 0.5` says a fuzzy string matcher answers paraphrase queries as well
-as embeddings do, and the entire premise of this project collapses. It is a mirage. At 0.5 the
-query *"find documents by what they mean instead of which words they contain"* returns 10 posts
-whose scores span **0.9916 to 0.9930** — the correct one wins by four ten-thousandths of noise.
-`papermod` matches all 13 posts. recall@3 rewards a config that returns most of the corpus.
+as embeddings do, and the entire premise of this project collapses. It is a mirage, and the
+mechanism is worth stating exactly.
+
+At 0.5, the query *"find documents by what they mean instead of which words they contain"*
+returns 10 of the 13 posts. Their top four, by score:
+
+```
+  1  0.9916  use-google-cloud-text-to-speech-...      <- wrong
+  2  0.9916  searching-your-hugo-site-with-lunr       <- wrong
+  3  0.9920  building-a-semantic-search-engine-...    <- correct
+  4  0.9930  building-a-full-text-search-engine-...
+```
+
+The correct post ranks **third**, behind two irrelevant posts that tie at 0.9916. Every score
+sits within 0.0014 of every other. recall@3 scores this as a hit. It is noise wearing a
+ranking's clothes, and `papermod` matches all 13 posts at the same setting.
 
 **`threshold: 0.2` is chosen because it is what ships on the live site**, not because it makes
 semantic search look good. It is also the precise setting: exactly one hit for `pydub`, `mmh3`,
@@ -466,6 +478,24 @@ rather than something they have to take on faith.
 
 The general hazard, worth its own paragraph in the post: a pre-registered rule for choosing the
 winner does nothing if you are free to tune the loser afterwards.
+
+**The keyword baseline every semantic arm must beat** (Fuse.js, shipped config, 30 queries):
+
+| family | recall@3 | MRR@10 | mean results returned | empty rankings |
+|---|---|---|---|---|
+| exact | **1.000** | 0.900 | 2.20 | 0 / 10 |
+| conceptual | **0.000** | 0.000 | 0.00 | 10 / 10 |
+| navigational | 0.100 | 0.100 | 0.10 | 9 / 10 |
+| **overall** | **0.367** | 0.333 | 0.77 | 19 / 30 |
+
+Keyword search is *perfect* on exact tokens and returns literally nothing for all ten paraphrase
+queries. Not "ranks them poorly" — returns zero candidates. That is the shape of the problem
+semantic search exists to solve, measured rather than assumed.
+
+The navigational row is the surprise: 9 of 10 empty. Fuse is a fuzzy *substring* matcher, not a
+bag-of-words engine like BM25, so a long natural-language query has no near-substring anywhere
+in the corpus and matches nothing. Worth saying plainly in the post — "keyword search" on this
+blog was never doing what most readers assume that phrase means.
 
 ### A content bug the eval surfaced
 
