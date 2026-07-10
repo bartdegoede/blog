@@ -246,6 +246,52 @@ uv run python -m sss_eval.evaluate --json build/results.json
 
 ---
 
+## The matched-config experiment the eval skipped, run 2026-07-10
+
+The offline eval built MiniLM and ternlight at chunk 1000/200 only. The site ships 600/120. This
+document previously said: *"Ternlight at c600 would see whole chunks and might well improve --
+that experiment was not run."* It has now been run. All three arms, identical chunks, semantic
+only, no fusion:
+
+| arm | chunk | r@1 | r@3 | MRR@10 | exact r@1 | conceptual r@1 |
+|---|---|---|---|---|---|---|
+| MiniLM q8 | 1000/200 | **0.700** | 0.944 | 0.925 | 0.700 | 0.850 |
+| MiniLM q8 | 600/120 | 0.667 | 0.956 | 0.905 | 0.700 | 0.750 |
+| ternlight-base | 1000/200 | 0.633 | 0.911 | 0.889 | 0.600 | 0.750 |
+| ternlight-base | 600/120 | 0.633 | 0.911 | 0.888 | 0.600 | 0.750 |
+| potion-8M @128d | 1000/200 | 0.650 | 0.917 | 0.897 | 0.750 | 0.650 |
+| **potion-8M @128d** | **600/120** | **0.683** | **0.967** | **0.922** | 0.750 | 0.750 |
+
+Change in recall@1 when chunks are halved:
+
+| arm | Δ r@1 |
+|---|---|
+| potion (a mean) | **+0.033** |
+| ternlight (2 transformer layers) | **0.000** |
+| MiniLM (6 transformer layers) | **−0.033** |
+
+### This corrects the story this document told
+
+The earlier claim was that ternlight's 128-token truncation "is silently doing the chunking for
+it." That is the wrong mechanism. At 1000-char chunks ternlight reads 72.0% of each chunk's
+tokens; at 600 it reads **93.3%** — a third more text — and its aggregate retrieval does not move
+at all. Its rankings *do* change (29 of 30 full orderings, 6 top-1 flips); the gains and losses
+cancel exactly.
+
+The real mechanism: **chunking helps a model that mean-pools.** Averaging 130 token vectors gives
+a sharper direction than averaging 204. Potion is nothing but that mean, so it gains. Ternlight
+has two transformer layers and MiniLM has six, so neither is a mean, and shorter context helps
+them not at all — MiniLM is actively hurt, losing conceptual recall@1 from 0.850 to 0.750 when
+you take its context away.
+
+So "chunk size is a model hyperparameter when the model is a mean" was right. "Truncation
+emulates chunking" was not. Ternlight is simply insensitive to chunk length in this range.
+
+**And the shipped arm wins its own configuration.** At 600/120, `potion-8M @128d` beats MiniLM on
+recall@1 (0.683 vs 0.667) and recall@3 (0.967 vs 0.956) — at 4.21 MB against 23.45 MB. Given
+n=30, that is still a tie, not a victory. The honest claim remains "as good as, at a fifth the
+size."
+
 ## What int8 quantization actually costs, measured on the shipped index
 
 The browser reconstructs each token row as `tokens[id*dims+d] * scales[id]` from the int8 table.
