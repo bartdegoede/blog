@@ -3,3 +3,5 @@ public/*
 .hugo_build.lock
 text-to-speech-*.json
 docs/plans/
+.embed-cache/
+.venv/

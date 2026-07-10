@@ -1,0 +1,9 @@
+[project]
+name = "blog-search-index"
+version = "0.1.0"
+description = "Build-time search index generation for bart.degoe.de"
+requires-python = ">=3.12"
+dependencies = ["static-site-search-eval==0.1.0"]
+
+[dependency-groups]
+dev = ["pytest>=8.3"]
