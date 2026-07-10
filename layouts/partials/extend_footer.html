@@ -1,7 +1,11 @@
 {{- /* Homepage inline search functionality */ -}}
 {{- if .IsHome }}
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.1.0"></script>
-<script>
+{{- $js := resources.Get "js/semantic/index.js" | js.Build (dict "minify" true "target" "es2017" "format" "esm") | fingerprint -}}
+<script type="module" src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+<script type="module">
+import { loadIndex, searchSemantic, searchHybrid, getChunks } from "{{ $js.RelPermalink }}";
+
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
@@ -9,10 +13,103 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (!searchInput) return;
 
+    // Escape arbitrary text before interpolating it into a template literal.
+    // item.title comes from our own front matter, but chunk snippets are
+    // arbitrary prose pulled straight from post bodies, so both need this.
+    function esc(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
     let searchIndex = null;
     let pagesIndex = null;
 
-    // Load search index
+    // --- Mode toggle: keyword / semantic / hybrid -----------------------
+    //
+    // layouts/index.html renders #searchInput/#searchResults/#allPosts, but
+    // this partial isn't allowed to touch that file, so the toggle is built
+    // here and spliced in above #searchResults instead of in the template.
+    const MODE_KEY = 'search-mode';
+    const MODES = ['keyword', 'semantic', 'hybrid'];
+    let mode = localStorage.getItem(MODE_KEY);
+    if (!MODES.includes(mode)) mode = 'hybrid';
+
+    const modeToggle = document.createElement('div');
+    modeToggle.className = 'search-modes';
+    modeToggle.setAttribute('role', 'radiogroup');
+    modeToggle.setAttribute('aria-label', 'Search mode');
+    // Hidden until a query is active, so it never pushes #allPosts down.
+    modeToggle.style.display = 'none';
+    modeToggle.innerHTML = MODES.map(function(m) {
+        return '<button type="button" data-mode="' + m + '" role="radio" aria-checked="' + (m === mode) + '">' + m + '</button>';
+    }).join('');
+    searchResults.parentNode.insertBefore(modeToggle, searchResults);
+
+    function updateToggleUI() {
+        modeToggle.querySelectorAll('button').forEach(function(btn) {
+            btn.setAttribute('aria-checked', String(btn.dataset.mode === mode));
+        });
+    }
+    updateToggleUI();
+
+    function setMode(newMode) {
+        mode = newMode;
+        localStorage.setItem(MODE_KEY, mode);
+        updateToggleUI();
+        runSearch(searchInput.value.trim());
+    }
+
+    modeToggle.addEventListener('click', function(e) {
+        const btn = e.target.closest('button[data-mode]');
+        if (!btn || btn.disabled) return;
+        setMode(btn.dataset.mode);
+    });
+
+    // --- Lazy-load the semantic index on first focus --------------------
+    //
+    // Do not await this here: keyword mode must stay instant. The promise
+    // is memoized so a second focus (or a mode switch before it resolves)
+    // never triggers a second fetch.
+    let semanticIndexPromise = null;
+    let semanticReady = false;
+    let semanticFailed = false;
+
+    function disableSemanticModes(err) {
+        console.error('Failed to load semantic search index:', err);
+        semanticFailed = true;
+        modeToggle.querySelectorAll('button[data-mode="semantic"], button[data-mode="hybrid"]').forEach(function(btn) {
+            btn.disabled = true;
+            btn.title = 'Semantic search unavailable (index failed to load)';
+        });
+        if (mode !== 'keyword') {
+            mode = 'keyword';
+            updateToggleUI();
+        }
+    }
+
+    function ensureSemanticIndex() {
+        if (!semanticIndexPromise) {
+            semanticIndexPromise = loadIndex()
+                .then(function(idx) {
+                    semanticReady = true;
+                    return idx;
+                })
+                .catch(function(err) {
+                    disableSemanticModes(err);
+                    throw err;
+                });
+        }
+        return semanticIndexPromise;
+    }
+
+    searchInput.addEventListener('focus', function() {
+        ensureSemanticIndex().catch(function() { /* already logged/handled */ });
+    }, { once: true });
+
+    // --- Keyword (Fuse.js) index load ------------------------------------
     fetch('/index.json')
         .then(response => response.json())
         .then(data => {
@@ -40,38 +137,28 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => console.error('Error loading search index:', error));
 
-    // Handle search input
-    searchInput.addEventListener('input', function(e) {
-        const query = e.target.value.trim();
+    // --- Rendering ---------------------------------------------------
 
-        if (query.length < 2) {
-            // Show all posts if query is too short
-            searchResults.innerHTML = '';
-            searchResults.style.display = 'none';
-            allPosts.style.display = 'block';
-            return;
-        }
+    function renderCountHtml(n) {
+        return '<div style="margin-bottom: 1.5rem; color: var(--secondary); font-size: 0.95rem;">Found ' + n + ' result' + (n === 1 ? '' : 's') + '</div>';
+    }
 
-        if (!searchIndex) {
-            searchResults.innerHTML = '<p style="color: var(--secondary);">Loading search index...</p>';
-            searchResults.style.display = 'block';
-            return;
-        }
+    function showNoResults(query) {
+        searchResults.innerHTML = '<p style="color: var(--secondary); padding: 1rem 0;">No results found for "' + esc(query) + '"</p>';
+    }
 
-        // Perform search
-        const results = searchIndex.search(query);
+    function showLoading() {
+        searchResults.innerHTML = '<p style="color: var(--secondary);">Loading semantic index&hellip;</p>';
+    }
 
-        // Hide all posts section
-        allPosts.style.display = 'none';
-        searchResults.style.display = 'block';
+    function slugFromHref(href) {
+        return new URL(href).pathname.replace(/^\/|\/$/g, '');
+    }
 
-        if (results.length === 0) {
-            searchResults.innerHTML = '<p style="color: var(--secondary); padding: 1rem 0;">No results found for "' + query + '"</p>';
-            return;
-        }
+    function renderKeywordHtml(results) {
+        if (results.length === 0) return null;
 
-        // Display results
-        let html = '<div style="margin-bottom: 1.5rem; color: var(--secondary); font-size: 0.95rem;">Found ' + results.length + ' result' + (results.length === 1 ? '' : 's') + '</div>';
+        let html = renderCountHtml(results.length);
 
         results.slice(0, 10).forEach(result => {
             const item = result.item;
@@ -80,16 +167,124 @@ document.addEventListener('DOMContentLoaded', function() {
             html += `
                 <article class="post-entry">
                     <header class="entry-header">
-                        <h2 class="entry-hint-parent">${item.title}</h2>
+                        <h2 class="entry-hint-parent">${esc(item.title)}</h2>
                     </header>
-                    ${snippet ? `<div class="entry-content"><p>${snippet}</p></div>` : ''}
-                    ${item.categories && item.categories.length > 0 ? `<footer class="entry-footer">${item.categories.join(', ')}</footer>` : ''}
-                    <a class="entry-link" aria-label="post link to ${item.title}" href="${item.href}"></a>
+                    ${snippet ? `<div class="entry-content"><p>${esc(snippet)}</p></div>` : ''}
+                    ${item.categories && item.categories.length > 0 ? `<footer class="entry-footer">${esc(item.categories.join(', '))}</footer>` : ''}
+                    <a class="entry-link" aria-label="post link to ${esc(item.title)}" href="${item.href}"></a>
                 </article>
             `;
         });
 
+        return html;
+    }
+
+    // Semantic/hybrid results are ranked post slugs, not chunk records, so
+    // they need a display record. getChunks() returns all 313 chunk rows;
+    // for a given slug we want the *winning* chunk's snippet (the one that
+    // actually produced the post's score).
+    //
+    // TODO: searchSemantic/searchHybrid roll per-chunk scores up to one
+    // best-per-post entry via rollupToPosts() and discard which chunk won,
+    // so we can't recover it here. As a placeholder we take the *first*
+    // chunk record whose post === slug, which is frequently not the chunk
+    // that matched. Surfacing the real winning chunk needs
+    // rollupToPosts(..., {withIndex: true}) returning the winning row index
+    // alongside the score, which Part 3 can add.
+    async function renderSemanticHtml(ranked) {
+        if (ranked.length === 0) return null;
+
+        const chunks = await getChunks();
+        let html = renderCountHtml(ranked.length);
+
+        ranked.slice(0, 10).forEach(([slug]) => {
+            const chunk = chunks.find(c => c.post === slug);
+            if (!chunk) return;
+
+            const snippet = chunk.snippet ? chunk.snippet.substring(0, 180).replace(/\n/g, ' ').trim() + '...' : '';
+
+            html += `
+                <article class="post-entry">
+                    <header class="entry-header">
+                        <h2 class="entry-hint-parent">${esc(chunk.title)}</h2>
+                    </header>
+                    ${snippet ? `<div class="entry-content"><p>${esc(snippet)}</p></div>` : ''}
+                    <a class="entry-link" aria-label="post link to ${esc(chunk.title)}" href="${chunk.href}"></a>
+                </article>
+            `;
+        });
+
+        return html;
+    }
+
+    // Guards against a slow, stale search (e.g. an in-flight semantic
+    // lookup) clobbering the result of a newer one that finished first.
+    let searchToken = 0;
+
+    async function runSearch(query) {
+        const myToken = ++searchToken;
+
+        if (query.length < 2) {
+            searchResults.innerHTML = '';
+            searchResults.style.display = 'none';
+            modeToggle.style.display = 'none';
+            allPosts.style.display = 'block';
+            return;
+        }
+
+        allPosts.style.display = 'none';
+        searchResults.style.display = 'block';
+        modeToggle.style.display = '';
+
+        const effectiveMode = semanticFailed ? 'keyword' : mode;
+
+        if (effectiveMode === 'keyword') {
+            if (!searchIndex) {
+                searchResults.innerHTML = '<p style="color: var(--secondary);">Loading search index...</p>';
+                return;
+            }
+            const html = renderKeywordHtml(searchIndex.search(query));
+            if (myToken !== searchToken) return;
+            if (html === null) { showNoResults(query); return; }
+            searchResults.innerHTML = html;
+            return;
+        }
+
+        // semantic or hybrid
+        const idxPromise = ensureSemanticIndex();
+        if (!semanticReady) {
+            showLoading();
+        }
+
+        try {
+            await idxPromise;
+        } catch (e) {
+            // disableSemanticModes() already flipped mode to 'keyword'.
+            if (myToken !== searchToken) return;
+            return runSearch(query);
+        }
+        if (myToken !== searchToken) return;
+
+        let ranked;
+        if (effectiveMode === 'semantic') {
+            ranked = await searchSemantic(query);
+        } else {
+            const keywordRanking = searchIndex
+                ? searchIndex.search(query).map(r => slugFromHref(r.item.href))
+                : [];
+            ranked = await searchHybrid(query, keywordRanking);
+        }
+        if (myToken !== searchToken) return;
+
+        const html = await renderSemanticHtml(ranked);
+        if (myToken !== searchToken) return;
+        if (html === null) { showNoResults(query); return; }
         searchResults.innerHTML = html;
+    }
+
+    // Handle search input
+    searchInput.addEventListener('input', function(e) {
+        runSearch(e.target.value.trim());
     });
 
     // Clear search on ESC key
@@ -98,6 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
             searchInput.value = '';
             searchResults.innerHTML = '';
             searchResults.style.display = 'none';
+            modeToggle.style.display = 'none';
             allPosts.style.display = 'block';
         }
     });
