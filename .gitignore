@@ -5,3 +5,4 @@ text-to-speech-*.json
 docs/plans/
 .embed-cache/
 .venv/
+node_modules/

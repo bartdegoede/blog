@@ -1,0 +1,6 @@
+{
+  "name": "blog-search-tests",
+  "private": true,
+  "type": "module",
+  "devDependencies": { "fuse.js": "^7.1.0" }
+}
