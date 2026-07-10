@@ -155,6 +155,7 @@ input[type="search"] {
     flex-wrap: wrap;
     gap: 0.75rem;
     margin-bottom: 1rem;
+    margin-top: 1rem;
 }
 
 /* Same treatment as the "Top 8 of 11 ranked" line above the results. */
