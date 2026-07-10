@@ -1,8 +1,8 @@
 {
   "sss_eval_version": "0.1.0",
   "manifest_files": {
-    "chunks": "chunks.24be56def341.json",
-    "docs": "docs.5dbe271a0849.bin",
+    "chunks": "chunks.56b3d7bc73b9.json",
+    "docs": "docs.a8954172e5c7.bin",
     "tokens": "tokens.5f3d9776bbef.bin",
     "scales": "scales.9dd8a81e1204.bin",
     "vocab": "vocab.00175329ae71.json"
@@ -11,13 +11,16 @@
     "lunr": [
       "searching-your-hugo-site-with-lunr",
       "use-hugo-output-formats-to-generate-lunr-index-files",
-      "migrating-hugo-blog-with-claude-code"
+      "migrating-hugo-blog-with-claude-code",
+      "semantic-search-in-your-browser"
     ],
     "pydub": [
-      "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts"
+      "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
+      "semantic-search-in-your-browser"
     ],
     "mmh3": [
-      "bloom-filters-bit-arrays-recommendations-caches-bitcoin"
+      "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
+      "semantic-search-in-your-browser"
     ],
     "murmurhash": [
       "migrating-hugo-blog-with-claude-code",
@@ -41,16 +44,20 @@
       "building-a-full-text-search-engine-150-lines-of-code"
     ],
     "sentence-transformers": [
-      "building-a-semantic-search-engine-in-250-lines-of-python"
+      "building-a-semantic-search-engine-in-250-lines-of-python",
+      "semantic-search-in-your-browser"
     ],
     "papermod": [
-      "migrating-hugo-blog-with-claude-code"
+      "migrating-hugo-blog-with-claude-code",
+      "semantic-search-in-your-browser"
     ],
     "qwen3": [
       "running-a-coding-agent-locally",
       "building-a-semantic-search-engine-in-250-lines-of-python"
     ],
-    "find documents by what they mean instead of which words they contain": [],
+    "find documents by what they mean instead of which words they contain": [
+      "semantic-search-in-your-browser"
+    ],
     "a probabilistic structure for testing whether an item is in a set": [],
     "rank documents by how important a term is across a collection": [],
     "listen to an article instead of reading it": [],
@@ -60,7 +67,9 @@
     "an autonomous program that plays a role playing game": [],
     "replacing a discontinued dataset with one from a public model hub": [],
     "type a keyword in the address bar to query a site directly": [],
-    "how do I add search to a static site": [],
+    "how do I add search to a static site": [
+      "semantic-search-in-your-browser"
+    ],
     "build a search engine from scratch in python": [],
     "serve my site over https for free": [],
     "working with ai coding agents": [],
@@ -73,6 +82,7 @@
     "customizing a hugo theme": [],
     "running large language models on your own hardware": [],
     "": [
+      "semantic-search-in-your-browser",
       "running-a-coding-agent-locally",
       "ai-agent-dungeon-crawl",
       "building-a-semantic-search-engine-in-250-lines-of-python",
@@ -88,15 +98,22 @@
       "searching-your-hugo-site-with-lunr"
     ],
     "zzzzqqqq": [],
-    "日本語のみ": [],
-    "café naïve": [],
-    "C++ vs C#": [],
+    "日本語のみ": [
+      "semantic-search-in-your-browser"
+    ],
+    "café naïve": [
+      "semantic-search-in-your-browser"
+    ],
+    "C++ vs C#": [
+      "semantic-search-in-your-browser"
+    ],
     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": [],
     "supercalifragilisticsupercalifragilisticsupercalifragilisticsupercalifragilisticsupercalifragilisticsupercalifragilisticsupercalifragilisticsupercalifragilistic": [],
     "bloom zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz filter": [],
     "bloom filter": [
       "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
-      "migrating-hugo-blog-with-claude-code"
+      "migrating-hugo-blog-with-claude-code",
+      "semantic-search-in-your-browser"
     ],
     "In the beginning the corpus was small and every query was a single word, but as the blog grew the search index had to grow with it, chunk by chunk, post by post, until it became clear that no amount of clever tokenization could substitute for a careful evaluation harness that actually measured recall and precision instead of assuming a vector database would simply do the right thing by default. Static site generators like Hugo build everything ahead of time, which means the search index has to be baked into a handful of content-hashed files that a browser can fetch lazily, tokenize locally, and score against without ever making a network call to a model server. That constraint is what makes int8 quantization attractive: a twenty-nine-thousand row embedding table shrinks by a factor of four, at the cost of a small and carefully measured amount of ranking noise that this very fixture exists to bound precisely, query by query, so that nobody ships a regression by accident while refactoring the tokenizer or the cosine similarity kernel six months from now when the details have been forgotten and only the tests remember them for us.": []
   },
@@ -372,6 +389,7 @@
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "building-a-full-text-search-engine-150-lines-of-code",
         "modernizing-python-search-engine",
+        "semantic-search-in-your-browser",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "running-a-coding-agent-locally",
         "migrating-hugo-blog-with-claude-code",
@@ -385,6 +403,7 @@
       "hybrid_ranking": [
         "searching-your-hugo-site-with-lunr",
         "use-hugo-output-formats-to-generate-lunr-index-files",
+        "semantic-search-in-your-browser",
         "migrating-hugo-blog-with-claude-code",
         "building-a-full-text-search-engine-150-lines-of-code",
         "modernizing-python-search-engine",
@@ -668,6 +687,7 @@
       "semantic_ranking": [
         "free-ssl-on-github-pages-with-a-custom-domain",
         "github-pages-and-lets-encrypt",
+        "semantic-search-in-your-browser",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "building-a-full-text-search-engine-150-lines-of-code",
         "ai-agent-dungeon-crawl",
@@ -682,6 +702,7 @@
       ],
       "hybrid_ranking": [
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
+        "semantic-search-in-your-browser",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "github-pages-and-lets-encrypt",
         "building-a-full-text-search-engine-150-lines-of-code",
@@ -968,6 +989,7 @@
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "running-a-coding-agent-locally",
+        "semantic-search-in-your-browser",
         "building-a-full-text-search-engine-150-lines-of-code",
         "modernizing-python-search-engine",
         "migrating-hugo-blog-with-claude-code",
@@ -980,6 +1002,7 @@
       ],
       "hybrid_ranking": [
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
+        "semantic-search-in-your-browser",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "running-a-coding-agent-locally",
@@ -1263,6 +1286,7 @@
       ],
       "semantic_ranking": [
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
+        "semantic-search-in-your-browser",
         "migrating-hugo-blog-with-claude-code",
         "searching-your-hugo-site-with-lunr",
         "use-hugo-output-formats-to-generate-lunr-index-files",
@@ -1279,6 +1303,7 @@
       "hybrid_ranking": [
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "migrating-hugo-blog-with-claude-code",
+        "semantic-search-in-your-browser",
         "searching-your-hugo-site-with-lunr",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
@@ -1566,6 +1591,7 @@
         "migrating-hugo-blog-with-claude-code",
         "searching-your-hugo-site-with-lunr",
         "building-a-full-text-search-engine-150-lines-of-code",
+        "semantic-search-in-your-browser",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
@@ -1582,6 +1608,7 @@
         "modernizing-python-search-engine",
         "ai-agent-dungeon-crawl",
         "building-a-full-text-search-engine-150-lines-of-code",
+        "semantic-search-in-your-browser",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
@@ -1865,6 +1892,7 @@
         "searching-your-hugo-site-with-lunr",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "modernizing-python-search-engine",
+        "semantic-search-in-your-browser",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "running-a-coding-agent-locally",
         "tab-plus-search-from-your-url-bar-with-opensearch",
@@ -1880,6 +1908,7 @@
         "searching-your-hugo-site-with-lunr",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "modernizing-python-search-engine",
+        "semantic-search-in-your-browser",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "running-a-coding-agent-locally",
         "tab-plus-search-from-your-url-bar-with-opensearch",
@@ -2160,6 +2189,7 @@
         "building-a-full-text-search-engine-150-lines-of-code",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "modernizing-python-search-engine",
+        "semantic-search-in-your-browser",
         "searching-your-hugo-site-with-lunr",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "use-hugo-output-formats-to-generate-lunr-index-files",
@@ -2175,6 +2205,7 @@
         "building-a-full-text-search-engine-150-lines-of-code",
         "modernizing-python-search-engine",
         "building-a-semantic-search-engine-in-250-lines-of-python",
+        "semantic-search-in-your-browser",
         "searching-your-hugo-site-with-lunr",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "use-hugo-output-formats-to-generate-lunr-index-files",
@@ -2456,6 +2487,7 @@
       ],
       "semantic_ranking": [
         "building-a-semantic-search-engine-in-250-lines-of-python",
+        "semantic-search-in-your-browser",
         "building-a-full-text-search-engine-150-lines-of-code",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "running-a-coding-agent-locally",
@@ -2471,6 +2503,7 @@
       ],
       "hybrid_ranking": [
         "building-a-semantic-search-engine-in-250-lines-of-python",
+        "semantic-search-in-your-browser",
         "building-a-full-text-search-engine-150-lines-of-code",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "running-a-coding-agent-locally",
@@ -2756,6 +2789,7 @@
         "migrating-hugo-blog-with-claude-code",
         "searching-your-hugo-site-with-lunr",
         "building-a-full-text-search-engine-150-lines-of-code",
+        "semantic-search-in-your-browser",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "free-ssl-on-github-pages-with-a-custom-domain",
@@ -2769,6 +2803,7 @@
       ],
       "hybrid_ranking": [
         "migrating-hugo-blog-with-claude-code",
+        "semantic-search-in-your-browser",
         "searching-your-hugo-site-with-lunr",
         "building-a-full-text-search-engine-150-lines-of-code",
         "use-hugo-output-formats-to-generate-lunr-index-files",
@@ -3055,6 +3090,7 @@
         "github-pages-and-lets-encrypt",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "searching-your-hugo-site-with-lunr",
+        "semantic-search-in-your-browser",
         "ai-agent-dungeon-crawl",
         "migrating-hugo-blog-with-claude-code",
         "tab-plus-search-from-your-url-bar-with-opensearch",
@@ -3070,6 +3106,7 @@
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "github-pages-and-lets-encrypt",
         "searching-your-hugo-site-with-lunr",
+        "semantic-search-in-your-browser",
         "ai-agent-dungeon-crawl",
         "migrating-hugo-blog-with-claude-code",
         "tab-plus-search-from-your-url-bar-with-opensearch",
@@ -3358,6 +3395,7 @@
         -0.10001229494810104
       ],
       "semantic_ranking": [
+        "semantic-search-in-your-browser",
         "building-a-full-text-search-engine-150-lines-of-code",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "searching-your-hugo-site-with-lunr",
@@ -3373,6 +3411,7 @@
         "github-pages-and-lets-encrypt"
       ],
       "hybrid_ranking": [
+        "semantic-search-in-your-browser",
         "building-a-full-text-search-engine-150-lines-of-code",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "searching-your-hugo-site-with-lunr",
@@ -3669,6 +3708,7 @@
       ],
       "semantic_ranking": [
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
+        "semantic-search-in-your-browser",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "running-a-coding-agent-locally",
         "building-a-full-text-search-engine-150-lines-of-code",
@@ -3684,6 +3724,7 @@
       ],
       "hybrid_ranking": [
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
+        "semantic-search-in-your-browser",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "running-a-coding-agent-locally",
         "building-a-full-text-search-engine-150-lines-of-code",
@@ -3978,6 +4019,7 @@
         "searching-your-hugo-site-with-lunr",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
+        "semantic-search-in-your-browser",
         "modernizing-python-search-engine",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "free-ssl-on-github-pages-with-a-custom-domain",
@@ -3993,6 +4035,7 @@
         "searching-your-hugo-site-with-lunr",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
+        "semantic-search-in-your-browser",
         "modernizing-python-search-engine",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "free-ssl-on-github-pages-with-a-custom-domain",
@@ -4279,6 +4322,7 @@
       "semantic_ranking": [
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "searching-your-hugo-site-with-lunr",
+        "semantic-search-in-your-browser",
         "ai-agent-dungeon-crawl",
         "migrating-hugo-blog-with-claude-code",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
@@ -4294,6 +4338,7 @@
       "hybrid_ranking": [
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "searching-your-hugo-site-with-lunr",
+        "semantic-search-in-your-browser",
         "ai-agent-dungeon-crawl",
         "migrating-hugo-blog-with-claude-code",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
@@ -4594,6 +4639,7 @@
         "building-a-full-text-search-engine-150-lines-of-code",
         "modernizing-python-search-engine",
         "use-hugo-output-formats-to-generate-lunr-index-files",
+        "semantic-search-in-your-browser",
         "migrating-hugo-blog-with-claude-code",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
@@ -4609,6 +4655,7 @@
         "building-a-full-text-search-engine-150-lines-of-code",
         "modernizing-python-search-engine",
         "use-hugo-output-formats-to-generate-lunr-index-files",
+        "semantic-search-in-your-browser",
         "migrating-hugo-blog-with-claude-code",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
@@ -4895,6 +4942,7 @@
         "modernizing-python-search-engine",
         "building-a-full-text-search-engine-150-lines-of-code",
         "running-a-coding-agent-locally",
+        "semantic-search-in-your-browser",
         "ai-agent-dungeon-crawl",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "free-ssl-on-github-pages-with-a-custom-domain",
@@ -4910,6 +4958,7 @@
         "modernizing-python-search-engine",
         "building-a-full-text-search-engine-150-lines-of-code",
         "running-a-coding-agent-locally",
+        "semantic-search-in-your-browser",
         "ai-agent-dungeon-crawl",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "free-ssl-on-github-pages-with-a-custom-domain",
@@ -5207,6 +5256,7 @@
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "searching-your-hugo-site-with-lunr",
         "building-a-full-text-search-engine-150-lines-of-code",
+        "semantic-search-in-your-browser",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "github-pages-and-lets-encrypt",
         "free-ssl-on-github-pages-with-a-custom-domain",
@@ -5222,6 +5272,7 @@
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "searching-your-hugo-site-with-lunr",
         "building-a-full-text-search-engine-150-lines-of-code",
+        "semantic-search-in-your-browser",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "github-pages-and-lets-encrypt",
         "free-ssl-on-github-pages-with-a-custom-domain",
@@ -5507,6 +5558,7 @@
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "running-a-coding-agent-locally",
         "github-pages-and-lets-encrypt",
+        "semantic-search-in-your-browser",
         "searching-your-hugo-site-with-lunr",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "migrating-hugo-blog-with-claude-code",
@@ -5522,6 +5574,7 @@
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "running-a-coding-agent-locally",
         "github-pages-and-lets-encrypt",
+        "semantic-search-in-your-browser",
         "searching-your-hugo-site-with-lunr",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "migrating-hugo-blog-with-claude-code",
@@ -5815,6 +5868,7 @@
         "running-a-coding-agent-locally",
         "migrating-hugo-blog-with-claude-code",
         "building-a-full-text-search-engine-150-lines-of-code",
+        "semantic-search-in-your-browser",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "github-pages-and-lets-encrypt",
         "searching-your-hugo-site-with-lunr",
@@ -5830,6 +5884,7 @@
         "running-a-coding-agent-locally",
         "migrating-hugo-blog-with-claude-code",
         "building-a-full-text-search-engine-150-lines-of-code",
+        "semantic-search-in-your-browser",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "github-pages-and-lets-encrypt",
         "searching-your-hugo-site-with-lunr",
@@ -6122,6 +6177,7 @@
         "building-a-full-text-search-engine-150-lines-of-code",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "searching-your-hugo-site-with-lunr",
+        "semantic-search-in-your-browser",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
@@ -6137,6 +6193,7 @@
         "building-a-full-text-search-engine-150-lines-of-code",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "searching-your-hugo-site-with-lunr",
+        "semantic-search-in-your-browser",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
@@ -6429,6 +6486,7 @@
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "github-pages-and-lets-encrypt",
+        "semantic-search-in-your-browser",
         "ai-agent-dungeon-crawl",
         "running-a-coding-agent-locally",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
@@ -6437,6 +6495,7 @@
         "building-a-semantic-search-engine-in-250-lines-of-python"
       ],
       "hybrid_ranking": [
+        "semantic-search-in-your-browser",
         "searching-your-hugo-site-with-lunr",
         "migrating-hugo-blog-with-claude-code",
         "tab-plus-search-from-your-url-bar-with-opensearch",
@@ -6731,6 +6790,7 @@
         "migrating-hugo-blog-with-claude-code",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "running-a-coding-agent-locally",
+        "semantic-search-in-your-browser",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "ai-agent-dungeon-crawl",
@@ -6746,6 +6806,7 @@
         "migrating-hugo-blog-with-claude-code",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "running-a-coding-agent-locally",
+        "semantic-search-in-your-browser",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "ai-agent-dungeon-crawl",
@@ -7036,6 +7097,7 @@
         "searching-your-hugo-site-with-lunr",
         "modernizing-python-search-engine",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
+        "semantic-search-in-your-browser",
         "building-a-full-text-search-engine-150-lines-of-code",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "ai-agent-dungeon-crawl",
@@ -7051,6 +7113,7 @@
         "searching-your-hugo-site-with-lunr",
         "modernizing-python-search-engine",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
+        "semantic-search-in-your-browser",
         "building-a-full-text-search-engine-150-lines-of-code",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "ai-agent-dungeon-crawl",
@@ -7337,6 +7400,7 @@
         "modernizing-python-search-engine",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
+        "semantic-search-in-your-browser",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "searching-your-hugo-site-with-lunr",
         "use-hugo-output-formats-to-generate-lunr-index-files"
@@ -7352,6 +7416,7 @@
         "modernizing-python-search-engine",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
+        "semantic-search-in-your-browser",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "searching-your-hugo-site-with-lunr",
         "use-hugo-output-formats-to-generate-lunr-index-files"
@@ -7640,6 +7705,7 @@
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "building-a-semantic-search-engine-in-250-lines-of-python",
+        "semantic-search-in-your-browser",
         "running-a-coding-agent-locally",
         "github-pages-and-lets-encrypt"
       ],
@@ -7655,6 +7721,7 @@
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "building-a-semantic-search-engine-in-250-lines-of-python",
+        "semantic-search-in-your-browser",
         "running-a-coding-agent-locally",
         "github-pages-and-lets-encrypt"
       ]
@@ -7933,6 +8000,7 @@
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "running-a-coding-agent-locally",
         "building-a-full-text-search-engine-150-lines-of-code",
+        "semantic-search-in-your-browser",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "modernizing-python-search-engine",
         "searching-your-hugo-site-with-lunr",
@@ -7948,6 +8016,7 @@
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "running-a-coding-agent-locally",
         "building-a-full-text-search-engine-150-lines-of-code",
+        "semantic-search-in-your-browser",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "modernizing-python-search-engine",
         "searching-your-hugo-site-with-lunr",
@@ -8242,6 +8311,7 @@
         "free-ssl-on-github-pages-with-a-custom-domain",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "modernizing-python-search-engine",
+        "semantic-search-in-your-browser",
         "building-a-full-text-search-engine-150-lines-of-code",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "tab-plus-search-from-your-url-bar-with-opensearch"
@@ -8257,6 +8327,7 @@
         "free-ssl-on-github-pages-with-a-custom-domain",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "modernizing-python-search-engine",
+        "semantic-search-in-your-browser",
         "building-a-full-text-search-engine-150-lines-of-code",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "tab-plus-search-from-your-url-bar-with-opensearch"
@@ -8537,6 +8608,7 @@
       ],
       "semantic_ranking": [
         "building-a-semantic-search-engine-in-250-lines-of-python",
+        "semantic-search-in-your-browser",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "building-a-full-text-search-engine-150-lines-of-code",
@@ -8552,6 +8624,7 @@
       ],
       "hybrid_ranking": [
         "building-a-semantic-search-engine-in-250-lines-of-python",
+        "semantic-search-in-your-browser",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "building-a-full-text-search-engine-150-lines-of-code",
@@ -8843,6 +8916,7 @@
         "free-ssl-on-github-pages-with-a-custom-domain",
         "building-a-full-text-search-engine-150-lines-of-code",
         "tab-plus-search-from-your-url-bar-with-opensearch",
+        "semantic-search-in-your-browser",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "ai-agent-dungeon-crawl",
         "modernizing-python-search-engine",
@@ -8858,6 +8932,7 @@
         "free-ssl-on-github-pages-with-a-custom-domain",
         "building-a-full-text-search-engine-150-lines-of-code",
         "tab-plus-search-from-your-url-bar-with-opensearch",
+        "semantic-search-in-your-browser",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "ai-agent-dungeon-crawl",
         "modernizing-python-search-engine",
@@ -9142,6 +9217,7 @@
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "running-a-coding-agent-locally",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
+        "semantic-search-in-your-browser",
         "building-a-full-text-search-engine-150-lines-of-code",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "ai-agent-dungeon-crawl",
@@ -9157,6 +9233,7 @@
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "running-a-coding-agent-locally",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
+        "semantic-search-in-your-browser",
         "building-a-full-text-search-engine-150-lines-of-code",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "ai-agent-dungeon-crawl",
@@ -9434,6 +9511,7 @@
       ],
       "semantic_ranking": [],
       "hybrid_ranking": [
+        "semantic-search-in-your-browser",
         "running-a-coding-agent-locally",
         "ai-agent-dungeon-crawl",
         "building-a-semantic-search-engine-in-250-lines-of-python",
@@ -9722,6 +9800,7 @@
       ],
       "semantic_ranking": [
         "running-a-coding-agent-locally",
+        "semantic-search-in-your-browser",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "searching-your-hugo-site-with-lunr",
@@ -9737,6 +9816,7 @@
       ],
       "hybrid_ranking": [
         "running-a-coding-agent-locally",
+        "semantic-search-in-your-browser",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "searching-your-hugo-site-with-lunr",
@@ -10021,6 +10101,7 @@
         0.0006114050047472119
       ],
       "semantic_ranking": [
+        "semantic-search-in-your-browser",
         "searching-your-hugo-site-with-lunr",
         "building-a-full-text-search-engine-150-lines-of-code",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
@@ -10036,6 +10117,7 @@
         "ai-agent-dungeon-crawl"
       ],
       "hybrid_ranking": [
+        "semantic-search-in-your-browser",
         "searching-your-hugo-site-with-lunr",
         "building-a-full-text-search-engine-150-lines-of-code",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
@@ -10318,6 +10400,7 @@
         0.07088558375835419
       ],
       "semantic_ranking": [
+        "semantic-search-in-your-browser",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "searching-your-hugo-site-with-lunr",
         "running-a-coding-agent-locally",
@@ -10333,6 +10416,7 @@
         "use-hugo-output-formats-to-generate-lunr-index-files"
       ],
       "hybrid_ranking": [
+        "semantic-search-in-your-browser",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "searching-your-hugo-site-with-lunr",
         "running-a-coding-agent-locally",
@@ -10621,6 +10705,7 @@
       "semantic_ranking": [
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "running-a-coding-agent-locally",
+        "semantic-search-in-your-browser",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "building-a-full-text-search-engine-150-lines-of-code",
         "tab-plus-search-from-your-url-bar-with-opensearch",
@@ -10634,6 +10719,7 @@
         "modernizing-python-search-engine"
       ],
       "hybrid_ranking": [
+        "semantic-search-in-your-browser",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "running-a-coding-agent-locally",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
@@ -11450,6 +11536,7 @@
       "semantic_ranking": [
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "building-a-full-text-search-engine-150-lines-of-code",
+        "semantic-search-in-your-browser",
         "modernizing-python-search-engine",
         "migrating-hugo-blog-with-claude-code",
         "building-a-semantic-search-engine-in-250-lines-of-python",
@@ -11465,6 +11552,7 @@
       "hybrid_ranking": [
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "building-a-full-text-search-engine-150-lines-of-code",
+        "semantic-search-in-your-browser",
         "modernizing-python-search-engine",
         "migrating-hugo-blog-with-claude-code",
         "building-a-semantic-search-engine-in-250-lines-of-python",
@@ -11747,6 +11835,7 @@
       "semantic_ranking": [
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "building-a-full-text-search-engine-150-lines-of-code",
+        "semantic-search-in-your-browser",
         "modernizing-python-search-engine",
         "migrating-hugo-blog-with-claude-code",
         "building-a-semantic-search-engine-in-250-lines-of-python",
@@ -11761,6 +11850,7 @@
       ],
       "hybrid_ranking": [
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
+        "semantic-search-in-your-browser",
         "migrating-hugo-blog-with-claude-code",
         "building-a-full-text-search-engine-150-lines-of-code",
         "modernizing-python-search-engine",
@@ -12272,6 +12362,7 @@
       "semantic_ranking": [
         "building-a-full-text-search-engine-150-lines-of-code",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
+        "semantic-search-in-your-browser",
         "modernizing-python-search-engine",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
@@ -12287,6 +12378,7 @@
       "hybrid_ranking": [
         "building-a-full-text-search-engine-150-lines-of-code",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
+        "semantic-search-in-your-browser",
         "modernizing-python-search-engine",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",

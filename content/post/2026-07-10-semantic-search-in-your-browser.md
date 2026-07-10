@@ -49,7 +49,7 @@ Embeddings happen at build time. On my laptop, whenever I run `hugo`, a Python s
 
 The chunking matters more than I expected, because of that averaging step. A static embedding is the *mean* of its token vectors, and if you average an entire 15,000-character post into one vector, you get something that points at "generic English prose about software" and not much else. The rare, distinctive words — the `pydub`, the `mmh3` — get drowned out by the thousands of ordinary words around them. Chopping the post into small chunks keeps those signals sharp. I'll come back to this, because it turns out to be the key to why some models beat others.
 
-I also built an embedding cache, keyed on a hash of each chunk's text, so that re-embedding only touches chunks that changed. This was a waste of time, and I want to be honest about that. Embedding all 313 chunks of this blog is a few hundred lookups and an average; it takes about ten milliseconds. I built a cache to speed up an operation that is already instantaneous. It would matter for the MiniLM model, where embedding is a real neural network forward pass — but I'm not shipping that one. So the cache sits there, correct and pointless, and I've left it in as a small monument to solving the wrong problem.
+I also built an embedding cache, keyed on a hash of each chunk's text, so that re-embedding only touches chunks that changed. This was a waste of time, and I want to be honest about that. Embedding every chunk of this blog is a few hundred lookups and an average; it takes about ten milliseconds. I built a cache to speed up an operation that is already instantaneous. It would matter for the MiniLM model, where embedding is a real neural network forward pass — but I'm not shipping that one. So the cache sits there, correct and pointless, and I've left it in as a small monument to solving the wrong problem.
 
 ## Shrinking the table: the model's stopword list is hiding in plain sight
 
@@ -87,11 +87,11 @@ The browser has the token table, but it still has to turn your typed query into 
 
 I found these by reading the library's source, and then I made very sure the JavaScript was right by comparing its output against Python's real tokenizer on thirty-six test strings — `pydub`, `café naïve`, `C++ vs C#`, `日本語のみ` — until they matched exactly. That comparison is a committed test, because a tokenizer that's subtly wrong doesn't throw an error; it just quietly returns worse search results forever.
 
-## Search is 313 dot products
+## Search is a few hundred dot products
 
-With the query embedded, search is almost anticlimactic. There are 313 chunk vectors. Computing the cosine similarity against all of them is 313 dot products of 128 numbers each — about 40,000 multiply-adds, which a browser does in a fraction of a millisecond. Then I group the chunks by post, take each post's best-scoring chunk, and sort. On my machine the entire query — tokenise, embed, score all 313 chunks, rank — takes **0.38 milliseconds**.
+With the query embedded, search is almost anticlimactic. There are a few hundred chunk vectors — one per chunk of every post. Computing the cosine similarity against all of them is a few hundred dot products of 128 numbers each, tens of thousands of multiply-adds, which a browser does in a fraction of a millisecond. Then I group the chunks by post, take each post's best-scoring chunk, and sort. On my machine the entire query — tokenise, embed, score every chunk, rank — takes about **0.4 milliseconds**.
 
-People reach for approximate-nearest-neighbour indexes (HNSW and friends) for this step, and if you have a million documents you should. With 313, an ANN index would be slower than the brute-force loop and much larger on disk. It's worth saying out loud because "vector search" has become synonymous with "vector database," and at this scale the vector database is a `for` loop.
+People reach for approximate-nearest-neighbour indexes (HNSW and friends) for this step, and if you have a million documents you should. With a few hundred, an ANN index would be slower than the brute-force loop and much larger on disk. It's worth saying out loud because "vector search" has become synonymous with "vector database," and at this scale the vector database is a `for` loop.
 
 There's one wrinkle worth knowing if you build one of these. The document vectors are stored as int8. Cosine similarity is invariant to a positive scale, and the document matrix uses one global scale, so the browser can dot a float32 query straight against the raw int8 bytes and get the right ranking without ever un-quantising them. But `int8 × int8` in JavaScript overflows silently — a dot product whose true value is three million comes back as `-64`, no error, no warning. So you accumulate into a regular float. I mention it because it cost me an afternoon.
 
@@ -140,7 +140,7 @@ I want to be careful with that claim, though, because thirty queries is a small 
 
 ## The metric couldn't see anything
 
-My headline metric was recall@3: did a relevant post make the top three? On my thirteen-post blog, "top three of thirteen" is a low bar — random guessing clears it about a quarter of the time — and it turned out that almost every model cleared it on almost every query. Five different configurations tied at exactly 0.978. Recall@3 could not tell a 4 MB lookup table apart from a 23 MB transformer.
+My headline metric was recall@3: did a relevant post make the top three? On a thirteen-post corpus, "top three of thirteen" is a low bar — random guessing clears it about a quarter of the time — and it turned out that almost every model cleared it on almost every query. Five different configurations tied at exactly 0.978. Recall@3 could not tell a 4 MB lookup table apart from a 23 MB transformer.
 
 Worse, it produced confident nonsense. Pure semantic search scored a *perfect* 1.000 on the exact-token queries — it apparently found `pydub` every time. Except it didn't:
 
@@ -174,7 +174,7 @@ Every one of those I found by measuring something I thought I already knew.
 
 ## What shipped, and how to steal it
 
-The search box on [the homepage](/) now runs keyword, semantic, and hybrid search, with a toggle so you can watch them disagree. Type `pydub` and flip to semantic mode to see it get the answer wrong; flip to hybrid to see it get it right again. The whole thing is a 4 MB lookup table, a 40 KB index, and about 300 lines of dependency-free JavaScript, lazy-loaded only when you focus the search box so the page itself pays nothing.
+The search box on [the homepage](/) now runs keyword, semantic, and hybrid search, with a toggle so you can watch them disagree. Type `pydub` and flip to semantic mode to see it get the answer wrong; flip to hybrid to see it get it right again. The whole thing is a 4 MB lookup table, a tiny document index, and about 300 lines of dependency-free JavaScript, lazy-loaded only when you focus the search box so the page itself pays nothing.
 
 The build pipeline — the chunking, the quantisation, the eval harness, all of it — is a Python package you can point at your own site:
 
