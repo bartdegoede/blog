@@ -1,9 +1,9 @@
 {{- /* Homepage inline search functionality */ -}}
 {{- if .IsHome }}
-<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.1.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.1.0" data-cf-async="false"></script>
 {{- $js := resources.Get "js/semantic/index.js" | js.Build (dict "minify" true "target" "es2017" "format" "esm") | fingerprint -}}
-<script type="module" src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
-<script type="module">
+<script type="module" src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" data-cf-async="false"></script>
+<script type="module" data-cf-async="false">
 import { loadIndex, searchSemantic, searchHybrid, getChunks, MIN_SCORE } from "{{ $js.RelPermalink }}";
 
 document.addEventListener('DOMContentLoaded', function() {
