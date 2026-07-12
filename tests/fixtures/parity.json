@@ -1,8 +1,8 @@
 {
   "sss_eval_version": "0.1.0",
   "manifest_files": {
-    "chunks": "chunks.31443ffd6ed5.json",
-    "docs": "docs.c1c4ee92048c.bin",
+    "chunks": "chunks.f0300325cef4.json",
+    "docs": "docs.bccf8bf54f0b.bin",
     "tokens": "tokens.5f3d9776bbef.bin",
     "scales": "scales.9dd8a81e1204.bin",
     "vocab": "vocab.00175329ae71.json"
@@ -15,7 +15,7 @@
       "semantic-search-in-your-browser"
     ],
     "pydub": [
-      "narrating-my-blog-with-a-local-model",
+      "narrating-your-blog-with-kokoro-a-local-opensource-model",
       "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
       "semantic-search-in-your-browser"
     ],
@@ -83,7 +83,7 @@
     "customizing a hugo theme": [],
     "running large language models on your own hardware": [],
     "": [
-      "narrating-my-blog-with-a-local-model",
+      "narrating-your-blog-with-kokoro-a-local-opensource-model",
       "semantic-search-in-your-browser",
       "running-a-coding-agent-locally",
       "ai-agent-dungeon-crawl",
@@ -398,7 +398,7 @@
         "github-pages-and-lets-encrypt",
         "ai-agent-dungeon-crawl",
         "semantic-search-in-your-browser",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin"
@@ -415,7 +415,7 @@
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "github-pages-and-lets-encrypt",
         "ai-agent-dungeon-crawl",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin"
@@ -692,7 +692,7 @@
         "free-ssl-on-github-pages-with-a-custom-domain",
         "github-pages-and-lets-encrypt",
         "semantic-search-in-your-browser",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "building-a-full-text-search-engine-150-lines-of-code",
         "ai-agent-dungeon-crawl",
@@ -706,12 +706,11 @@
         "tab-plus-search-from-your-url-bar-with-opensearch"
       ],
       "hybrid_ranking": [
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "semantic-search-in-your-browser",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "free-ssl-on-github-pages-with-a-custom-domain",
-        "narrating-my-blog-with-a-local-model",
         "github-pages-and-lets-encrypt",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
         "building-a-full-text-search-engine-150-lines-of-code",
         "ai-agent-dungeon-crawl",
         "use-hugo-output-formats-to-generate-lunr-index-files",
@@ -1000,8 +999,8 @@
         "building-a-full-text-search-engine-150-lines-of-code",
         "modernizing-python-search-engine",
         "migrating-hugo-blog-with-claude-code",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
         "searching-your-hugo-site-with-lunr",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "ai-agent-dungeon-crawl",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
@@ -1017,8 +1016,8 @@
         "building-a-full-text-search-engine-150-lines-of-code",
         "modernizing-python-search-engine",
         "migrating-hugo-blog-with-claude-code",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
         "searching-your-hugo-site-with-lunr",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "ai-agent-dungeon-crawl",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
@@ -1304,7 +1303,7 @@
         "building-a-full-text-search-engine-150-lines-of-code",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "ai-agent-dungeon-crawl",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "running-a-coding-agent-locally",
         "modernizing-python-search-engine",
         "tab-plus-search-from-your-url-bar-with-opensearch",
@@ -1321,7 +1320,7 @@
         "building-a-full-text-search-engine-150-lines-of-code",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "ai-agent-dungeon-crawl",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "running-a-coding-agent-locally",
         "modernizing-python-search-engine",
         "tab-plus-search-from-your-url-bar-with-opensearch",
@@ -1604,7 +1603,7 @@
         "building-a-full-text-search-engine-150-lines-of-code",
         "semantic-search-in-your-browser",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "running-a-coding-agent-locally",
@@ -1622,7 +1621,7 @@
         "building-a-full-text-search-engine-150-lines-of-code",
         "semantic-search-in-your-browser",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "running-a-coding-agent-locally",
@@ -1899,7 +1898,7 @@
       ],
       "semantic_ranking": [
         "free-ssl-on-github-pages-with-a-custom-domain",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "github-pages-and-lets-encrypt",
         "building-a-full-text-search-engine-150-lines-of-code",
         "use-hugo-output-formats-to-generate-lunr-index-files",
@@ -1918,7 +1917,7 @@
         "free-ssl-on-github-pages-with-a-custom-domain",
         "github-pages-and-lets-encrypt",
         "use-hugo-output-formats-to-generate-lunr-index-files",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "building-a-full-text-search-engine-150-lines-of-code",
         "searching-your-hugo-site-with-lunr",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
@@ -2213,7 +2212,7 @@
         "github-pages-and-lets-encrypt",
         "ai-agent-dungeon-crawl",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "migrating-hugo-blog-with-claude-code"
       ],
@@ -2230,7 +2229,7 @@
         "github-pages-and-lets-encrypt",
         "ai-agent-dungeon-crawl",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "migrating-hugo-blog-with-claude-code"
       ]
@@ -2504,8 +2503,8 @@
       ],
       "semantic_ranking": [
         "building-a-semantic-search-engine-in-250-lines-of-python",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
         "semantic-search-in-your-browser",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "building-a-full-text-search-engine-150-lines-of-code",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "running-a-coding-agent-locally",
@@ -2522,7 +2521,7 @@
       "hybrid_ranking": [
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "semantic-search-in-your-browser",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "building-a-full-text-search-engine-150-lines-of-code",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "running-a-coding-agent-locally",
@@ -2814,7 +2813,7 @@
         "semantic-search-in-your-browser",
         "modernizing-python-search-engine",
         "ai-agent-dungeon-crawl",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "github-pages-and-lets-encrypt",
@@ -2831,7 +2830,7 @@
         "free-ssl-on-github-pages-with-a-custom-domain",
         "modernizing-python-search-engine",
         "ai-agent-dungeon-crawl",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "github-pages-and-lets-encrypt",
@@ -3114,7 +3113,7 @@
         "searching-your-hugo-site-with-lunr",
         "ai-agent-dungeon-crawl",
         "migrating-hugo-blog-with-claude-code",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "building-a-full-text-search-engine-150-lines-of-code",
         "free-ssl-on-github-pages-with-a-custom-domain",
@@ -3131,7 +3130,7 @@
         "searching-your-hugo-site-with-lunr",
         "ai-agent-dungeon-crawl",
         "migrating-hugo-blog-with-claude-code",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "building-a-full-text-search-engine-150-lines-of-code",
         "free-ssl-on-github-pages-with-a-custom-domain",
@@ -3423,7 +3422,7 @@
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "searching-your-hugo-site-with-lunr",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "use-hugo-output-formats-to-generate-lunr-index-files",
@@ -3440,7 +3439,7 @@
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "searching-your-hugo-site-with-lunr",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "use-hugo-output-formats-to-generate-lunr-index-files",
@@ -3743,7 +3742,7 @@
         "searching-your-hugo-site-with-lunr",
         "modernizing-python-search-engine",
         "free-ssl-on-github-pages-with-a-custom-domain",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "migrating-hugo-blog-with-claude-code",
         "use-hugo-output-formats-to-generate-lunr-index-files"
@@ -3760,7 +3759,7 @@
         "searching-your-hugo-site-with-lunr",
         "modernizing-python-search-engine",
         "free-ssl-on-github-pages-with-a-custom-domain",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "migrating-hugo-blog-with-claude-code",
         "use-hugo-output-formats-to-generate-lunr-index-files"
@@ -4052,7 +4051,7 @@
         "free-ssl-on-github-pages-with-a-custom-domain",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "tab-plus-search-from-your-url-bar-with-opensearch",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "ai-agent-dungeon-crawl",
         "running-a-coding-agent-locally",
         "github-pages-and-lets-encrypt",
@@ -4069,7 +4068,7 @@
         "free-ssl-on-github-pages-with-a-custom-domain",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "tab-plus-search-from-your-url-bar-with-opensearch",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "ai-agent-dungeon-crawl",
         "running-a-coding-agent-locally",
         "github-pages-and-lets-encrypt",
@@ -4350,7 +4349,7 @@
       ],
       "semantic_ranking": [
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "searching-your-hugo-site-with-lunr",
         "ai-agent-dungeon-crawl",
         "migrating-hugo-blog-with-claude-code",
@@ -4367,7 +4366,7 @@
       ],
       "hybrid_ranking": [
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "searching-your-hugo-site-with-lunr",
         "ai-agent-dungeon-crawl",
         "migrating-hugo-blog-with-claude-code",
@@ -4670,8 +4669,8 @@
         "building-a-full-text-search-engine-150-lines-of-code",
         "modernizing-python-search-engine",
         "use-hugo-output-formats-to-generate-lunr-index-files",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "semantic-search-in-your-browser",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
         "migrating-hugo-blog-with-claude-code",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
@@ -4687,8 +4686,8 @@
         "building-a-full-text-search-engine-150-lines-of-code",
         "modernizing-python-search-engine",
         "use-hugo-output-formats-to-generate-lunr-index-files",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "semantic-search-in-your-browser",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
         "migrating-hugo-blog-with-claude-code",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
@@ -4984,7 +4983,7 @@
         "github-pages-and-lets-encrypt",
         "searching-your-hugo-site-with-lunr",
         "tab-plus-search-from-your-url-bar-with-opensearch",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model"
+        "narrating-your-blog-with-kokoro-a-local-opensource-model"
       ],
       "hybrid_ranking": [
         "migrating-hugo-blog-with-claude-code",
@@ -5001,7 +5000,7 @@
         "github-pages-and-lets-encrypt",
         "searching-your-hugo-site-with-lunr",
         "tab-plus-search-from-your-url-bar-with-opensearch",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model"
+        "narrating-your-blog-with-kokoro-a-local-opensource-model"
       ]
     },
     {
@@ -5286,7 +5285,7 @@
         "running-a-coding-agent-locally",
         "ai-agent-dungeon-crawl",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "migrating-hugo-blog-with-claude-code",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
@@ -5303,7 +5302,7 @@
         "running-a-coding-agent-locally",
         "ai-agent-dungeon-crawl",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "migrating-hugo-blog-with-claude-code",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
@@ -5599,7 +5598,7 @@
         "free-ssl-on-github-pages-with-a-custom-domain",
         "migrating-hugo-blog-with-claude-code",
         "use-hugo-output-formats-to-generate-lunr-index-files",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "semantic-search-in-your-browser",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "building-a-semantic-search-engine-in-250-lines-of-python",
@@ -5616,7 +5615,7 @@
         "free-ssl-on-github-pages-with-a-custom-domain",
         "migrating-hugo-blog-with-claude-code",
         "use-hugo-output-formats-to-generate-lunr-index-files",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "semantic-search-in-your-browser",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "building-a-semantic-search-engine-in-250-lines-of-python",
@@ -5902,7 +5901,7 @@
         0.10056839138269424
       ],
       "semantic_ranking": [
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "modernizing-python-search-engine",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "running-a-coding-agent-locally",
@@ -5919,7 +5918,7 @@
         "ai-agent-dungeon-crawl"
       ],
       "hybrid_ranking": [
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "modernizing-python-search-engine",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "running-a-coding-agent-locally",
@@ -6227,7 +6226,7 @@
         "github-pages-and-lets-encrypt",
         "running-a-coding-agent-locally",
         "modernizing-python-search-engine",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "ai-agent-dungeon-crawl"
       ],
       "hybrid_ranking": [
@@ -6244,7 +6243,7 @@
         "github-pages-and-lets-encrypt",
         "running-a-coding-agent-locally",
         "modernizing-python-search-engine",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "ai-agent-dungeon-crawl"
       ]
     },
@@ -6536,7 +6535,7 @@
         "building-a-full-text-search-engine-150-lines-of-code",
         "modernizing-python-search-engine",
         "building-a-semantic-search-engine-in-250-lines-of-python",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model"
+        "narrating-your-blog-with-kokoro-a-local-opensource-model"
       ],
       "hybrid_ranking": [
         "semantic-search-in-your-browser",
@@ -6553,7 +6552,7 @@
         "building-a-full-text-search-engine-150-lines-of-code",
         "modernizing-python-search-engine",
         "building-a-semantic-search-engine-in-250-lines-of-python",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model"
+        "narrating-your-blog-with-kokoro-a-local-opensource-model"
       ]
     },
     {
@@ -6838,7 +6837,7 @@
         "semantic-search-in-your-browser",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "tab-plus-search-from-your-url-bar-with-opensearch",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "ai-agent-dungeon-crawl",
         "searching-your-hugo-site-with-lunr",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
@@ -6855,7 +6854,7 @@
         "semantic-search-in-your-browser",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "tab-plus-search-from-your-url-bar-with-opensearch",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "ai-agent-dungeon-crawl",
         "searching-your-hugo-site-with-lunr",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
@@ -7146,7 +7145,7 @@
         "semantic-search-in-your-browser",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "building-a-full-text-search-engine-150-lines-of-code",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "ai-agent-dungeon-crawl",
         "building-a-semantic-search-engine-in-250-lines-of-python"
@@ -7163,7 +7162,7 @@
         "semantic-search-in-your-browser",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "building-a-full-text-search-engine-150-lines-of-code",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "ai-agent-dungeon-crawl",
         "building-a-semantic-search-engine-in-250-lines-of-python"
@@ -7452,7 +7451,7 @@
         "semantic-search-in-your-browser",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "searching-your-hugo-site-with-lunr",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "use-hugo-output-formats-to-generate-lunr-index-files"
       ],
       "hybrid_ranking": [
@@ -7469,7 +7468,7 @@
         "semantic-search-in-your-browser",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "searching-your-hugo-site-with-lunr",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "use-hugo-output-formats-to-generate-lunr-index-files"
       ]
     },
@@ -7759,7 +7758,7 @@
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "running-a-coding-agent-locally",
         "github-pages-and-lets-encrypt",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model"
+        "narrating-your-blog-with-kokoro-a-local-opensource-model"
       ],
       "hybrid_ranking": [
         "searching-your-hugo-site-with-lunr",
@@ -7776,7 +7775,7 @@
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "running-a-coding-agent-locally",
         "github-pages-and-lets-encrypt",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model"
+        "narrating-your-blog-with-kokoro-a-local-opensource-model"
       ]
     },
     {
@@ -8057,7 +8056,7 @@
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "modernizing-python-search-engine",
         "searching-your-hugo-site-with-lunr",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "ai-agent-dungeon-crawl",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "free-ssl-on-github-pages-with-a-custom-domain",
@@ -8074,7 +8073,7 @@
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "modernizing-python-search-engine",
         "searching-your-hugo-site-with-lunr",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "ai-agent-dungeon-crawl",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "free-ssl-on-github-pages-with-a-custom-domain",
@@ -8357,7 +8356,7 @@
       ],
       "semantic_ranking": [
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "migrating-hugo-blog-with-claude-code",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "running-a-coding-agent-locally",
@@ -8374,7 +8373,7 @@
       ],
       "hybrid_ranking": [
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "migrating-hugo-blog-with-claude-code",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "running-a-coding-agent-locally",
@@ -8666,7 +8665,7 @@
       "semantic_ranking": [
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "semantic-search-in-your-browser",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "building-a-full-text-search-engine-150-lines-of-code",
@@ -8683,7 +8682,7 @@
       "hybrid_ranking": [
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "semantic-search-in-your-browser",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "building-a-full-text-search-engine-150-lines-of-code",
@@ -8976,7 +8975,7 @@
         "semantic-search-in-your-browser",
         "building-a-full-text-search-engine-150-lines-of-code",
         "tab-plus-search-from-your-url-bar-with-opensearch",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "ai-agent-dungeon-crawl",
         "modernizing-python-search-engine",
@@ -8993,7 +8992,7 @@
         "semantic-search-in-your-browser",
         "building-a-full-text-search-engine-150-lines-of-code",
         "tab-plus-search-from-your-url-bar-with-opensearch",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "ai-agent-dungeon-crawl",
         "modernizing-python-search-engine",
@@ -9276,7 +9275,7 @@
       ],
       "semantic_ranking": [
         "building-a-semantic-search-engine-in-250-lines-of-python",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "semantic-search-in-your-browser",
         "running-a-coding-agent-locally",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
@@ -9293,7 +9292,7 @@
       ],
       "hybrid_ranking": [
         "building-a-semantic-search-engine-in-250-lines-of-python",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "semantic-search-in-your-browser",
         "running-a-coding-agent-locally",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
@@ -9574,7 +9573,7 @@
       ],
       "semantic_ranking": [],
       "hybrid_ranking": [
-        "narrating-my-blog-with-a-local-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "semantic-search-in-your-browser",
         "running-a-coding-agent-locally",
         "ai-agent-dungeon-crawl",
@@ -9871,7 +9870,7 @@
         "building-a-full-text-search-engine-150-lines-of-code",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "ai-agent-dungeon-crawl",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "github-pages-and-lets-encrypt",
         "modernizing-python-search-engine",
         "migrating-hugo-blog-with-claude-code",
@@ -9888,7 +9887,7 @@
         "building-a-full-text-search-engine-150-lines-of-code",
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "ai-agent-dungeon-crawl",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "github-pages-and-lets-encrypt",
         "modernizing-python-search-engine",
         "migrating-hugo-blog-with-claude-code",
@@ -10168,7 +10167,7 @@
       ],
       "semantic_ranking": [
         "semantic-search-in-your-browser",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "searching-your-hugo-site-with-lunr",
         "building-a-full-text-search-engine-150-lines-of-code",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
@@ -10185,7 +10184,7 @@
       ],
       "hybrid_ranking": [
         "semantic-search-in-your-browser",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "searching-your-hugo-site-with-lunr",
         "building-a-full-text-search-engine-150-lines-of-code",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
@@ -10475,8 +10474,8 @@
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "migrating-hugo-blog-with-claude-code",
         "building-a-full-text-search-engine-150-lines-of-code",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
         "github-pages-and-lets-encrypt",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "ai-agent-dungeon-crawl",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "tab-plus-search-from-your-url-bar-with-opensearch",
@@ -10492,8 +10491,8 @@
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "migrating-hugo-blog-with-claude-code",
         "building-a-full-text-search-engine-150-lines-of-code",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
         "github-pages-and-lets-encrypt",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "ai-agent-dungeon-crawl",
         "free-ssl-on-github-pages-with-a-custom-domain",
         "tab-plus-search-from-your-url-bar-with-opensearch",
@@ -10777,7 +10776,7 @@
         "running-a-coding-agent-locally",
         "semantic-search-in-your-browser",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "building-a-full-text-search-engine-150-lines-of-code",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
@@ -10794,7 +10793,7 @@
         "building-a-semantic-search-engine-in-250-lines-of-python",
         "running-a-coding-agent-locally",
         "bloom-filters-bit-arrays-recommendations-caches-bitcoin",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "building-a-full-text-search-engine-150-lines-of-code",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
@@ -11618,7 +11617,7 @@
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "tab-plus-search-from-your-url-bar-with-opensearch",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "ai-agent-dungeon-crawl",
         "github-pages-and-lets-encrypt"
       ],
@@ -11635,7 +11634,7 @@
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "tab-plus-search-from-your-url-bar-with-opensearch",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "ai-agent-dungeon-crawl",
         "github-pages-and-lets-encrypt"
       ]
@@ -11919,7 +11918,7 @@
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "tab-plus-search-from-your-url-bar-with-opensearch",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "ai-agent-dungeon-crawl",
         "github-pages-and-lets-encrypt"
       ],
@@ -11936,7 +11935,7 @@
         "use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "tab-plus-search-from-your-url-bar-with-opensearch",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "ai-agent-dungeon-crawl",
         "github-pages-and-lets-encrypt"
       ]
@@ -12448,7 +12447,7 @@
         "searching-your-hugo-site-with-lunr",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "migrating-hugo-blog-with-claude-code",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "github-pages-and-lets-encrypt"
       ],
@@ -12465,7 +12464,7 @@
         "searching-your-hugo-site-with-lunr",
         "tab-plus-search-from-your-url-bar-with-opensearch",
         "migrating-hugo-blog-with-claude-code",
-        "narrating-my-blog-with-kokoro-a-local-opensource-model",
+        "narrating-your-blog-with-kokoro-a-local-opensource-model",
         "use-hugo-output-formats-to-generate-lunr-index-files",
         "github-pages-and-lets-encrypt"
       ]
