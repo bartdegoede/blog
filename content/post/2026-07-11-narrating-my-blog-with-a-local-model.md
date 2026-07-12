@@ -1,8 +1,8 @@
 ---
-title: "Narrating my blog with Kokoro, a local and opensource text-to-speech model"
+title: "Narrating your blog with Kokoro, a local and opensource text-to-speech model"
 date: 2026-07-12T12:00:00+02:00
 draft: false
-slug: "narrating-my-blog-with-kokoro-a-local-opensource-model"
+slug: "narrating-your-blog-with-kokoro-a-local-opensource-model"
 categories: ["machine learning", "hugo", "text-to-speech", "ai"]
 keywords: ["text-to-speech", "kokoro", "mlx", "apple silicon", "tts", "local ai", "hugo"]
 description: "Seven years ago I used Google's text-to-speech API to create audio versions of my posts. Now I can run an 82-million-parameter open weight model locally on my laptop, for free."
