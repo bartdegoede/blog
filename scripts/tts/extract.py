@@ -31,6 +31,7 @@ def to_narration(md_text: str) -> str:
     paragraphs = [p for p in paragraphs if not _FOOTNOTE_DEF_START.match(p.lstrip())]
     prose = "\n\n".join(paragraphs)
     prose = _FOOTNOTE_REF.sub("", prose)
+    prose = prose.replace("~~", "")  # leftover strikethrough markers to_prose keeps
     prose = _TABLE_SEP.sub(" ", prose)
     prose = prose.replace("|", " ")
     prose = re.sub(r"\s+", " ", prose).strip()

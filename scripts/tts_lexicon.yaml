@@ -1,8 +1,15 @@
 # Surface form -> spoken form. Case-sensitive, whole-token, longest-match-first.
 # Grow this whenever Kokoro mispronounces a term in a post.
+# Note: "<name>.js" is spelled "<name> J S" and "~123" becomes "approximately"
+# by rules in lexicon.py, so those don't need entries here.
+# Symbols map to space-padded words so "±250" reads as "approximately 250".
+"±": " approximately "
+"×": " times "
+"%": " percent "
 int8: "int eight"
 fp32: "F P thirty two"
 RRF: "R R F"
+JSON: "Jason"
 Goldmark: "Gold mark"
 espeak-ng: "e speak N G"
 mlx-audio: "M L X audio"
@@ -10,6 +17,5 @@ MLX: "M L X"
 Kokoro: "koh koh roh"
 tqdm: "T Q D M"
 Hugo: "Hugo"
-Fuse.js: "fuse J S"
 pydub: "pie dub"
 WordPiece: "word piece"

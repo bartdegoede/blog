@@ -55,6 +55,13 @@ def test_neutralizes_table_markup():
     assert "small" in prose
 
 
+def test_removes_strikethrough_markers():
+    md = "This is ~~wrong~~ actually correct."
+    prose = to_narration(md)
+    assert "~~" not in prose
+    assert "actually correct" in prose
+
+
 def test_preserves_inline_code_as_words():
     md = "Run `hugo server` to preview."
     prose = to_narration(md)

@@ -17,7 +17,7 @@ from tqdm import tqdm
 
 from tts.chunk import sentence_chunks
 from tts.extract import to_narration
-from tts.lexicon import apply_lexicon, load_lexicon
+from tts.lexicon import apply_lexicon, apply_pronunciation_rules, load_lexicon
 from tts.stitch import stitch_to_mp3
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -34,6 +34,7 @@ def render_post(md_path, voice, speed, lexicon, synth_fn, audio_dir=AUDIO_DIR):
     post has no narratable prose."""
     md_path = Path(md_path)
     prose = apply_lexicon(to_narration(md_path.read_text()), lexicon)
+    prose = apply_pronunciation_rules(prose)
     chunks = sentence_chunks(prose)
     if not chunks:
         return None
