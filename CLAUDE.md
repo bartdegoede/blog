@@ -33,12 +33,16 @@ Builds the site, commits the output in the `public/` folder, and pushes to GitHu
 
 ### Generate audio versions of blog posts
 ```bash
-python scripts/text_to_speech.py content/post/[filename].md
+uv run python scripts/text_to_speech.py content/post/[filename].md   # one post
+uv run python scripts/text_to_speech.py --all                        # whole catalogue
 ```
-Uses Google Cloud Text-to-Speech API to convert blog post markdown to an MP3 audio file. Requires:
-- Python dependencies in `requirements.txt`
-- Google Cloud credentials configured
-- Outputs to `static/audio/`
+Converts blog post markdown to an MP3 using a **local** Kokoro-82M model (via
+`mlx-audio` on Apple Silicon) — no cloud, no API key, no cost. Details:
+- Python dependencies are in `pyproject.toml` / `uv.lock`; run everything with `uv run`.
+- Needs `espeak-ng` and `ffmpeg` (Homebrew) for Kokoro's G2P and MP3 encoding.
+- Pronunciation of jargon is fixed with the shared lexicon `scripts/tts_lexicon.yaml`.
+- `--all` backs existing audio up to `backups/` (copy, never delete) before re-rendering.
+- Outputs to `static/audio/<markdown-stem>.mp3`.
 
 ## Architecture
 
@@ -122,16 +126,17 @@ include_js: ["mathjax-config.js"]
 include_cdn: ["https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"]
 ```
 
-## Text-to-Speech Script
+## Text-to-Speech Pipeline
 
-The `scripts/text_to_speech.py` script:
-1. Parses markdown blog post files
-2. Strips Hugo front matter and code blocks
-3. Converts markdown to HTML, then extracts plain text
-4. Splits text into 5000-character chunks (API limit)
-5. Calls Google Cloud Text-to-Speech API for each chunk
-6. Stitches MP3 segments together using pydub
-7. Exports final audio as MP3
-8. Cleans up intermediate files
+Local Kokoro-82M narration lives in the `scripts/tts/` package, driven by the
+`scripts/text_to_speech.py` CLI shim. The stages:
+1. **`extract.py`** — markdown → narratable prose (reuses `sss_eval.markdown.to_prose`, then drops footnote-definition paragraphs and table markup).
+2. **`lexicon.py`** — applies `scripts/tts_lexicon.yaml` pronunciation overrides (case-sensitive, whole-token, longest-match-first).
+3. **`chunk.py`** — splits prose on sentence boundaries.
+4. **`synth.py`** — synthesizes each chunk with Kokoro via `mlx-audio` (24 kHz).
+5. **`stitch.py`** — concatenates segments and exports one MP3 with pydub/ffmpeg.
+6. **`cli.py`** — click CLI: single-file and `--all` batch (backup + tqdm + per-post error isolation).
 
-Dependencies are specified in `requirements.txt` (beautifulsoup4, markdown, pydub, google-cloud-texttospeech).
+Tests are in `tests/tts/` (`uv run pytest tests/tts -m "not slow"`; the opt-in
+`slow` marker runs a real Kokoro render). Dependencies are in `pyproject.toml`.
+The design/plan are under `docs/superpowers/`.
