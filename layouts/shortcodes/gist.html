@@ -1,0 +1,6 @@
+{{- /*
+  Replacement for Hugo's built-in gist shortcode, removed after v0.143.0.
+  Usage: {{< gist USERNAME GIST_ID [FILENAME] >}}
+  Emits the same <script> embed the built-in used to generate.
+*/ -}}
+<script src="https://gist.github.com/{{ .Get 0 }}/{{ .Get 1 }}.js{{ with .Get 2 }}?file={{ . }}{{ end }}"></script>
