@@ -103,8 +103,13 @@ def stitch_to_mp3(segments: list[np.ndarray], out_path: Path, sample_rate: int =
      `backups/audio-google-2026-07/` (created once; skip if already backed up so
      re-runs are safe).
   2. For each `content/post/*.md` with body text, render and overwrite
-     `static/audio/<md-stem>.mp3`.
+     `static/audio/<md-stem>.mp3`, wrapped in a `tqdm` progress bar over the
+     post list.
   3. Continue on per-file errors; print a summary (rendered / skipped / failed).
+
+**Never deletes.** Batch mode only copies (for the backup) and overwrites MP3s
+in place. Existing files — including the legacy `.ogg` companions — are left on
+disk untouched; the backup is an additional copy, not a move.
 
 ## Backup strategy
 
@@ -121,7 +126,7 @@ def stitch_to_mp3(segments: list[np.ndarray], out_path: Path, sample_rate: int =
 
 - **Create `pyproject.toml`** declaring all blog Python dependencies:
   runtime — `mlx-audio`, `misaki`, `soundfile`, `numpy`, `pydub`,
-  `beautifulsoup4`, `markdown`, `click`, `pyyaml`,
+  `beautifulsoup4`, `markdown`, `click`, `pyyaml`, `tqdm`,
   `static-site-search-eval==0.1.0` (the search-index build);
   dev — `pytest`, `ruff`, `black`.
 - **`uv sync`** manages a repo-local `.venv` and a committed `uv.lock`.
