@@ -5,7 +5,7 @@
 
 Batch mode backs up existing audio first (copy, never move/delete) and shows a
 tqdm progress bar. Output MP3s are named by the markdown file stem, matching the
-existing static/audio convention.
+existing assets/audio convention.
 """
 
 import logging
@@ -23,7 +23,7 @@ from tts.stitch import stitch_to_mp3
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
-AUDIO_DIR = Path("static/audio")
+AUDIO_DIR = Path("assets/audio")
 POSTS_DIR = Path("content/post")
 BACKUP_DIR = Path("backups/audio-google-2026-07")
 LEXICON_PATH = Path(__file__).resolve().parent.parent / "tts_lexicon.yaml"
@@ -61,7 +61,7 @@ def backup_existing_audio(audio_dir=AUDIO_DIR, backup_dir=BACKUP_DIR):
 @click.command()
 @click.argument("filename", required=False, type=click.Path(exists=True, path_type=Path))
 @click.option("--all", "all_posts", is_flag=True, help="Re-render every post in content/post.")
-@click.option("--peaks", "peaks_only", is_flag=True, help="(Re)generate waveform peaks for every MP3 in static/audio, without synthesizing.")
+@click.option("--peaks", "peaks_only", is_flag=True, help="(Re)generate waveform peaks for every MP3 in assets/audio, without synthesizing.")
 @click.option("--voice", default="af_heart", show_default=True, help="Kokoro voice preset.")
 @click.option("--speed", default=1.0, show_default=True, type=float)
 def main(filename, all_posts, peaks_only, voice, speed):

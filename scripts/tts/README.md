@@ -17,7 +17,7 @@ mismatch warning).
 ## Narrating posts
 
 ```bash
-# One post -> static/audio/<same-filename-stem>.mp3
+# One post -> assets/audio/<same-filename-stem>.mp3
 uv run python scripts/text_to_speech.py content/post/2026-07-11-my-post.md
 
 # The whole catalogue (backs up existing audio first, shows a progress bar)
@@ -32,7 +32,7 @@ matches what the `{{< audio >}}` shortcode in the post expects.
 
 ## `--all` is safe
 
-Before rendering, it copies every existing `static/audio/*.mp3` and `.ogg` into
+Before rendering, it copies every existing `assets/audio/*.mp3` and `.ogg` into
 `backups/audio-google-2026-07/` (gitignored). It **never deletes** anything and
 never overwrites an existing backup, so re-running keeps the first snapshot.
 

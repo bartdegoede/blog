@@ -1,7 +1,15 @@
 {{- $src := .Get "src" -}}
 {{- $uid := $src | anchorize -}}
 {{- $peaksFile := "" -}}
-{{- if $src }}{{ $peaksFile = printf "static%s" (replace $src ".mp3" ".peaks.json") }}{{ end -}}
+{{- if $src }}{{ $peaksFile = printf "assets%s" (replace $src ".mp3" ".peaks.json") }}{{ end -}}
+{{- /* Content-hash the audio via Hugo fingerprint so a re-rendered file gets a
+       new URL and busts browser/CDN caches. Falls back to the raw src if the
+       file isn't an asset. */ -}}
+{{- $audioSrc := $src -}}
+{{- if $src }}{{ with resources.Get (printf "audio/%s" (path.Base $src)) }}{{ $audioSrc = (. | fingerprint).RelPermalink }}{{ end }}{{ end -}}
+{{- $bsrc := .Get "backup_src" -}}
+{{- $backupSrc := $bsrc -}}
+{{- if $bsrc }}{{ with resources.Get (printf "audio/%s" (path.Base $bsrc)) }}{{ $backupSrc = (. | fingerprint).RelPermalink }}{{ end }}{{ end -}}
 <div class="tts-player" id="player-{{ $uid }}">
     <div class="listen">Listen to this article instead</div>
     <div class="tts-waveform" aria-hidden="true">
@@ -30,8 +38,8 @@
         </select>
     </div>
     <audio class="tts-audio" preload="metadata" {{ with .Get "title" }}data-info-title="{{ . }}"{{ end }}>
-        {{ with $src }}<source src="{{ . }}"{{ with $.Get "type" }} type="audio/{{ . }}"{{ end }}>{{ end }}
-        {{ with .Get "backup_src" }}<source src="{{ . }}"{{ with $.Get "backup_type" }} type="audio/{{ . }}"{{ end }}>{{ end }}
+        {{ with $src }}<source src="{{ $audioSrc }}"{{ with $.Get "type" }} type="audio/{{ . }}"{{ end }}>{{ end }}
+        {{ with .Get "backup_src" }}<source src="{{ $backupSrc }}"{{ with $.Get "backup_type" }} type="audio/{{ . }}"{{ end }}>{{ end }}
         Your browser does not support the audio element
     </audio>
 </div>

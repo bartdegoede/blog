@@ -42,7 +42,7 @@ Converts blog post markdown to an MP3 using a **local** Kokoro-82M model (via
 - Needs `espeak-ng` and `ffmpeg` (Homebrew) for Kokoro's G2P and MP3 encoding.
 - Pronunciation of jargon is fixed with the shared lexicon `scripts/tts_lexicon.yaml`.
 - `--all` backs existing audio up to `backups/` (copy, never delete) before re-rendering.
-- Outputs to `static/audio/<markdown-stem>.mp3`.
+- Outputs to `assets/audio/<markdown-stem>.mp3` (content-hashed into the page by Hugo's `fingerprint` so re-rendered audio busts caches).
 
 ## Architecture
 
