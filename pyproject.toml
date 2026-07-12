@@ -1,9 +1,25 @@
 [project]
-name = "blog-search-index"
+name = "blog-tooling"
 version = "0.1.0"
-description = "Build-time search index generation for bart.degoe.de"
+description = "Build-time tooling for bart.degoe.de: search index + local TTS narration"
 requires-python = ">=3.12"
-dependencies = ["static-site-search-eval==0.1.0"]
+dependencies = [
+    "static-site-search-eval==0.1.0",
+    "mlx-audio",
+    "misaki",
+    "numpy",
+    "pydub",
+    "audioop-lts; python_version >= '3.13'",
+    "click",
+    "pyyaml",
+    "tqdm",
+]
 
 [dependency-groups]
-dev = ["pytest>=8.3"]
+dev = ["pytest>=8.3", "ruff", "black"]
+
+[tool.pytest.ini_options]
+pythonpath = ["scripts"]
+markers = [
+    "slow: tests that download/run the Kokoro model (deselect with -m 'not slow')",
+]
