@@ -21,7 +21,13 @@
     <div class="tts-controls">
         <button type="button" class="tts-play" aria-label="Play">&#9654;</button>
         <span class="tts-time">0:00 / 0:00</span>
-        <button type="button" class="tts-speed" aria-label="Playback speed">1&times;</button>
+        <select class="tts-speed" aria-label="Playback speed">
+            <option value="0.75">0.75&times;</option>
+            <option value="1" selected>1&times;</option>
+            <option value="1.25">1.25&times;</option>
+            <option value="1.5">1.5&times;</option>
+            <option value="2">2&times;</option>
+        </select>
     </div>
     <audio class="tts-audio" preload="metadata" {{ with .Get "title" }}data-info-title="{{ . }}"{{ end }}>
         {{ with $src }}<source src="{{ . }}"{{ with $.Get "type" }} type="audio/{{ . }}"{{ end }}>{{ end }}
