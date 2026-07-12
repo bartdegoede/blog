@@ -1,26 +1,31 @@
-<div id="player">
+{{- $src := .Get "src" -}}
+{{- $uid := $src | anchorize -}}
+{{- $peaksFile := "" -}}
+{{- if $src }}{{ $peaksFile = printf "static%s" (replace $src ".mp3" ".peaks.json") }}{{ end -}}
+<div class="tts-player" id="player-{{ $uid }}">
     <div class="listen">Listen to this article instead</div>
-    <div id="waveform">
-        {{ $waveform := resources.Get "img/waveform.svg" | minify }}
-        <img src="{{ $waveform.Permalink }}" alt="waveform">
+    <div class="tts-waveform" aria-hidden="true">
+        {{- if and $peaksFile (os.FileExists $peaksFile) -}}
+            {{- $data := os.ReadFile $peaksFile | transform.Unmarshal -}}
+            {{- $peaks := $data.peaks -}}
+            {{- $n := len $peaks -}}
+            <svg class="wf" viewBox="0 0 {{ $n }} 100" preserveAspectRatio="none">
+                <defs><clipPath id="clip-{{ $uid }}"><rect class="wf-clip" x="0" y="0" width="0" height="100"/></clipPath></defs>
+                <g class="wf-base">{{ range $i, $p := $peaks }}<rect x="{{ $i }}" y="{{ div (sub 100.0 $p) 2.0 }}" width="0.6" height="{{ $p }}"/>{{ end }}</g>
+                <g class="wf-played" clip-path="url(#clip-{{ $uid }})">{{ range $i, $p := $peaks }}<rect x="{{ $i }}" y="{{ div (sub 100.0 $p) 2.0 }}" width="0.6" height="{{ $p }}"/>{{ end }}</g>
+            </svg>
+        {{- else -}}
+            {{ $img := resources.Get "img/waveform.svg" | minify }}<img class="wf-fallback" src="{{ $img.Permalink }}" alt="waveform">
+        {{- end -}}
     </div>
-    <audio controls
-        class="audio_controls {{ .Get "class" }}"
-        {{ with .Get "id" }}id="{{ . }}"{{ end }}
-        {{ with .Get "preload" }}preload="{{ . }}"{{ else }}preload="metadata"{{ end }}
-
-        style="{{ with .Get "style" }}{{ . | safeCSS }}; {{ end }}"
-        {{ with .Get "title" }}data-info-title="{{ . }}"{{ end }}
-    >
-        {{ if .Get "src" }}
-        <source {{ with .Get "src" }}src="{{ . }}"{{ end }}
-            {{ with .Get "type" }}type="audio/{{ . }}"{{ end }}>
-        {{ else if .Get "backup_src" }}
-            <source src="{{ .Get "backup_src" }}"
-                {{ with .Get "backup_type" }}type="audio/{{ . }}"{{ end }}
-                {{ with .Get "backup_codec" }}codecs="{{ . }}"{{ end }}
-            >
-        {{ end }}
+    <div class="tts-controls">
+        <button type="button" class="tts-play" aria-label="Play">&#9654;</button>
+        <span class="tts-time">0:00 / 0:00</span>
+        <button type="button" class="tts-speed" aria-label="Playback speed">1&times;</button>
+    </div>
+    <audio class="tts-audio" preload="metadata" {{ with .Get "title" }}data-info-title="{{ . }}"{{ end }}>
+        {{ with $src }}<source src="{{ . }}"{{ with $.Get "type" }} type="audio/{{ . }}"{{ end }}>{{ end }}
+        {{ with .Get "backup_src" }}<source src="{{ . }}"{{ with $.Get "backup_type" }} type="audio/{{ . }}"{{ end }}>{{ end }}
         Your browser does not support the audio element
     </audio>
 </div>
