@@ -26,6 +26,12 @@ def _get_model():
     return _model
 
 
+def preload() -> None:
+    """Eagerly load the model so a load failure surfaces once, up front, rather
+    than once per post in the middle of a batch run."""
+    _get_model()
+
+
 def synth(text: str, voice: str = "af_heart", speed: float = 1.0) -> np.ndarray:
     text = text.strip()
     if not text:

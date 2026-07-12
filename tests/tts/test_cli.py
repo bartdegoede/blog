@@ -1,6 +1,8 @@
 import numpy as np
+from click.testing import CliRunner
 from pydub import AudioSegment
 
+import tts.cli as cli
 from tts.cli import backup_existing_audio, render_post
 
 
@@ -51,6 +53,40 @@ def test_backup_copies_without_deleting(tmp_path):
     # originals still present
     assert (src / "a.mp3").exists()
     assert (src / "a.ogg").exists()
+
+
+def test_all_backs_up_before_render_and_isolates_failures(tmp_path, monkeypatch):
+    posts = tmp_path / "posts"
+    posts.mkdir()
+    (posts / "2020-01-01-good.md").write_text("A fine sentence.")
+    (posts / "2020-01-02-bad.md").write_text("This one will explode.")
+    (posts / "2020-01-03-good.md").write_text("Another fine one.")
+    audio = tmp_path / "audio"
+    audio.mkdir()
+    (audio / "old.mp3").write_bytes(b"original")
+
+    monkeypatch.setattr(cli, "POSTS_DIR", posts)
+    monkeypatch.setattr(cli, "AUDIO_DIR", audio)
+    monkeypatch.setattr(cli, "BACKUP_DIR", tmp_path / "bk")
+    monkeypatch.setattr(cli, "LEXICON_PATH", tmp_path / "absent.yaml")
+
+    def fake_synth(text, voice="af_heart", speed=1.0):
+        if "explode" in text:
+            raise RuntimeError("boom")
+        return np.zeros(2400, dtype=np.float32)
+
+    monkeypatch.setattr("tts.synth.synth", fake_synth)
+    monkeypatch.setattr("tts.synth.preload", lambda: None)
+
+    result = CliRunner().invoke(cli.main, ["--all"])
+
+    assert result.exit_code == 0
+    assert "rendered 2, skipped 0, failed 1" in result.output
+    # the bad post did not abort the run; the good ones were written
+    assert (audio / "2020-01-01-good.mp3").exists()
+    assert (audio / "2020-01-03-good.mp3").exists()
+    # backup ran before any render, preserving the original
+    assert (tmp_path / "bk" / "old.mp3").read_bytes() == b"original"
 
 
 def test_backup_is_idempotent(tmp_path):

@@ -11,18 +11,25 @@ import re
 
 from sss_eval.markdown import to_prose
 
-# A footnote definition line: "[^1]: some text" possibly wrapped. We only need
-# to drop the marker + the rest of that line; to_prose has already flattened
-# structure, so definitions appear inline. Drop reference markers everywhere,
-# and drop the trailing definition text after a "[^id]:" marker.
-_FOOTNOTE_DEF = re.compile(r"\[\^[^\]]+\]:\s*[^.]*\.?")
-_FOOTNOTE_REF = re.compile(r"\[\^[^\]]+\]")
-_TABLE_SEP = re.compile(r"\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?")
+# to_prose keeps Markdown footnote *definitions* as their own paragraphs that
+# begin with "[^id]:" -- often multi-sentence citations. Drop those paragraphs
+# whole: matching only to the first period leaks the rest, and deleting greedily
+# to end-of-document destroys posts that write "[^id]:" mid-sentence as
+# punctuation (a footnote ref immediately before a code block). A paragraph that
+# *starts* with the marker is a definition; the same marker mid-paragraph is a
+# reference. Then strip the remaining inline "[^id]" references from the bodies.
+_FOOTNOTE_DEF_START = re.compile(r"\[\^[\w-]+\]:")
+_FOOTNOTE_REF = re.compile(r"\[\^[\w-]+\]")
+# A Markdown table separator row, e.g. "|---|:--:|". Require 3+ hyphens per cell
+# so ordinary prose (an em-dash written as "10--20") is left alone.
+_TABLE_SEP = re.compile(r"\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)*\|?")
 
 
 def to_narration(md_text: str) -> str:
     prose = to_prose(md_text)
-    prose = _FOOTNOTE_DEF.sub(" ", prose)
+    paragraphs = re.split(r"\n\s*\n", prose)
+    paragraphs = [p for p in paragraphs if not _FOOTNOTE_DEF_START.match(p.lstrip())]
+    prose = "\n\n".join(paragraphs)
     prose = _FOOTNOTE_REF.sub("", prose)
     prose = _TABLE_SEP.sub(" ", prose)
     prose = prose.replace("|", " ")

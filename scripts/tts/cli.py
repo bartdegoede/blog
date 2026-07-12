@@ -61,17 +61,21 @@ def backup_existing_audio(audio_dir=AUDIO_DIR, backup_dir=BACKUP_DIR):
 @click.option("--voice", default="af_heart", show_default=True, help="Kokoro voice preset.")
 @click.option("--speed", default=1.0, show_default=True, type=float)
 def main(filename, all_posts, voice, speed):
-    from tts.synth import synth as synth_fn
+    from tts.synth import preload, synth as synth_fn
 
     lexicon = load_lexicon(LEXICON_PATH)
 
     if all_posts:
-        backup_existing_audio()
+        try:
+            preload()  # fail once, up front, not once per post
+        except Exception as exc:
+            raise click.ClickException(f"could not load the Kokoro model: {exc}")
+        backup_existing_audio(AUDIO_DIR, BACKUP_DIR)
         posts = sorted(POSTS_DIR.glob("*.md"))
         rendered = skipped = failed = 0
         for post in tqdm(posts, desc="Narrating posts", unit="post"):
             try:
-                out = render_post(post, voice, speed, lexicon, synth_fn)
+                out = render_post(post, voice, speed, lexicon, synth_fn, audio_dir=AUDIO_DIR)
                 if out:
                     rendered += 1
                 else:
@@ -84,5 +88,5 @@ def main(filename, all_posts, voice, speed):
 
     if filename is None:
         raise click.UsageError("Provide a FILENAME or use --all.")
-    out = render_post(filename, voice, speed, lexicon, synth_fn)
+    out = render_post(filename, voice, speed, lexicon, synth_fn, audio_dir=AUDIO_DIR)
     click.echo(f"wrote {out}" if out else "nothing to render (empty prose)")
