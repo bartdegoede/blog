@@ -1,0 +1,15 @@
+# Surface form -> spoken form. Case-sensitive, whole-token, longest-match-first.
+# Grow this whenever Kokoro mispronounces a term in a post.
+int8: "int eight"
+fp32: "F P thirty two"
+RRF: "R R F"
+Goldmark: "Gold mark"
+espeak-ng: "e speak N G"
+mlx-audio: "M L X audio"
+MLX: "M L X"
+Kokoro: "koh koh roh"
+tqdm: "T Q D M"
+Hugo: "Hugo"
+Fuse.js: "fuse J S"
+pydub: "pie dub"
+WordPiece: "word piece"
