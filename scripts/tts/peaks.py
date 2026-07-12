@@ -10,6 +10,7 @@ mis-sniffs a bare "[1,2,3]" as CSV. An object is parsed as JSON.
 """
 
 import json
+import os
 from pathlib import Path
 
 import numpy as np
@@ -39,5 +40,9 @@ def write_peaks(mp3_path, n_bars: int = N_BARS) -> Path:
     seg = AudioSegment.from_file(Path(mp3_path)).set_channels(1)
     samples = np.array(seg.get_array_of_samples())
     out = peaks_path(mp3_path)
-    out.write_text(json.dumps({"peaks": compute_peaks(samples, n_bars)}))
+    # Write atomically: a partial file must never be visible to Hugo's file
+    # watcher (a truncated read fails JSON parsing during `hugo serve`).
+    tmp = out.with_name(out.name + ".tmp")
+    tmp.write_text(json.dumps({"peaks": compute_peaks(samples, n_bars)}))
+    os.replace(tmp, out)
     return out
