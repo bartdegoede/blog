@@ -1,93 +1,18 @@
-import click
-import functools
-from glob import glob
-import logging
-import os
-import re
+"""Entry point kept for backwards compatibility and docs.
 
-from bs4 import BeautifulSoup
-from markdown import markdown
-from pydub import AudioSegment
+    uv run python scripts/text_to_speech.py content/post/foo.md
+    uv run python scripts/text_to_speech.py --all
 
-from google.cloud import texttospeech
+The implementation lives in scripts/tts/. This shim puts scripts/ on the import
+path so `tts` resolves when run as a file.
+"""
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s %(levelname)s %(message)s')
+import sys
+from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-def clean_text(text):
-    # get rid of the Hugo preamble
-    text = ''.join(text.decode('utf8').split('---')[2:]).strip()
-    # get rid of superfluous newlines, as that counts towards our API limits
-    text = re.sub('\n+', ' ', text)
-    # we're hacking our way around the markdown by converting to html first,
-    # just because BeautifulSoup makes life so easy
-    html = markdown(text)
+from tts.cli import main  # noqa: E402
 
-    html = re.sub(r'<pre>(.*?)</pre>', ' ', html)
-    # this removes some artifacts from Hugo shortcodes
-    html = re.sub(r'{{}}', '', html)
-    html = re.sub(r'\[\^.*?\]', ' ', html)
-    soup = BeautifulSoup(html, "html.parser")
-    text = ''.join(soup.findAll(text=True))
-    # get rid of superfluous whitespace
-    return re.sub(r'\s+', ' ', text)
-
-
-@click.command()
-@click.argument('filename', type=click.File('rb'))
-def text_to_speech(filename):
-    name = os.path.basename(filename.name).replace('.md', '')
-    data = filename.read()
-    text = clean_text(data)
-    # initialize the API client
-    client = texttospeech.TextToSpeechClient()
-    # The API limit is 5000 bytes (not characters). Split on word
-    # boundaries to avoid cutting mid-word or mid-multibyte character.
-    chunks = []
-    current = []
-    current_bytes = 0
-    for word in text.split():
-        word_bytes = len((word + ' ').encode('utf-8'))
-        if current_bytes + word_bytes > 4900 and current:  # leave margin
-            chunks.append(' '.join(current))
-            current = []
-            current_bytes = 0
-        current.append(word)
-        current_bytes += word_bytes
-    if current:
-        chunks.append(' '.join(current))
-
-    for j, chunk in enumerate(chunks):
-        synthesis_input = texttospeech.types.SynthesisInput(text=chunk)
-        voice = texttospeech.types.VoiceSelectionParams(
-            language_code='en-US',
-            name='en-US-Wavenet-B'
-        )
-        audio_config = texttospeech.types.AudioConfig(
-            audio_encoding=texttospeech.enums.AudioEncoding.MP3
-        )
-        logging.info(f'Synthesizing speech for {name}_{j}')
-        response = client.synthesize_speech(synthesis_input, voice,
-                                            audio_config)
-        with open(f'{name}_{j}.mp3', 'wb') as out:
-            # Write the response to the output file.
-            out.write(response.audio_content)
-            logging.info(f'Audio content written to file "{name}_{j}.mp3"')
-
-    mp3_segments = sorted(glob(f'{name}_*.mp3'))
-    segments = [AudioSegment.from_mp3(f) for f in mp3_segments]
-
-    logging.info(f'Stitching together {len(segments)} mp3 files for {name}')
-    audio = functools.reduce(lambda a, b: a + b, segments)
-
-    logging.info(f'Exporting {name}.mp3')
-    audio.export(f'static/audio/{name}.mp3', format='mp3')
-
-    logging.info('Removing intermediate files')
-    for f in mp3_segments:
-        os.remove(f)
-
-
-if __name__ == '__main__':
-    text_to_speech()
+if __name__ == "__main__":
+    main()
