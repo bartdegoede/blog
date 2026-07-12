@@ -9,7 +9,7 @@ body {
 }
 
 /* Audio Player Styling - Theme aware */
-#player {
+.tts-player {
     padding: 1.5rem;
     margin: 2rem 0;
     border-radius: 8px;
@@ -18,36 +18,85 @@ body {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.theme-dark #player {
+.theme-dark .tts-player {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-#player .listen {
+.tts-player .listen {
     color: var(--primary);
     margin-bottom: 0.75rem;
     font-size: 0.9rem;
     font-weight: 500;
 }
 
-#player #waveform {
+.tts-waveform {
+    height: 64px;
     margin-bottom: 1rem;
+    cursor: pointer;
 }
 
-#player #waveform img {
+.tts-waveform svg.wf {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.tts-waveform .wf-base rect {
+    fill: var(--secondary);
+    opacity: 0.35;
+}
+
+.tts-waveform .wf-played rect {
+    fill: var(--primary);
+}
+
+.tts-waveform .wf-fallback {
     width: 100%;
     height: auto;
     border-radius: 4px;
     opacity: 0.8;
 }
 
-#player audio {
-    width: 100%;
-    margin-top: 0.5rem;
+.tts-audio {
+    display: none;
 }
 
-/* Audio controls styling for better theme integration */
-audio::-webkit-media-controls-panel {
-    background-color: var(--entry);
+.tts-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.tts-play,
+.tts-speed {
+    background: var(--tertiary);
+    color: var(--primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.35rem 0.6rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
+.tts-play:hover,
+.tts-speed:hover {
+    background: var(--border);
+}
+
+.tts-play {
+    min-width: 2.2rem;
+}
+
+.tts-speed {
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+}
+
+.tts-time {
+    color: var(--secondary);
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
 }
 
 /* Figure and Image Styling */
@@ -95,7 +144,7 @@ figcaption h4 {
 }
 
 /* Regular images not in figures */
-.post-content img:not(#waveform img) {
+.post-content img:not(.tts-waveform img) {
     max-width: 100%;
     height: auto;
     border-radius: 8px;
@@ -105,7 +154,7 @@ figcaption h4 {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.theme-dark .post-content img:not(#waveform img) {
+.theme-dark .post-content img:not(.tts-waveform img) {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -139,7 +188,7 @@ code.language-python {
 }
 
 /* Ensure proper spacing for embedded content */
-.post-content #player {
+.post-content .tts-player {
     margin: 2rem 0;
 }
 
@@ -199,12 +248,12 @@ input[type="search"] {
 
 /* Responsive adjustments for audio player */
 @media (max-width: 768px) {
-    #player {
+    .tts-player {
         padding: 1rem;
         margin: 1.5rem 0;
     }
 
-    #player .listen {
+    .tts-player .listen {
         font-size: 0.85rem;
     }
 }

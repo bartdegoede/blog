@@ -318,3 +318,50 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 {{- end }}
+<script data-cf-async="false">
+document.addEventListener('DOMContentLoaded', function () {
+    var SPEEDS = [0.75, 1, 1.25, 1.5, 2];
+    function fmt(t) {
+        if (!isFinite(t)) t = 0;
+        var m = Math.floor(t / 60), s = Math.floor(t % 60);
+        return m + ':' + (s < 10 ? '0' : '') + s;
+    }
+    document.querySelectorAll('.tts-player').forEach(function (player) {
+        var audio = player.querySelector('.tts-audio');
+        var playBtn = player.querySelector('.tts-play');
+        var timeEl = player.querySelector('.tts-time');
+        var speedBtn = player.querySelector('.tts-speed');
+        var wave = player.querySelector('.tts-waveform');
+        var clip = player.querySelector('.wf-clip');
+        var svg = player.querySelector('svg.wf');
+        var n = svg ? svg.viewBox.baseVal.width : 0;
+        var si = 1;
+        function update() {
+            timeEl.textContent = fmt(audio.currentTime) + ' / ' + fmt(audio.duration);
+            if (clip && n && audio.duration) {
+                clip.setAttribute('width', (audio.currentTime / audio.duration) * n);
+            }
+        }
+        playBtn.addEventListener('click', function () {
+            if (audio.paused) { audio.play(); } else { audio.pause(); }
+        });
+        audio.addEventListener('play', function () { playBtn.innerHTML = '&#10074;&#10074;'; playBtn.setAttribute('aria-label', 'Pause'); });
+        audio.addEventListener('pause', function () { playBtn.innerHTML = '&#9654;'; playBtn.setAttribute('aria-label', 'Play'); });
+        audio.addEventListener('ended', function () { playBtn.innerHTML = '&#9654;'; });
+        audio.addEventListener('timeupdate', update);
+        audio.addEventListener('loadedmetadata', update);
+        wave.addEventListener('click', function (e) {
+            if (!audio.duration) { return; }
+            var r = wave.getBoundingClientRect();
+            var f = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+            audio.currentTime = f * audio.duration;
+        });
+        speedBtn.addEventListener('click', function () {
+            si = (si + 1) % SPEEDS.length;
+            audio.playbackRate = SPEEDS[si];
+            speedBtn.textContent = SPEEDS[si] + '×';
+        });
+        update();
+    });
+});
+</script>
