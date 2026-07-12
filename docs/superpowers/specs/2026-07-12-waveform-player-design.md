@@ -12,8 +12,8 @@ with:
 1. A **real per-post waveform**, computed at build time from each MP3's samples
    and rendered as inline SVG bars.
 2. A **custom, theme-aware player** — play/pause, `MM:SS / MM:SS` time, a
-   playback-speed toggle, and click-to-seek on the waveform — driving a headless
-   `<audio>` element.
+   playback-speed toggle (cycles `0.75× → 1× → 1.25× → 1.5× → 2×`, starting at
+   1×), and click-to-seek on the waveform — driving a headless `<audio>` element.
 
 The custom player also fixes a dark-mode bug: the native audio controls render
 their shadow-DOM chrome (play button, time, volume, ⋮ menu) with light-ish
@@ -27,8 +27,8 @@ audio controls can't be reliably themed, so we drop them and own the controls.
 - **Rendering:** build-time inline SVG (Hugo reads the peaks JSON at build; no
   runtime fetch; the waveform is present before JS runs).
 - **Interaction:** click-to-seek on the waveform.
-- **Controls:** custom play/pause + time + speed toggle (1× / 1.5× / 2×);
-  headless `<audio>`.
+- **Controls:** custom play/pause + time + speed toggle
+  (`0.75× → 1× → 1.25× → 1.5× → 2×`, default 1×); headless `<audio>`.
 
 ## Architecture
 
@@ -95,7 +95,8 @@ Existing shortcode params to preserve: `src`, `type`, `backup_src`, `backup_type
   - `loadedmetadata` / `timeupdate` → update `MM:SS / MM:SS` and set the played
     clip width to `currentTime / duration * N`;
   - click on the waveform → `currentTime = offsetX / width * duration`;
-  - speed button cycles 1 → 1.5 → 2 → 1 via `playbackRate`, updating its label.
+  - speed button cycles `0.75 → 1 → 1.25 → 1.5 → 2` (wrapping) via
+    `playbackRate`, starting at 1, updating its label.
   - No-ops on pages without a `.tts-player`.
 - **Styles:** in `assets/css/extended/custom.css`, using PaperMod theme variables
   (`--primary`, `--secondary`, `--content`, `--entry`) so light and dark both look
