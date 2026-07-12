@@ -98,3 +98,31 @@ def test_backup_is_idempotent(tmp_path):
     (backup / "a.mp3").write_bytes(b"EDITED")  # a re-run must not clobber
     backup_existing_audio(audio_dir=src, backup_dir=backup)
     assert (backup / "a.mp3").read_bytes() == b"EDITED"
+
+
+def test_render_post_also_writes_peaks(tmp_path):
+    md = tmp_path / "2020-01-01-hello.md"
+    md.write_text("One. Two. Three.")
+    out_dir = tmp_path / "audio"
+
+    def real_ish_synth(text, voice="af_heart", speed=1.0):
+        return np.full(2400, 0.2, dtype=np.float32)
+
+    out = render_post(md, "af_heart", 1.0, {}, real_ish_synth, audio_dir=out_dir)
+    assert (out_dir / "2020-01-01-hello.peaks.json").exists()
+
+
+def test_peaks_flag_backfills_all_mp3s(tmp_path, monkeypatch):
+    from tts.stitch import stitch_to_mp3
+
+    audio = tmp_path / "audio"
+    audio.mkdir()
+    for name in ("a.mp3", "b.mp3"):
+        stitch_to_mp3([np.full(2400, 0.3, dtype=np.float32)], audio / name, sample_rate=24000)
+    monkeypatch.setattr(cli, "AUDIO_DIR", audio)
+
+    result = CliRunner().invoke(cli.main, ["--peaks"])
+    assert result.exit_code == 0
+    assert (audio / "a.peaks.json").exists()
+    assert (audio / "b.peaks.json").exists()
+    assert "2" in result.output

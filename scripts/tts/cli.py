@@ -18,6 +18,7 @@ from tqdm import tqdm
 from tts.chunk import sentence_chunks
 from tts.extract import to_narration
 from tts.lexicon import apply_lexicon, apply_pronunciation_rules, load_lexicon
+from tts.peaks import write_peaks
 from tts.stitch import stitch_to_mp3
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -41,6 +42,7 @@ def render_post(md_path, voice, speed, lexicon, synth_fn, audio_dir=AUDIO_DIR):
     segments = [synth_fn(c, voice=voice, speed=speed) for c in chunks]
     out = Path(audio_dir) / (md_path.stem + ".mp3")
     stitch_to_mp3(segments, out, sample_rate=SAMPLE_RATE)
+    write_peaks(out)
     return out
 
 
@@ -59,9 +61,17 @@ def backup_existing_audio(audio_dir=AUDIO_DIR, backup_dir=BACKUP_DIR):
 @click.command()
 @click.argument("filename", required=False, type=click.Path(exists=True, path_type=Path))
 @click.option("--all", "all_posts", is_flag=True, help="Re-render every post in content/post.")
+@click.option("--peaks", "peaks_only", is_flag=True, help="(Re)generate waveform peaks for every MP3 in static/audio, without synthesizing.")
 @click.option("--voice", default="af_heart", show_default=True, help="Kokoro voice preset.")
 @click.option("--speed", default=1.0, show_default=True, type=float)
-def main(filename, all_posts, voice, speed):
+def main(filename, all_posts, peaks_only, voice, speed):
+    if peaks_only:
+        mp3s = sorted(AUDIO_DIR.glob("*.mp3"))
+        for mp3 in tqdm(mp3s, desc="Peaks", unit="file"):
+            write_peaks(mp3)
+        click.echo(f"wrote peaks for {len(mp3s)} files")
+        return
+
     from tts.synth import preload, synth as synth_fn
 
     lexicon = load_lexicon(LEXICON_PATH)
