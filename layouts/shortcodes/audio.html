@@ -10,7 +10,7 @@
 {{- $bsrc := .Get "backup_src" -}}
 {{- $backupSrc := $bsrc -}}
 {{- if $bsrc }}{{ with resources.Get (printf "audio/%s" (path.Base $bsrc)) }}{{ $backupSrc = (. | fingerprint).RelPermalink }}{{ end }}{{ end -}}
-<div class="tts-player" id="player-{{ $uid }}">
+<div class="tts-player" id="player-{{ $uid }}" data-track="{{ strings.TrimSuffix ".mp3" (path.Base $src) }}">
     <div class="listen">Listen to this article instead</div>
     <div class="tts-waveform" aria-hidden="true">
         {{- if and $peaksFile (os.FileExists $peaksFile) -}}

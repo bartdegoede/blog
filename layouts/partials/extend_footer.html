@@ -334,18 +334,44 @@ document.addEventListener('DOMContentLoaded', function () {
         var clip = player.querySelector('.wf-clip');
         var svg = player.querySelector('svg.wf');
         var n = svg ? svg.viewBox.baseVal.width : 0;
+
+        // GA4 engagement tracking. Guarded on gtag so it stays silent when a
+        // visitor has Do-Not-Track on (the site's gtag setup leaves gtag
+        // undefined in that case). The track label comes from the original
+        // (pre-fingerprint) src, so it's stable across audio re-renders.
+        var track = player.getAttribute('data-track') || 'unknown';
+        function ga(name, params) {
+            if (typeof gtag !== 'function') { return; }
+            gtag('event', name, Object.assign({ audio_track: track }, params || {}));
+        }
+        var playSent = false;
+        var milestones = [25, 50, 75];
+        var milestoneSent = {};
+
         function update() {
             timeEl.textContent = fmt(audio.currentTime) + ' / ' + fmt(audio.duration);
             if (clip && n && audio.duration) {
                 clip.setAttribute('width', (audio.currentTime / audio.duration) * n);
             }
+            if (audio.duration) {
+                var pct = (audio.currentTime / audio.duration) * 100;
+                milestones.forEach(function (m) {
+                    if (pct >= m && !milestoneSent[m]) {
+                        milestoneSent[m] = true;
+                        ga('audio_progress', { percent: m });
+                    }
+                });
+            }
         }
         playBtn.addEventListener('click', function () {
             if (audio.paused) { audio.play(); } else { audio.pause(); }
         });
-        audio.addEventListener('play', function () { playBtn.innerHTML = '&#10074;&#10074;'; playBtn.setAttribute('aria-label', 'Pause'); });
+        audio.addEventListener('play', function () {
+            playBtn.innerHTML = '&#10074;&#10074;'; playBtn.setAttribute('aria-label', 'Pause');
+            if (!playSent) { playSent = true; ga('audio_play'); }
+        });
         audio.addEventListener('pause', function () { playBtn.innerHTML = '&#9654;'; playBtn.setAttribute('aria-label', 'Play'); });
-        audio.addEventListener('ended', function () { playBtn.innerHTML = '&#9654;'; });
+        audio.addEventListener('ended', function () { playBtn.innerHTML = '&#9654;'; ga('audio_complete'); });
         audio.addEventListener('timeupdate', update);
         audio.addEventListener('loadedmetadata', update);
         wave.addEventListener('click', function (e) {
