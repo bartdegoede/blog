@@ -6,6 +6,8 @@ slug: "narrating-your-blog-with-kokoro-a-local-opensource-model"
 categories: ["machine learning", "hugo", "text-to-speech", "ai"]
 keywords: ["text-to-speech", "kokoro", "mlx", "apple silicon", "tts", "local ai", "hugo"]
 description: "Seven years ago I used Google's text-to-speech API to create audio versions of my posts. Now I can run an 82-million-parameter open weight model locally on my laptop, for free."
+related:
+  - use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts
 ---
 
 {{<audio src="/audio/2026-07-11-narrating-my-blog-with-a-local-model.mp3" type="mp3">}}

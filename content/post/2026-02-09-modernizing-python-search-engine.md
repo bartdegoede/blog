@@ -6,6 +6,10 @@ slug: "modernizing-python-search-engine"
 categories: ["how-to", "search", "python", "open-source"]
 keywords: ["python", "search engine", "hugging face", "datasets", "uv", "modernization"]
 description: A few years ago I wrote a full-text search engine in 150 lines of Python. The Wikipedia data source it relied on has since been discontinued, and the tooling around it was showing its age. I wanted to (finally) write a follow-up about semantic search, but I realized that I had to get the old repository in a working state first. It's now using Hugging Face (🤗) datasets, uv, ruff, pytest, and GitHub Actions, without touching the core search logic.
+related:
+  - building-a-full-text-search-engine-150-lines-of-code
+  - building-a-semantic-search-engine-in-250-lines-of-python
+  - semantic-search-in-your-browser
 ---
 
 A few years ago I wrote a [full-text search engine in 150 lines of Python](/building-a-full-text-search-engine-150-lines-of-code/). The Wikipedia data source it relied on has since been discontinued, and the tooling around it was showing its age. I wanted to (finally) write a follow-up about semantic search, but I realized that I had to get the old repository in a working state first. It's now using Hugging Face (🤗) datasets, uv, ruff, pytest, and GitHub Actions, without touching the core search logic.<!-- more -->

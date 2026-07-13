@@ -10,6 +10,10 @@ include_js: ["mathjax-config.js"]
 include_cdn: ["https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"]
 cover:
     image: "/img/2026-02-09-semantic-search-python/cover.jpg"
+related:
+  - building-a-full-text-search-engine-150-lines-of-code
+  - semantic-search-in-your-browser
+  - modernizing-python-search-engine
 ---
 
 {{<audio src="/audio/2026-02-09-semantic-search-python.mp3" type="mp3">}}

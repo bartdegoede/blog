@@ -6,6 +6,9 @@ slug: "migrating-hugo-blog-with-claude-code"
 categories: ["hugo", "ai", "how-to", "blog"]
 keywords: ["hugo", "claude", "ai", "migration", "static site"]
 description: I haven't really touched my blog since 2019. The theme was ancient, jQuery was everywhere, and I kept putting off the inevitable migration. Then I decided to let an LLM do it. Here's what happened when Claude Code spent an evening trying to modernize my setup.
+related:
+  - searching-your-hugo-site-with-lunr
+  - use-hugo-output-formats-to-generate-lunr-index-files
 ---
 
 I haven't really touched my blog since 2019. The theme was ancient, jQuery was everywhere, and I kept putting off the migration. Then I decided to let an LLM do it. Here's what happened when Claude Code spent an evening trying to modernize my setup.<!-- more -->

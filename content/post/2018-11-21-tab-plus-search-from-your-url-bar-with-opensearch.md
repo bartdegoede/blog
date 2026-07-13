@@ -5,6 +5,10 @@ draft: false
 slug: "tab-plus-search-from-your-url-bar-with-opensearch"
 categories: ["search", "opensearch", "how-to"]
 keywords: ["search", "opensearch", "how-to"]
+related:
+  - searching-your-hugo-site-with-lunr
+  - semantic-search-in-your-browser
+  - building-a-full-text-search-engine-150-lines-of-code
 ---
 
 Almost all modern browsers enable websites to customize the built-in search feature to let the user access their search features directly, without going to your website first and finding the search input box. If your website has search functionality accessible through a basic GET request, it's surprisingly simple to enable this for your website too.<!--more-->

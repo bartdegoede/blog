@@ -8,6 +8,10 @@ keywords: ["semantic search", "embeddings", "hybrid search", "model2vec", "stati
 description: "This blog now has semantic search that runs entirely in your browser. No server, no API keys, no 23 MB transformer. The whole model is a 4 MB lookup table, and extends the existing keyword search with semantic capabilities."
 cover:
     image: "/img/2026-07-10-semantic-search-in-your-browser/cover.png"
+related:
+  - building-a-semantic-search-engine-in-250-lines-of-python
+  - building-a-full-text-search-engine-150-lines-of-code
+  - searching-your-hugo-site-with-lunr
 ---
 
 {{<audio src="/audio/2026-07-10-semantic-search-in-your-browser.mp3" type="mp3">}}

@@ -5,6 +5,10 @@ draft: false
 slug: "searching-your-hugo-site-with-lunr"
 categories: ["hugo", "search", "lunr", "javascript", "how-to"]
 keywords: ["hugo", "search", "lunr", "javascript"]
+related:
+  - use-hugo-output-formats-to-generate-lunr-index-files
+  - tab-plus-search-from-your-url-bar-with-opensearch
+  - semantic-search-in-your-browser
 ---
 
 Like many software engineers, I figured I needed a blog of sorts, because it would give me a place for my own notes on "How To Do Things™", let me have a URL to give people, and share my ramblings about Life, the Universe and Everything Else with whoever wants to read them.<!--more-->

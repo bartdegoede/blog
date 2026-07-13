@@ -8,6 +8,8 @@ keywords: ["local ai", "coding agent", "qwen", "mlx", "lm studio", "claude code"
 description: "The all-you-can-eat AI coding era is over. So what do you do on the 22nd of the month, when the token budget's gone and there's over a week of work left? Here's a local coding agent (Pi plus Qwen3-Coder on a MacBook) that's decent enough for the routine stuff and runs for free (if you have enough RAM)."
 cover:
     image: "/img/2026-06-29-running-a-coding-agent-locally/cover.png"
+related:
+  - ai-agent-dungeon-crawl
 ---
 
 {{<audio src="/audio/2026-06-29-running-a-coding-agent-locally.mp3" type="mp3">}}

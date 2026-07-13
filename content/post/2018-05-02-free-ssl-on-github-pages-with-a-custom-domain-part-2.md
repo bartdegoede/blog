@@ -5,6 +5,8 @@ draft: false
 slug: "github-pages-and-lets-encrypt"
 categories: ["ssl", "hugo", "how-to", "gh-pages", "https", "lets-encrypt"]
 keywords: ["ssl", "hugo", "github pages", "https", "free ssl", "cloudflare", "letsencrypt"]
+related:
+  - free-ssl-on-github-pages-with-a-custom-domain
 ---
 
 [GitHub Pages](https://pages.github.com/) has just become even more awesome. Since yesterday[^yesterday], GitHub Pages [supports HTTPS for custom domains](https://blog.github.com/2018-05-01-github-pages-custom-domains-https/). And yes, it is still free!<!--more-->
