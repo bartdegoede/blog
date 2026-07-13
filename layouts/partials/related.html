@@ -11,11 +11,17 @@
 {{- with $pages }}
 <div class="post-related">
   <h3>Related posts</h3>
-  <ul>
+  <div class="related-grid">
     {{- range . }}
-    <li><a href="{{ .Permalink }}">{{ .Title }}</a></li>
+    {{- $desc := .Description }}
+    {{- if not $desc }}{{ $desc = .Summary }}{{ end }}
+    {{- $desc = $desc | markdownify | plainify | htmlUnescape }}
+    <a class="related-card" href="{{ .Permalink }}">
+      <span class="related-card-title">{{ .Title }}</span>
+      {{- with $desc }}<span class="related-card-desc">{{ . | truncate 150 }}</span>{{ end }}
+    </a>
     {{- end }}
-  </ul>
+  </div>
 </div>
 {{- end }}
 {{- end }}
