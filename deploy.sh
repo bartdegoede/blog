@@ -39,11 +39,14 @@ if ! git diff --quiet --exit-code -- static/search || \
 fi
 
 # --- 2. Build the site --------------------------------------------------------
-# --gc --cleanDestinationDir prune orphaned output (old slugs, stray dev-server
-# artifacts) so stale duplicate pages can't ride along to the live site. This is
-# only safe because CNAME now lives in static/ and is regenerated every build.
+# NOTE: do NOT add --cleanDestinationDir here. public/ is a git submodule whose
+# .git is a gitlink *file*, and cleanDestinationDir deletes it (along with any
+# committed-but-not-regenerated file), breaking the submodule on every deploy.
+# Orphaned old slugs are handled by `aliases:` front matter (which regenerates
+# them as redirect stubs); public-only files like CNAME and BingSiteAuth.xml
+# live in static/ so a normal build always re-emits them.
 echo -e "${GREEN}Building site with Hugo...${NC}"
-hugo --gc --cleanDestinationDir
+hugo
 
 [ -d "public" ] || fail "Error: Hugo build failed - public directory not found"
 
