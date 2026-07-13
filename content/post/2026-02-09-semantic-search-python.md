@@ -3,6 +3,7 @@ title: "Building a semantic search engine in ±250 lines of Python"
 date: 2026-02-09T18:00:00-07:00
 draft: false
 slug: "building-a-semantic-search-engine-in-250-lines-of-python"
+aliases: ["/building-a-semantic-search-engine-in-python/", "/semantic-search-python/"]
 categories: ["how-to", "search", "full-text search", "python", "machine learning", "ai"]
 keywords: ["python", "semantic search", "embeddings", "sentence-transformers", "vector search", "cosine similarity"]
 description: "Our keyword search engine can't find 'alcoholic beverage disaster in England' even though the London Beer Flood is right there. In this post, we add semantic search using sentence-transformers embeddings and cosine similarity to find documents by meaning, not just matching words."

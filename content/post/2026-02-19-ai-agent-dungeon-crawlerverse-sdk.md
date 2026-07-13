@@ -3,6 +3,7 @@ title: "Your OpenClaw can book flights. But can it survive a dungeon crawl?"
 date: 2026-02-19T12:00:00-07:00
 draft: false
 slug: "ai-agent-dungeon-crawl"
+aliases: ["/ai-agent-dungeon-crawlerverse-sdk/"]
 categories: ["ai", "python", "games"]
 keywords: ["ai agent", "llm", "crawlerverse", "roguelike", "sdk", "openclaw", "benchmark", "claude"]
 description: "Everyone's building AI agents that send emails and book flights. How about one that fights monsters in a dungeon? Here's how you can too."

@@ -39,8 +39,11 @@ if ! git diff --quiet --exit-code -- static/search || \
 fi
 
 # --- 2. Build the site --------------------------------------------------------
+# --gc --cleanDestinationDir prune orphaned output (old slugs, stray dev-server
+# artifacts) so stale duplicate pages can't ride along to the live site. This is
+# only safe because CNAME now lives in static/ and is regenerated every build.
 echo -e "${GREEN}Building site with Hugo...${NC}"
-hugo
+hugo --gc --cleanDestinationDir
 
 [ -d "public" ] || fail "Error: Hugo build failed - public directory not found"
 
