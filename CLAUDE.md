@@ -46,7 +46,12 @@ Converts blog post markdown to an MP3 using a **local** Kokoro-82M model (via
 
 ## Architecture
 
-**Important:** The `public/` directory is a **separate git repository** (not a submodule of this repo). It tracks the `master` branch of the GitHub Pages deployment repo. Do not treat it as part of the main repo's git history. The `deploy.sh` script handles committing and pushing within `public/` independently.
+**Important:** The `public/` directory is a **git submodule** (registered in `.gitmodules`) that tracks the `master` branch of the GitHub Pages deployment repo (`bartdegoede.github.io`). Its build output is committed and pushed to *that* repo, not to this one's history. The `deploy.sh` script handles committing and pushing within `public/` independently; the parent repo's submodule pointer is intentionally left lagging (`M public` in `git status` is expected — don't feel obliged to bump it).
+
+**Deploy gotchas (learned the hard way — do not repeat):**
+- **Never build with `hugo --cleanDestinationDir`.** Because `public/` is a submodule, its `.git` is a gitlink *file*; cleanDestinationDir deletes it (and every committed-but-not-regenerated file), breaking the submodule with `fatal: in unpopulated submodule 'public'`. Recovery: restore the gitlink with `echo "gitdir: ../.git/modules/public" > public/.git` — history survives in `.git/modules/public`.
+- **Files that must exist in `public/` but aren't page output — `CNAME`, `BingSiteAuth.xml` — live in `static/`** so a normal build always re-emits them. Anything only committed into `public/` directly is fragile and can be wiped.
+- **To retire or rename a slug, add `aliases: ["/old-slug/"]`** to the post's front matter. Hugo regenerates the old URL as a forward-redirect stub (meta-refresh + canonical pointing to the new URL), which preserves inbound links and avoids duplicate-content pages. A plain `hugo` build never deletes orphaned old-slug directories on its own.
 
 **Note on Migration:** This blog was migrated from hyde-x theme to PaperMod in October 2025. Legacy files remain for reference:
 - `layouts/partials/search.html`, `search_scripts.html`, `sidebar/footer.html` — old search/sidebar partials
