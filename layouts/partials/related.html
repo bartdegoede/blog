@@ -1,0 +1,21 @@
+{{- /* Related posts: resolves front-matter `related:` slugs to pages.
+       Renders nothing when the list is empty or no slug resolves. */ -}}
+{{- $related := .Params.related }}
+{{- if $related }}
+{{- $pages := slice }}
+{{- range $slug := $related }}
+  {{- with where site.RegularPages "Params.slug" $slug }}
+  {{- $pages = $pages | append (index . 0) }}
+  {{- end }}
+{{- end }}
+{{- with $pages }}
+<div class="post-related">
+  <h3>Related posts</h3>
+  <ul>
+    {{- range . }}
+    <li><a href="{{ .Permalink }}">{{ .Title }}</a></li>
+    {{- end }}
+  </ul>
+</div>
+{{- end }}
+{{- end }}
