@@ -1,21 +1,28 @@
 // assets/js/ask/page.js
 /**
- * /ask/ page controller: capability probe, model cards, download progress,
- * question → sources → gated, streamed summary. All rules and numbers live
- * in the sibling pure modules; the model lives in worker.js.
+ * /ask/ page controller: question bar, model status strip, download
+ * progress, question → sources → gated, streamed summary. All rules and
+ * numbers live in the sibling pure modules; the model lives in worker.js.
  *
- * The question form works from the start: without a ready model it shows
- * the retrieved passages only (sources-only mode).
+ * The question bar works from the start: without a ready model it shows the
+ * retrieved passages only (sources-only mode).
  */
 import { loadIndex } from "../semantic/index.js";
 import { scoreQuery, topChunks } from "./retrieve.js";
 import { TOP_K, buildMessages, passesGate } from "./prompt.js";
-import { MODELS, CACHE_NAME, fileUrl, totalBytes, modelById } from "./models.js";
+import { MODELS, DEFAULT_MODEL_ID, CACHE_NAME, fileUrl, totalBytes, modelById } from "./models.js";
 import { DownloadProgress, tileCount } from "./progress.js";
 
 const WASM_DTYPE = "q4f16"; // confirmed in Part 2 Task 1
 const root = document.getElementById("ask-app");
+const page = root?.closest(".ask-page") ?? root; // includes the small-print footer
 const WORKER_URL = root?.dataset.worker;
+
+const EXAMPLES = [
+  "How do bloom filters work?",
+  "How did this blog add search?",
+  "How do I run a coding agent locally?",
+];
 
 const state = {
   cap: null,
@@ -31,7 +38,7 @@ const state = {
   nextId: 1,
   currentId: null,
   partial: "", // streamed text so far, for a hard stop
-  bench: null, // last benchmark {ttft_ms, tok_s, device} for state.model
+  bench: null, // last benchmark {ttft_ms, tok_s} for state.model
   afterStop: false, // the current load is the reload after a WASM Stop
 };
 let persistAsked = false;
@@ -39,8 +46,9 @@ let persistAsked = false;
 const esc = (s) =>
   String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const mb = (bytes) => `${Math.round(bytes / 1e6)} MB`;
-const $ = (sel) => root.querySelector(sel);
+const $ = (sel) => page.querySelector(sel);
 const backendLabel = () => (state.backend === "webgpu" ? "WebGPU" : "CPU (WASM)");
+const backendShort = () => (state.backend === "webgpu" ? "GPU" : "CPU");
 
 async function probe() {
   let webgpu = false;
@@ -82,99 +90,150 @@ function announce(text) {
 
 const blockedOnBackend = (m) => state.backend === "wasm" && m.webgpuOnly;
 
-function modelCard(m) {
-  const blocked = blockedOnBackend(m);
-  const stats = `In my eval: <strong>${m.faithful}/30</strong> faithful answers; made something up for <strong>${m.invented}/15</strong> questions the blog doesn't answer.`;
-  return `
-    <div class="ask-model" data-model="${m.id}">
-      <div class="ask-model-head">
-        <span class="ask-model-name">${esc(m.name)}</span>
-        <span class="ask-model-size">${mb(totalBytes(m))}</span>
-        <span class="ask-model-cached" hidden>Cached, loads instantly</span>
+// ---------------------------------------------------------------- shell
+
+function renderShell() {
+  root.innerHTML = `
+    <form class="ask-bar" role="search">
+      <div class="ask-bar-field">
+        <input type="search" class="ask-input" placeholder="Ask a question about the blog…" aria-label="Your question" autocomplete="off" required>
+        <button type="button" class="ask-stop ask-btn ask-btn-secondary" hidden>Stop</button>
+        <button type="submit" class="ask-submit ask-btn ask-btn-primary">Ask</button>
       </div>
-      <p class="ask-model-stats">${stats}</p>
-      <button type="button" class="ask-load" data-model="${m.id}"${blocked ? " disabled" : ""}>Load ${esc(m.name)} (${mb(totalBytes(m))})</button>
-      ${blocked ? '<p class="ask-model-blocked">Needs WebGPU (not available in this browser)</p>' : ""}
-    </div>`;
+    </form>
+    <div class="ask-examples" aria-label="Example questions">
+      ${EXAMPLES.map((q) => `<button type="button" class="ask-example" data-q="${esc(q)}">${esc(q)}</button>`).join("")}
+    </div>
+    <section class="ask-strip" aria-label="Summary model"></section>
+    <div class="ask-answer" aria-live="polite" aria-busy="false" hidden></div>
+    <section class="ask-sources-wrap" hidden>
+      <h2 class="ask-sources-title">From the blog</h2>
+      <ol class="ask-sources"></ol>
+    </section>
+    <p class="ask-announce visually-hidden" aria-live="polite"></p>`;
+  renderStripIdle();
 }
 
-function renderIdle() {
-  const cap = state.cap;
-  const def = MODELS.filter((m) => m.role === "default");
+// ---------------------------------------------------------------- strip
+
+function statChips(m) {
+  return `
+    <span class="ask-pill" title="In my eval: ${m.faithful} of 30 answers were faithful to the passages">${m.faithful}/30 faithful</span>
+    <span class="ask-pill" title="In my eval: made something up for ${m.invented} of 15 questions the blog doesn't answer">invented ${m.invented}/15</span>`;
+}
+
+function demoRow(m) {
+  const action = blockedOnBackend(m)
+    ? '<span class="ask-demo-blocked">Needs WebGPU (not available in this browser)</span>'
+    : `<button type="button" class="ask-load ask-btn ask-btn-link" data-model="${m.id}" aria-label="Load ${esc(m.name)} (${mb(totalBytes(m))})">Load</button>`;
+  return `
+    <li class="ask-demo" data-model="${m.id}">
+      <span class="ask-demo-name">${esc(m.name)}</span>
+      <span class="ask-demo-size">${mb(totalBytes(m))}</span>
+      <span class="ask-pill" title="In my eval: ${m.faithful} of 30 answers were faithful to the passages">${m.faithful}/30 faithful</span>
+      <span class="ask-pill ask-model-cached" hidden>Cached</span>
+      <span class="ask-demo-action">${action}</span>
+    </li>`;
+}
+
+function renderStripIdle() {
+  const strip = $(".ask-strip");
+  strip.dataset.state = "idle";
+  const def = modelById(DEFAULT_MODEL_ID);
   const demos = MODELS.filter((m) => m.role === "demo");
   // Measured in Task 1: WebGPU 19.8 tok/s; single-threaded WASM 1.2 tok/s
   // (GitHub Pages can't send COOP/COEP, so no WASM threads).
-  const backend =
-    state.backend === "webgpu"
-      ? "Your browser supports WebGPU: the model runs on your GPU."
-      : cap.device === "webgpu"
-        ? "Running on your CPU (slower mode): expect roughly 30–60 seconds per answer."
-        : "No WebGPU with 16-bit support here, so the model runs on your CPU (slower mode): expect roughly 30–60 seconds per answer.";
-  root.innerHTML = `
-    <div class="ask-models">
-      <p class="ask-capability">${esc(backend)}${cap.memoryGb ? ` Device memory: ~${cap.memoryGb} GB.` : ""}</p>
-      ${def.map(modelCard).join("")}
-      <details class="ask-demos">
-        <summary>See why size matters: three smaller models</summary>
-        <p>These are smaller, but in my eval they were almost never faithful to the passages. Try one to see what that looks like.</p>
-        ${demos.map(modelCard).join("")}
-      </details>
+  const cpu = state.backend === "wasm";
+  strip.innerHTML = `
+    <div class="ask-strip-row">
+      <span class="ask-dot" aria-hidden="true"></span>
+      <span class="ask-strip-title">Summaries off</span>
+      <span class="ask-strip-actions">
+        <button type="button" class="ask-load ask-btn ask-btn-primary" data-model="${def.id}">Load ${esc(def.name)} · ${mb(totalBytes(def))}</button>
+        <span class="ask-pill ask-pill-backend" title="${cpu ? "No WebGPU with 16-bit support: runs on your CPU" : "WebGPU: runs on your GPU"}">${cpu ? "CPU · slow" : "GPU"}</span>
+      </span>
     </div>
-    <div class="ask-loading" hidden></div>
-    <div class="ask-machine" hidden></div>
-    <form class="ask-form">
-      <input type="search" class="ask-input" placeholder="Ask a question about the blog…" aria-label="Your question" autocomplete="off" required>
-      <button type="submit" class="ask-submit">Ask</button>
-      <button type="button" class="ask-stop" hidden>Stop</button>
-      <button type="button" class="ask-switch" hidden>Switch model</button>
-    </form>
-    <div class="ask-answer" aria-live="polite" aria-busy="false" hidden></div>
-    <ol class="ask-sources" hidden></ol>
-    <p class="ask-manage">
-      <button type="button" class="ask-delete">Delete downloaded models (all models this site downloaded)</button>
-      <span class="ask-manage-status" role="status"></span>
-    </p>
-    <p class="ask-announce visually-hidden" aria-live="polite"></p>`;
+    <div class="ask-strip-sub ask-model" data-model="${def.id}">
+      ${statChips(def)}
+      <span class="ask-pill ask-model-cached" hidden>Cached</span>
+      ${cpu ? '<span class="ask-strip-note">Runs on your CPU here: ~30 to 60 s per answer.</span>' : ""}
+    </div>
+    <details class="ask-demos">
+      <summary>Other models (smaller, see why size matters)</summary>
+      <p class="ask-demos-intro">Smaller and faster to download, but in my eval they were rarely faithful to the passages. Try one to see what that looks like.</p>
+      <ul class="ask-demo-list">${demos.map(demoRow).join("")}</ul>
+    </details>`;
   markCached();
 }
 
 async function markCached() {
   for (const m of MODELS) {
-    const card = root.querySelector(`.ask-model[data-model="${m.id}"]`);
-    if (card) card.querySelector(".ask-model-cached").hidden = !(await isCached(m));
+    const kept = await isCached(m);
+    page.querySelectorAll(`[data-model="${m.id}"] .ask-model-cached`).forEach((el) => (el.hidden = !kept));
   }
 }
 
 /** Disable every control that would start or disturb a load while one is in flight. */
 function setLoading(loading) {
   state.loading = loading;
-  root.querySelectorAll(".ask-load").forEach((b) => {
+  page.querySelectorAll(".ask-load").forEach((b) => {
     b.disabled = loading || blockedOnBackend(modelById(b.dataset.model));
   });
-  root.querySelectorAll(".ask-retry, .ask-retry-wasm, .ask-reload, .ask-delete").forEach((b) => (b.disabled = loading));
+  page.querySelectorAll(".ask-retry, .ask-retry-wasm, .ask-reload, .ask-delete").forEach((b) => (b.disabled = loading));
 }
 
-function renderLoading(model) {
+function renderStripLoading(model) {
+  const strip = $(".ask-strip");
+  strip.dataset.state = "loading";
   const tiles = tileCount(totalBytes(model));
-  const box = $(".ask-loading");
-  box.hidden = false;
-  box.innerHTML = `
-    <p class="ask-loading-title">Loading ${esc(model.name)} (${model.params} parameters)</p>
-    <p class="ask-storage-note" hidden></p>
-    <div class="ask-progress" role="progressbar" aria-label="Model download" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-      <div class="ask-progress-fill"></div>
+  strip.innerHTML = `
+    <div class="ask-strip-row">
+      <span class="ask-dot" aria-hidden="true"></span>
+      <span class="ask-strip-title">Loading ${esc(model.name)} <span class="ask-muted">(${model.params} parameters)</span></span>
     </div>
-    <p class="ask-progress-label">Starting download…</p>
-    <div class="ask-map" aria-hidden="true">${'<span class="ask-tile"></span>'.repeat(tiles)}</div>
-    <p class="ask-error" hidden></p>`;
+    <div class="ask-loading">
+      <p class="ask-storage-note" hidden></p>
+      <div class="ask-progress" role="progressbar" aria-label="Model download" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="ask-progress-fill"></div>
+      </div>
+      <p class="ask-progress-label">Starting download…</p>
+      <div class="ask-map" aria-hidden="true">${'<span class="ask-tile"></span>'.repeat(tiles)}</div>
+      <p class="ask-error" hidden></p>
+    </div>`;
 }
+
+function renderStripReady(device, bench) {
+  const strip = $(".ask-strip");
+  strip.dataset.state = "ready";
+  const speed = bench.tok_s ? ` · ${bench.tok_s.toFixed(1)} tok/s` : "";
+  const ttft = bench.ttft_ms !== null && bench.ttft_ms !== undefined ? `First token in ${bench.ttft_ms} ms on ${device === "webgpu" ? "WebGPU" : "CPU (WASM)"}` : "";
+  strip.innerHTML = `
+    <div class="ask-strip-row">
+      <span class="ask-dot" aria-hidden="true"></span>
+      <span class="ask-strip-title ask-machine" title="${esc(ttft)}">Summaries on · ${esc(state.model.name)} · ${device === "webgpu" ? "GPU" : "CPU"}${speed}</span>
+      <button type="button" class="ask-switch ask-btn ask-btn-link">Switch</button>
+    </div>`;
+}
+
+function backToIdle() {
+  state.worker?.terminate();
+  state.worker = null;
+  state.ready = false;
+  state.loading = false;
+  renderStripIdle();
+  setLoading(false);
+  $(`.ask-load[data-model="${DEFAULT_MODEL_ID}"]`)?.focus();
+}
+
+// ---------------------------------------------------------------- loading
 
 function paintProgress() {
   const p = state.progress;
   const pct = Math.floor(p.fraction * 100);
   const bar = $(".ask-progress");
+  if (!bar) return;
   $(".ask-progress-fill").style.width = `${pct}%`;
-  const tiles = root.querySelectorAll(".ask-tile");
+  const tiles = page.querySelectorAll(".ask-tile");
   const filled = Math.floor(p.fraction * tiles.length);
   tiles.forEach((t, i) => t.classList.toggle("is-filled", i < filled));
   if (pct >= 100) {
@@ -201,13 +260,13 @@ function askPersist() {
   }
 }
 
-async function checkStorage(model) {
+async function checkStorage(model, worker) {
   const est = await storageEstimate();
-  if (!est) return;
+  if (!est || worker !== state.worker) return;
   const free = est.quota - est.usage;
   console.info(`[ask] storage estimate: quota ${mb(est.quota)}, usage ${mb(est.usage)}, free ${mb(free)}, model ${mb(totalBytes(model))}`);
-  if (!state.fromCache && free < totalBytes(model) * 1.1) {
-    const note = $(".ask-storage-note");
+  const note = $(".ask-storage-note");
+  if (note && !state.fromCache && free < totalBytes(model) * 1.1) {
     note.hidden = false;
     note.textContent = `Your browser only allows ~${mb(Math.max(0, free))} of storage for this site, so the model probably won't be kept and will download again next visit.`;
   }
@@ -226,9 +285,7 @@ function startWorker(model, device, { skipBench = false } = {}) {
   state.progress = new DownloadProgress(model.files);
   if (!skipBench) state.bench = null;
   state.afterStop = skipBench;
-  $(".ask-machine").hidden = true;
-  $(".ask-switch").hidden = true;
-  renderLoading(model);
+  renderStripLoading(model);
   setLoading(true);
   worker.onmessage = ({ data }) => {
     if (worker === state.worker) onWorker(data, device);
@@ -251,17 +308,19 @@ function startWorker(model, device, { skipBench = false } = {}) {
     if (label?.textContent === "Starting download…") label.textContent = "Loading from cache";
     $(".ask-storage-note")?.setAttribute("hidden", "");
   });
-  checkStorage(model);
+  checkStorage(model, worker);
 }
 
 function showLoadError(message, device) {
   setLoading(false);
   const el = $(".ask-error");
   el.hidden = false;
-  el.innerHTML = `Loading failed: ${esc(message)}
-    <button type="button" class="ask-retry">Retry</button>
-    ${device === "webgpu" && !state.model?.webgpuOnly ? '<button type="button" class="ask-retry-wasm">Try slower mode (CPU)</button>' : ""}
-    <button type="button" class="ask-choose">Choose another model</button>`;
+  el.innerHTML = `<span class="ask-error-text">Loading failed: ${esc(message)}</span>
+    <span class="ask-error-actions">
+      <button type="button" class="ask-retry ask-btn ask-btn-secondary">Retry</button>
+      ${device === "webgpu" && !state.model?.webgpuOnly ? '<button type="button" class="ask-retry-wasm ask-btn ask-btn-secondary">Try slower mode (CPU)</button>' : ""}
+      <button type="button" class="ask-choose ask-btn ask-btn-link">Choose another model</button>
+    </span>`;
   announce(`Loading failed: ${message}`);
   $(".ask-retry").focus();
 }
@@ -276,11 +335,16 @@ function onWorkerCrash(message, device) {
   state.ready = false;
   if (state.busy) onGenerateError(`the model stopped (${message})`);
   setBusy(false);
-  $(".ask-switch").hidden = true;
-  const machine = $(".ask-machine");
-  machine.insertAdjacentHTML(
+  const strip = $(".ask-strip");
+  strip.dataset.state = "error";
+  $(".ask-switch")?.remove();
+  strip.insertAdjacentHTML(
     "beforeend",
-    ` <span class="ask-error">The model stopped working. <button type="button" class="ask-reload">Reload model</button> <button type="button" class="ask-choose">Choose another model</button></span>`
+    `<p class="ask-error"><span class="ask-error-text">The model stopped working.</span>
+      <span class="ask-error-actions">
+        <button type="button" class="ask-reload ask-btn ask-btn-secondary">Reload model</button>
+        <button type="button" class="ask-choose ask-btn ask-btn-link">Choose another model</button>
+      </span></p>`
   );
   announce("The model stopped working");
 }
@@ -293,7 +357,8 @@ function onWorker(msg, device) {
     state.progress.complete(msg.file);
     paintProgress();
   } else if (msg.type === "status") {
-    $(".ask-progress-label").textContent = msg.text;
+    const label = $(".ask-progress-label");
+    if (label) label.textContent = msg.text;
   } else if (msg.type === "ready") {
     onReady(msg);
   } else if (msg.type === "token") {
@@ -307,59 +372,61 @@ function onWorker(msg, device) {
 }
 
 function onReady(msg) {
-  const device = msg.device;
   // A reload after Stop skips the benchmark (bench: null): keep the old numbers.
   const bench = msg.bench ?? state.bench ?? { ttft_ms: null, tok_s: null };
   state.bench = bench;
   state.ready = true;
+  const active = document.activeElement;
+  const focusWasInStrip = !active || active === document.body || $(".ask-strip").contains(active);
+  renderStripReady(msg.device, bench);
   setLoading(false);
-  $(".ask-loading").hidden = true;
   if (state.afterStop) {
     const meta = $(".ask-meta");
     if (meta && (/Reloading/.test(meta.textContent) || meta.querySelector(".ask-reload"))) meta.textContent = "Stopped.";
     state.afterStop = false;
   }
-  const machine = $(".ask-machine");
-  machine.hidden = false;
-  const speed = bench.tok_s ? `${bench.tok_s.toFixed(1)} tokens/s` : "n/a";
-  machine.innerHTML = `<strong>Your machine:</strong> ${esc(state.model.name)} on ${device === "webgpu" ? "WebGPU" : "CPU (WASM)"} · ${speed}${bench.ttft_ms !== null ? ` · first token in ${bench.ttft_ms} ms` : ""}`;
-  $(".ask-models").hidden = true;
-  $(".ask-switch").hidden = false;
   announce(`${state.model.name} is ready`);
-  const active = document.activeElement;
-  if (!state.busy && (!active || active === document.body || $(".ask-loading").contains(active))) $(".ask-input").focus();
-  markCached();
+  if (!state.busy && focusWasInStrip) $(".ask-input").focus();
   if (!state.fromCache) {
     const model = state.model;
     isCached(model).then((kept) => {
       if (!kept && state.model === model && state.ready) {
-        machine.insertAdjacentHTML(
+        $(".ask-strip").insertAdjacentHTML(
           "beforeend",
-          `<p class="ask-kept-note">Note: your browser didn't keep the model (storage limit or private window), so it will download again next time.</p>`
+          `<p class="ask-kept-note">Your browser didn't keep the model (storage limit or private window), so it will download again next time.</p>`
         );
       }
     });
   }
 }
 
+// ---------------------------------------------------------------- asking
+
 function renderSources(top) {
-  const list = $(".ask-sources");
-  list.hidden = false;
-  list.innerHTML = top
+  $(".ask-sources-wrap").hidden = false;
+  $(".ask-sources").innerHTML = top
     .map(({ chunk }) => {
       const href = chunk.anchor ? `${chunk.href}#${chunk.anchor}` : chunk.href;
-      const heading = chunk.heading ? ` · ${esc(chunk.heading)}` : "";
-      return `<li class="ask-source"><a href="${esc(href)}">${esc(chunk.title)}${heading}</a><blockquote>${esc(chunk.snippet)}</blockquote></li>`;
+      return `<li><a class="ask-source" href="${esc(href)}">
+        <span class="ask-source-title">${esc(chunk.title)}</span>
+        ${chunk.heading ? `<span class="ask-source-heading">${esc(chunk.heading)}</span>` : ""}
+        <span class="ask-source-snippet">${esc(chunk.snippet)}</span>
+      </a></li>`;
     })
     .join("");
 }
 
+const info = (text, cls = "") => `<p class="ask-info ${cls}">${text}</p>`;
+
 function setBusy(busy) {
   state.busy = busy;
   $(".ask-submit").disabled = busy;
-  $(".ask-switch").disabled = busy;
+  page.querySelectorAll(".ask-example").forEach((b) => (b.disabled = busy));
+  const sw = $(".ask-switch");
+  if (sw) sw.disabled = busy;
   if (!busy) {
     $(".ask-stop").hidden = true;
+    $(".ask-submit").hidden = false;
     $(".ask-answer").setAttribute("aria-busy", "false");
     $(".ask-input").focus();
   }
@@ -371,38 +438,47 @@ async function ask(question) {
   const answer = $(".ask-answer");
   answer.hidden = false;
   answer.setAttribute("aria-busy", "true");
-  answer.innerHTML = '<p class="ask-searching">Searching the blog…</p>';
+  answer.innerHTML = info("Searching the blog…");
   let top;
   try {
     const idx = await loadIndex();
     top = topChunks(scoreQuery(idx, question), idx.chunks, TOP_K);
   } catch (e) {
-    $(".ask-sources").hidden = true;
-    answer.innerHTML = `<p class="ask-error">Couldn't load the search index (${esc(e?.message ?? e)}). Reload the page to try again.</p>`;
+    $(".ask-sources-wrap").hidden = true;
+    answer.innerHTML = info(`Couldn't load the search index (${esc(e?.message ?? e)}). Reload the page to try again.`, "is-error");
     setBusy(false);
     return;
   }
   renderSources(top);
   if (!passesGate(top)) {
-    answer.innerHTML = `<p class="ask-notfound">I couldn't find this on the blog. These are the closest passages, but they probably don't answer it.</p>`;
+    answer.innerHTML = info("I couldn't find this on the blog. These are the closest passages, but they probably don't answer it.");
     setBusy(false);
     return;
   }
   if (!state.ready) {
-    answer.innerHTML = state.loading
-      ? `<p class="ask-note">These are the most relevant passages. The model is still loading: ask again once it's ready for a summary.</p>`
-      : `<p class="ask-note">These are the most relevant passages. Load a model above to get a generated summary.</p>`;
+    answer.innerHTML = info(
+      state.loading
+        ? "The model is still loading: ask again once it's ready for a summary."
+        : "Load a model above to get a generated summary of these passages."
+    );
     setBusy(false);
     return;
   }
   answer.innerHTML = `
-    <p class="ask-label">Summary, generated by ${esc(state.model.name)} in your browser. It may be wrong; check the passages below.</p>
-    <p class="ask-summary"><span class="ask-skeleton"></span><span class="ask-skeleton"></span></p>
-    <p class="ask-meta">Reading ${top.length} passages…</p>`;
+    <div class="ask-summary-card">
+      <div class="ask-summary-head">
+        <span class="ask-badge">AI summary</span>
+        <span class="ask-summary-model">${esc(state.model.name)}</span>
+        <span class="ask-summary-warn">may be wrong · check the passages below</span>
+      </div>
+      <p class="ask-summary"><span class="ask-skeleton"></span><span class="ask-skeleton"></span></p>
+      <p class="ask-meta">Reading ${top.length} passages…</p>
+    </div>`;
   $(".ask-sources").classList.add("is-reading");
   state.currentId = state.nextId++;
   state.partial = "";
   state.worker.postMessage({ type: "generate", id: state.currentId, messages: buildMessages(question, top.map((t) => t.chunk)) });
+  $(".ask-submit").hidden = true;
   $(".ask-stop").hidden = false;
 }
 
@@ -435,7 +511,7 @@ function onGenerateError(message) {
  * WebGPU: ask the worker to interrupt. WASM: the worker is stuck inside
  * synchronous inference and never sees the stop message (measured: the
  * answer ran to its end ~40 s after Stop), so terminate it, keep the partial
- * text, and reload the same model (from cache when the browser kept it).
+ * text, and reload the same model only when that costs no download.
  */
 async function stop() {
   if (state.backend !== "wasm") {
@@ -451,15 +527,19 @@ async function stop() {
   announce("Stopped");
   setBusy(false);
   const model = state.model;
-  // Only reload on our own when it costs no download.
   if (await isCached(model)) {
     $(".ask-meta").textContent = "Stopped. Reloading the model…";
     startWorker(model, state.backend, { skipBench: true });
   } else {
-    $(".ask-switch").hidden = true;
-    $(".ask-meta").innerHTML = `Stopped. <button type="button" class="ask-reload">Reload model (${mb(totalBytes(model))} download)</button>`;
+    $(".ask-strip").dataset.state = "off";
+    $(".ask-switch")?.remove();
+    $(".ask-strip .ask-strip-title").textContent = `Summaries off · ${model.name} stopped`;
+    $(".ask-strip .ask-strip-row").insertAdjacentHTML("beforeend", '<button type="button" class="ask-choose ask-btn ask-btn-link">Switch</button>');
+    $(".ask-meta").innerHTML = `Stopped. <button type="button" class="ask-reload ask-btn ask-btn-secondary ask-btn-small">Reload model (${mb(totalBytes(model))} download)</button>`;
   }
 }
+
+// ---------------------------------------------------------------- storage
 
 async function deleteModels() {
   const btn = $(".ask-delete");
@@ -481,14 +561,18 @@ async function deleteModels() {
   await markCached();
 }
 
+// ---------------------------------------------------------------- main
+
 async function main() {
   if (!root || !WORKER_URL) return;
   state.cap = await probe();
   state.backend = state.cap.device;
-  renderIdle();
-  root.addEventListener("click", (e) => {
-    const t = e.target;
-    if (t.disabled) return;
+  renderShell();
+  const manage = $(".ask-manage");
+  if (manage) manage.hidden = false;
+  page.addEventListener("click", (e) => {
+    const t = e.target.closest("button");
+    if (!t || t.disabled || !page.contains(t)) return;
     if (t.matches(".ask-load")) startWorker(modelById(t.dataset.model), state.backend);
     else if (t.matches(".ask-retry")) startWorker(state.model, state.backend);
     else if (t.matches(".ask-reload")) startWorker(state.model, state.backend, { skipBench: !!state.bench });
@@ -496,14 +580,12 @@ async function main() {
       state.backend = "wasm";
       startWorker(state.model, "wasm");
     } else if (t.matches(".ask-stop")) stop();
-    else if (t.matches(".ask-switch, .ask-choose")) {
-      state.worker?.terminate();
-      state.worker = null;
-      state.ready = false;
-      state.loading = false;
-      renderIdle();
-      root.querySelector(`.ask-load[data-model="${MODELS.find((m) => m.role === "default").id}"]`)?.focus();
-    } else if (t.matches(".ask-delete")) deleteModels();
+    else if (t.matches(".ask-switch, .ask-choose")) backToIdle();
+    else if (t.matches(".ask-delete")) deleteModels();
+    else if (t.matches(".ask-example")) {
+      $(".ask-input").value = t.dataset.q;
+      ask(t.dataset.q);
+    }
   });
   root.addEventListener("submit", (e) => {
     e.preventDefault();

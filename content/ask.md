@@ -3,14 +3,12 @@ title: "Ask my blog"
 layout: ask
 description: "Ask a question about the blog; a small language model running in your browser answers from the posts themselves."
 robotsNoIndex: true
+# Placeholder until Part 3: the post with the eval write-up.
+measuredUrl: "/"
 build:
   list: never
 sitemap:
   disable: true
 ---
 
-Ask a question about anything I've written here. My search finds the most relevant passages, and a small language model running entirely in your browser summarises them in a sentence or two. Nothing you type leaves your machine.
-
-Small models get things wrong, and I [measured how often](/). The passages it read are always shown underneath; trust those over the summary.
-
-Loading a model downloads it once from Hugging Face, and the code that runs it from jsDelivr (your browser keeps both for next time, storage permitting).
+Ask anything about what I've written. Search finds the passages; a small language model running in your browser can summarise them.
