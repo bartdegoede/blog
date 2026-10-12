@@ -634,11 +634,13 @@ input[type="search"] {
 
 .ask-loading { padding: 0 0 8px; }
 .ask-storage-note { font-size: 0.8rem; color: var(--secondary); margin: 0 0 8px; }
-.ask-progress { height: 8px; border-radius: 4px; background: var(--border); overflow: hidden; }
-.ask-progress-fill { height: 100%; width: 0; background: var(--primary); transition: width 0.2s linear; }
 .ask-progress-label { font-variant-numeric: tabular-nums; font-size: 0.85rem; color: var(--secondary); margin: 8px 0; }
-.ask-map { display: grid; grid-template-columns: repeat(auto-fill, minmax(8px, 1fr)); gap: 3px; margin: 8px 0; }
-.ask-tile { aspect-ratio: 1; border-radius: 2px; background: var(--border); transition: background 0.3s; }
+.ask-cite { display: inline-block; min-width: 1.4em; margin: 0 1px; padding: 0 4px; font-size: 0.65em; line-height: 1.5; vertical-align: super; text-align: center; border-radius: 999px; background: var(--border); color: var(--primary); font-weight: 600; text-decoration: none; }
+.ask-cite:hover { background: var(--tertiary); }
+.ask-src-anchor { position: absolute; top: 0; scroll-margin-top: 80px; }
+/* Waffle-chart download progress: one fixed 10px block per ~4 MB (tileCount). */
+.ask-map { display: flex; flex-wrap: wrap; gap: 3px; margin: 8px 0 0; }
+.ask-tile { width: 10px; height: 10px; border-radius: 2px; background: var(--border); transition: background 0.3s; }
 .ask-tile.is-filled { background: var(--primary); }
 .ask-error { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 8px 0; font-size: 0.85rem; }
 .ask-error-text { color: var(--ask-err); }
@@ -705,8 +707,7 @@ input[type="search"] {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ask-map { display: none; }
   .ask-skeleton, .ask-cursor, .ask-dot, .ask-sources.is-reading .ask-source { animation: none; }
-  .ask-progress-fill, .ask-tile, .ask-source, .ask-source::after { transition: none; }
+  .ask-tile, .ask-source, .ask-source::after { transition: none; }
   .ask-source:hover { transform: none; }
 }

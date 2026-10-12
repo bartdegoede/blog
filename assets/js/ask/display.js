@@ -53,3 +53,16 @@ export function cleanSnippet(snippet, heading) {
   if (heading) text = text.replace(new RegExp(`^\\s*${escapeRe(heading.trim())}(?:\\s+|$)`), "");
   return text.replace(/\s+/g, " ").trim();
 }
+
+/**
+ * Turn "[n]" passage markers into links to the matching source card.
+ * Expects already-escaped HTML; markers outside 1..count are left as text.
+ * @param {string} escapedHtml
+ * @param {number} count - number of passages the model was given
+ */
+export function linkCitations(escapedHtml, count) {
+  return escapedHtml.replace(/\[(\d+)\]/g, (whole, digits) => {
+    const n = Number(digits);
+    return n >= 1 && n <= count ? `<a class="ask-cite" href="#ask-src-${n}">${n}</a>` : whole;
+  });
+}

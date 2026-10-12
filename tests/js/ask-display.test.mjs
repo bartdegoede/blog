@@ -1,7 +1,7 @@
 // tests/js/ask-display.test.mjs
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { stripLeadingMarkers, clampSentences, formatAnswer, cleanSnippet } from "../../assets/js/ask/display.js";
+import { stripLeadingMarkers, clampSentences, formatAnswer, cleanSnippet, linkCitations } from "../../assets/js/ask/display.js";
 
 test("strips leading passage markers only", () => {
   assert.equal(stripLeadingMarkers("[3] Bloom filters use bits."), "Bloom filters use bits.");
@@ -56,4 +56,22 @@ test("cleanSnippet strips a heading the index prepended, once", () => {
 test("cleanSnippet with no heading only removes footnotes and collapses whitespace", () => {
   assert.equal(cleanSnippet("Hugo[^hugo]  framework\n\nworks", null), "Hugo framework works");
   assert.equal(cleanSnippet("Closing thoughts There", null), "Closing thoughts There");
+});
+
+test("linkCitations links in-range [n] markers to source anchors", () => {
+  assert.equal(
+    linkCitations("Bloom filters use bits [1] and hashes [2].", 4),
+    'Bloom filters use bits <a class="ask-cite" href="#ask-src-1">1</a> and hashes <a class="ask-cite" href="#ask-src-2">2</a>.'
+  );
+  assert.equal(linkCitations("See [1][3].", 3), 'See <a class="ask-cite" href="#ask-src-1">1</a><a class="ask-cite" href="#ask-src-3">3</a>.');
+});
+
+test("linkCitations leaves out-of-range and non-numeric brackets alone", () => {
+  assert.equal(linkCitations("Zero [0], five [5], word [a], empty [].", 4), "Zero [0], five [5], word [a], empty [].");
+  assert.equal(linkCitations("No markers here", 4), "No markers here");
+  assert.equal(linkCitations("x [1]", 0), "x [1]");
+});
+
+test("linkCitations works on already-escaped text", () => {
+  assert.equal(linkCitations("a &lt;b&gt; [2]", 2), 'a &lt;b&gt; <a class="ask-cite" href="#ask-src-2">2</a>');
 });

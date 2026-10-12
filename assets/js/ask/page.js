@@ -12,7 +12,7 @@ import { scoreQuery, topChunks } from "./retrieve.js";
 import { TOP_K, buildMessages, passesGate } from "./prompt.js";
 import { MODELS, DEFAULT_MODEL_ID, CACHE_NAME, fileUrl, totalBytes, modelById } from "./models.js";
 import { DownloadProgress, tileCount } from "./progress.js";
-import { cleanSnippet } from "./display.js";
+import { cleanSnippet, linkCitations } from "./display.js";
 
 const WASM_DTYPE = "q4f16"; // confirmed in Part 2 Task 1
 const root = document.getElementById("ask-app");
@@ -39,6 +39,7 @@ const state = {
   nextId: 1,
   currentId: null,
   partial: "", // streamed text so far, for a hard stop
+  passages: 0, // passages in the current prompt, for [n] citation links
   bench: null, // last benchmark {ttft_ms, tok_s} for state.model
   afterStop: false, // the current load is the reload after a WASM Stop
 };
@@ -194,11 +195,8 @@ function renderStripLoading(model) {
     </div>
     <div class="ask-loading">
       <p class="ask-storage-note" hidden></p>
-      <div class="ask-progress" role="progressbar" aria-label="Model download" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-        <div class="ask-progress-fill"></div>
-      </div>
+      <div class="ask-map" role="progressbar" aria-label="Model download" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">${'<span class="ask-tile"></span>'.repeat(tiles)}</div>
       <p class="ask-progress-label">Starting download…</p>
-      <div class="ask-map" aria-hidden="true">${'<span class="ask-tile"></span>'.repeat(tiles)}</div>
       <p class="ask-error" hidden></p>
     </div>`;
 }
@@ -231,9 +229,8 @@ function backToIdle() {
 function paintProgress() {
   const p = state.progress;
   const pct = Math.floor(p.fraction * 100);
-  const bar = $(".ask-progress");
+  const bar = $(".ask-map");
   if (!bar) return;
-  $(".ask-progress-fill").style.width = `${pct}%`;
   const tiles = page.querySelectorAll(".ask-tile");
   const filled = Math.floor(p.fraction * tiles.length);
   tiles.forEach((t, i) => t.classList.toggle("is-filled", i < filled));
@@ -406,11 +403,12 @@ function onReady(msg) {
 /** Group top chunks by post, in the order of each post's best chunk. */
 function groupByPost(top) {
   const posts = new Map();
-  for (const { chunk } of top) {
+  top.forEach(({ chunk }, i) => {
     const key = chunk.post ?? chunk.href;
-    if (!posts.has(key)) posts.set(key, { title: chunk.title, href: chunk.href, chunks: [] });
+    if (!posts.has(key)) posts.set(key, { title: chunk.title, href: chunk.href, chunks: [], passages: [] });
     posts.get(key).chunks.push(chunk);
-  }
+    posts.get(key).passages.push(i + 1); // passage n in the prompt
+  });
   return [...posts.values()];
 }
 
@@ -428,13 +426,17 @@ function renderSources(top) {
   $(".ask-sources-wrap").hidden = false;
   $(".ask-sources").innerHTML = groupByPost(top)
     .map(
-      (post) => `<li class="ask-source${post.chunks.length > 1 ? " is-multi" : ""}">
+      (post, k) => `<li class="ask-source${post.chunks.length > 1 ? " is-multi" : ""}" id="ask-card-${k + 1}">
+        ${post.passages.map((n) => `<span class="ask-src-anchor" id="ask-src-${n}"></span>`).join("")}
         <a class="ask-source-title" href="${esc(post.href)}">${esc(post.title)}</a>
         <ul class="ask-sections">${post.chunks.map((c) => sectionItem(c, post.href)).join("")}</ul>
       </li>`
     )
     .join("");
 }
+
+/** Escape first, then turn [n] markers into links to the source cards. */
+const summaryHtml = (text) => linkCitations(esc(text), state.passages);
 
 const info = (text, cls = "") => `<p class="ask-info ${cls}">${text}</p>`;
 
@@ -496,6 +498,7 @@ async function ask(question) {
     </div>`;
   $(".ask-sources").classList.add("is-reading");
   state.currentId = state.nextId++;
+  state.passages = top.length;
   state.partial = "";
   state.worker.postMessage({ type: "generate", id: state.currentId, messages: buildMessages(question, top.map((t) => t.chunk)) });
   $(".ask-submit").hidden = true;
@@ -506,14 +509,14 @@ function onToken({ id, text, tok_s }) {
   if (id !== state.currentId) return;
   state.partial = text;
   $(".ask-sources").classList.remove("is-reading");
-  $(".ask-summary").innerHTML = `${esc(text)}<span class="ask-cursor" aria-hidden="true"></span>`;
+  $(".ask-summary").innerHTML = `${summaryHtml(text)}<span class="ask-cursor" aria-hidden="true"></span>`;
   if (tok_s) $(".ask-meta").textContent = `${tok_s.toFixed(1)} tok/s · ${backendLabel()}`;
 }
 
 function onDone({ id, text, tokens, ttft_ms, tok_s }) {
   if (id !== state.currentId) return;
   $(".ask-sources").classList.remove("is-reading");
-  $(".ask-summary").textContent = text || "(no answer)";
+  $(".ask-summary").innerHTML = text ? summaryHtml(text) : "(no answer)";
   const speed = tok_s ? ` · ${tok_s.toFixed(1)} tok/s` : "";
   $(".ask-meta").textContent = `${tokens} tokens · first token ${ttft_ms} ms${speed} · ${backendLabel()}`;
   setBusy(false);
@@ -543,16 +546,19 @@ async function stop() {
   state.ready = false;
   state.currentId = null;
   $(".ask-sources").classList.remove("is-reading");
-  $(".ask-summary").textContent = `${state.partial || ""} (stopped)`.trim();
+  $(".ask-summary").innerHTML = `${summaryHtml(state.partial || "")} (stopped)`.trim();
   announce("Stopped");
   setBusy(false);
   const model = state.model;
+  // Never let the strip claim "ready" while we check the cache.
+  const strip = $(".ask-strip");
+  strip.dataset.state = "stopped";
+  $(".ask-switch")?.remove();
+  strip.querySelector(".ask-strip-title").textContent = `Stopped · ${model.name}`;
   if (await isCached(model)) {
     $(".ask-meta").textContent = "Stopped. Reloading the model…";
     startWorker(model, state.backend, { skipBench: true });
   } else {
-    $(".ask-strip").dataset.state = "off";
-    $(".ask-switch")?.remove();
     $(".ask-strip .ask-strip-title").textContent = `Summaries off · ${model.name} stopped`;
     $(".ask-strip .ask-strip-row").insertAdjacentHTML("beforeend", '<button type="button" class="ask-choose ask-btn ask-btn-link">Switch</button>');
     $(".ask-meta").innerHTML = `Stopped. <button type="button" class="ask-reload ask-btn ask-btn-secondary ask-btn-small">Reload model (${mb(totalBytes(model))} download)</button>`;
