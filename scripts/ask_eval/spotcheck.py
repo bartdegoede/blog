@@ -118,6 +118,7 @@ def score(rd, from_md):
         raise click.ClickException(f"missing/invalid labels for n = {bad}")
     for r in rows:
         r["human_label"] = norm(r["human_label"])
+    jl.write_text("".join(json.dumps(r) + "\n" for r in rows))
     agree = [r for r in rows if r["human_label"] == r["judge_label"]]
     hk = [r for r in rows if r["arm"] == HAIKU]
     click.echo(f"Overall agreement: {len(agree)}/{len(rows)}")
