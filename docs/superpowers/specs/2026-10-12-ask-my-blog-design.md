@@ -178,7 +178,7 @@ If a runtime is too painful to set up, say so and describe it qualitatively.
 
 ## Post
 
-Working title: *"Asking my blog questions with a language model in your
+Working title: *"Running RAG with a (small) language model in the
 browser"* — follow-up to the semantic-search post.
 
 1. Hook: MicroLLM lab (credited) + "my search already finds the right
@@ -192,6 +192,21 @@ browser"* — follow-up to the semantic-search post.
 
 Afterwards: related-posts suggestions presented for confirmation (never
 auto-filled), and narration via `scripts/text_to_speech.py`.
+
+### Style
+
+Match the recent posts (e.g. `2026-07-11-narrating-my-blog-with-a-local-model.md`,
+`2026-07-10-semantic-search-in-your-browser.md`):
+
+- First person, conversational, a bit wry; opens by linking back to earlier
+  posts and the "why now".
+- **Em dashes sparingly**: the existing posts use about one per 1,500-3,000
+  words. Prefer commas, semicolons, colons, parentheses or a new sentence.
+- Inline links to tools, models and earlier posts; asides go in footnotes
+  (`[^name]`).
+- `<!-- more -->` after the intro; audio shortcode at the top once narrated.
+- Front matter per CLAUDE.md (title, date, slug, categories, keywords,
+  description, `related:` once confirmed).
 
 ## Testing
 
