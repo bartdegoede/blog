@@ -732,7 +732,30 @@ def test_hosted_cost_per_1k():
 def test_always_on_gpu_cost_per_1k():
     # $0.50/h, 730 h/month, 1,000 questions/month -> $365 per 1k questions
     assert cost_per_1k_always_on_gpu(0.50, 1000) == pytest.approx(365.0)
+
+
+def test_threshold_sweep_counts_pass_and_reject():
+    pos = [0.40, 0.55, 0.70]
+    neg = [0.25, 0.45, 0.60]
+    rows = threshold_sweep(pos, neg, [0.30, 0.50, 0.65])
+    assert rows == [
+        {"threshold": 0.30, "neg_passing": 2, "pos_rejected": 0},
+        {"threshold": 0.50, "neg_passing": 1, "pos_rejected": 1},
+        {"threshold": 0.65, "neg_passing": 0, "pos_rejected": 2},
+    ]
+
+
+def test_arm_summary_ignores_judge_refusals_in_denominator():
+    judged = [
+        {"family": "exact", "label": "faithful"},
+        {"family": "exact", "label": "judge-refused"},
+    ]
+    assert arm_summary(judged)["faithful"] == pytest.approx(1.0)
 ```
+
+Add `threshold_sweep` to the import list at the top of the test file.
+
+**Why the sweep (added after Task 6):** retrieval scores showed near-miss negatives (0.54-0.63) overlap answerable questions (min 0.374), so a single `choose_threshold` value is not the whole story. The report shows the trade-off table and the human picks the shipped threshold.
 
 - [ ] **Step 2: Run to verify they fail**
 
@@ -765,7 +788,20 @@ def choose_threshold(pos: list[float], neg: list[float], max_neg_pass: float) ->
     return ranked[allowed] + 1e-6
 
 
+def threshold_sweep(pos: list[float], neg: list[float], thresholds: list[float]) -> list[dict]:
+    """For each candidate gate threshold: negatives let through, answerable rejected."""
+    return [
+        {
+            "threshold": t,
+            "neg_passing": sum(s >= t for s in neg),
+            "pos_rejected": sum(s < t for s in pos),
+        }
+        for t in thresholds
+    ]
+
+
 def arm_summary(judged: list[dict]) -> dict:
+    judged = [j for j in judged if j["label"] != "judge-refused"]
     ans = [j for j in judged if j["family"] in ANSWERABLE]
     neg = [j for j in judged if j["family"] == "negative"]
 
@@ -1158,6 +1194,7 @@ from ask_eval.report_lib import (
     choose_threshold,
     cost_per_1k_always_on_gpu,
     cost_per_1k_hosted,
+    threshold_sweep,
 )
 
 HERE = Path(__file__).parent
@@ -1213,6 +1250,11 @@ def main(gpu_hourly_usd, questions_per_month, max_neg_pass, bar, max_mb):
             f"| {arm} | {c['tier']} | {c['download_mb']} | {s['faithful']:.0%} | {s['unsupported']:.0%} | "
             f"{s['non_answer']:.0%} | {s['negative_unsupported_ungated']:.0%} | {ttft} | {toks} | ${cost:.2f} |"
         )
+    sweep = threshold_sweep(pos, neg, [round(0.30 + 0.05 * i, 2) for i in range(8)])
+    lines += ["", "## Gate threshold sweep", "",
+              "| threshold | negatives passing | answerable rejected |", "|---|---|---|"]
+    lines += [f"| {r['threshold']:.2f} | {r['neg_passing']}/{len(neg)} | {r['pos_rejected']}/{len(pos)} |"
+              for r in sweep]
     picks = choose_models(table, bar=bar, max_mb=max_mb)
     lines += ["", f"Shipped models: small = {picks['small']}, better = {picks['better']}",
               f"(bar {bar:.0%} faithful, max {max_mb} MB; hosted latency is end-to-end incl. network)", ""]
