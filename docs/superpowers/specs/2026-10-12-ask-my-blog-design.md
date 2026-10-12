@@ -47,6 +47,42 @@ that worth it?**
 - **No reuse of MicroLLM lab code**: its repo states no license; we build on
   transformers.js directly and credit it as inspiration.
 
+## Shipped (Part 2): where the page differs from the design below
+
+The sections below are the original design. Where they disagree with this list,
+this list (and the code) wins.
+
+- **Sources-only first.** The question bar works from page load without a model:
+  it shows the passages, and a summary appears once a model is loaded. The model
+  status strip (Summaries off / loading / on) sits under the question bar.
+- **Route:** `content/ask.md` with `layout: ask` → `layouts/_default/ask.html`
+  (not `layouts/ask/single.html`). `noindex`, unlisted, excluded from the sitemap;
+  linked from the homepage search box (the Part 3 post will link to it too).
+- **Backend:** WebGPU only when the adapter has `shader-f16`; otherwise WASM,
+  labelled "CPU · slow" with a "~30 to 60 s per answer" note. WASM is
+  single-threaded (no COOP/COEP on GitHub Pages). Gemma 3 270M and LFM2.5-350M
+  are `webgpuOnly` (their q4f16 uses an op with no WASM kernel) and are disabled
+  on CPU. "Try slower mode (CPU)" exists only as a retry after a WebGPU load error.
+- **Benchmark on load:** 64 tokens on WebGPU, 16 on WASM; results show in the
+  status strip (tok/s) and its tooltip (first token), not a separate panel.
+- **Two-sentence stop:** the worker clamps and interrupts generation at
+  `MAX_SENTENCES` (2); the page shows only those sentences.
+- **Citations:** leading `[n]` markers are stripped; inline `[n]` become links to
+  the source card holding passage n (the "out of scope" note below is superseded).
+- **Sources:** one card per post, with each matched section as a sub-item; snippets
+  are cleaned of footnote refs and the index's repeated section heading.
+- **Download progress:** one tile per ~4 MB (`tileCount`) plus a text label
+  (`212 / 579 MB · 37% · ~40 s left`); no separate bar, no layer-count label. Under
+  `prefers-reduced-motion` the tiles stay, only animation/transitions are dropped.
+- **Stop:** on WebGPU a message interrupts generation; on WASM the worker can't
+  see that message mid-generation, so Stop terminates it and reloads from cache,
+  or offers "Reload model (N MB download)" when the model isn't cached.
+- **Storage:** the page asks for persistent storage (best effort), warns before a
+  download when quota is short, and says afterwards if the model wasn't kept.
+- **Accepted trust boundary:** transformers.js is pinned (`@4.3.1/+esm`) but loaded
+  with dynamic `import()` from jsDelivr, which can't carry SRI; jsDelivr also serves
+  the ONNX Runtime WASM. The page's small print discloses jsDelivr and Hugging Face.
+
 ## Out of scope (v1)
 
 - Using the model from the homepage search box (query expansion, result

@@ -182,7 +182,7 @@ so WASM runs single-threaded.
 | model | backend | first download → ready | benchmark tok/s | real answer: first token / tok/s |
 |---|---|---|---|---|
 | Qwen3-0.6B | WebGPU | 16.2 s load (spike) | 19.8 | 1.7 s (short prompt, spike) |
-| Qwen3-0.6B | WASM | ~29-36 s | 1.2 | ~16 s / 1.1 (≈60 s per answer) |
+| Qwen3-0.6B | WASM | ~29-36 s | 1.2 | ~16 s / 1.1 (30-60 s per answer) |
 | SmolLM2-360M | WASM | ~18 s | 1.5-1.7 | ~9 s / 1.5 |
 
 - q4f16 works on WASM for Qwen3 and SmolLM2, but **not** for Gemma 3 270M or
@@ -190,4 +190,5 @@ so WASM runs single-threaded.
 - The model file is kept in Cache Storage in a normal Chrome profile; non-persistent
   or low-quota contexts don't keep it (the page says so).
 - Stop on WASM: the worker never sees a stop message mid-generation, so Stop
-  terminates the worker (≈30 ms) and reloads from cache (2-3.5 s).
+  terminates the worker (≈30 ms); if the model is cached it reloads (2-3.5 s),
+  otherwise it offers a "Reload model (N MB download)" button instead of downloading silently.

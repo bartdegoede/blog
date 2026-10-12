@@ -112,7 +112,7 @@ function renderShell() {
       <h2 class="ask-sources-title">From the blog</h2>
       <ol class="ask-sources"></ol>
     </section>
-    <p class="ask-announce visually-hidden" aria-live="polite"></p>`;
+    <p class="ask-announce ask-visually-hidden" aria-live="polite"></p>`;
   renderStripIdle();
 }
 
@@ -210,7 +210,7 @@ function renderStripReady(device, bench) {
     <div class="ask-strip-row">
       <span class="ask-dot" aria-hidden="true"></span>
       <span class="ask-strip-title ask-machine" title="${esc(ttft)}">Summaries on · ${esc(state.model.name)} · ${device === "webgpu" ? "GPU" : "CPU"}${speed}</span>
-      <button type="button" class="ask-switch ask-btn ask-btn-link">Switch</button>
+      <button type="button" class="ask-switch ask-btn ask-btn-link"${state.busy ? " disabled" : ""}>Switch</button>
     </div>`;
 }
 
@@ -556,12 +556,14 @@ async function stop() {
   $(".ask-switch")?.remove();
   strip.querySelector(".ask-strip-title").textContent = `Stopped · ${model.name}`;
   if (await isCached(model)) {
-    $(".ask-meta").textContent = "Stopped. Reloading the model…";
+    const meta = $(".ask-meta");
+    if (meta) meta.textContent = "Stopped. Reloading the model…";
     startWorker(model, state.backend, { skipBench: true });
   } else {
     $(".ask-strip .ask-strip-title").textContent = `Summaries off · ${model.name} stopped`;
     $(".ask-strip .ask-strip-row").insertAdjacentHTML("beforeend", '<button type="button" class="ask-choose ask-btn ask-btn-link">Switch</button>');
-    $(".ask-meta").innerHTML = `Stopped. <button type="button" class="ask-reload ask-btn ask-btn-secondary ask-btn-small">Reload model (${mb(totalBytes(model))} download)</button>`;
+    const meta = $(".ask-meta");
+    if (meta) meta.innerHTML = `Stopped. <button type="button" class="ask-reload ask-btn ask-btn-secondary ask-btn-small">Reload model (${mb(totalBytes(model))} download)</button>`;
   }
 }
 

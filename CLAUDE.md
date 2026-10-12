@@ -106,7 +106,8 @@ so and leave it empty. The script only prints — it never edits front matter.
 `content/ask.md` + `layouts/_default/ask.html` mount an "ask my blog" page:
 semantic search retrieves the top 4 passages, and a small LLM (transformers.js,
 WebGPU or single-threaded WASM) streams a ≤2-sentence summary in a Web Worker.
-The page is `noindex`, unlisted and out of the sitemap; the post links to it.
+The page is `noindex`, unlisted and out of the sitemap; it's linked from the
+homepage search box (the Part 3 post will link to it too).
 
 - `assets/js/ask/{retrieve,prompt,display,progress,models}.js` — pure, unit-tested
   (`tests/js/ask-*.test.mjs`); every rule and number lives here (gate 0.45, two
