@@ -864,7 +864,9 @@ function renderIdle(cap) {
   const backend =
     cap.device === "webgpu"
       ? "Your browser supports WebGPU: the model runs on your GPU."
-      : "No WebGPU with 16-bit support here, so the model runs on your CPU (slower mode).";
+      : "No WebGPU with 16-bit support here, so the model runs on your CPU (slower mode): expect roughly 30–60 seconds per answer.";
+  // Measured in Task 1: WebGPU 19.8 tok/s; single-threaded WASM 1.2 tok/s
+  // (GitHub Pages can't send COOP/COEP, so no WASM threads).
   root.innerHTML = `
     <p class="ask-capability">${esc(backend)}${cap.memoryGb ? ` Device memory: ~${cap.memoryGb} GB.` : ""}</p>
     ${def.map(modelCard).join("")}
