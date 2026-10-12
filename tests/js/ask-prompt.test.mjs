@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   SYSTEM_PROMPT, TOP_K, MAX_NEW_TOKENS, MAX_PASSAGE_CHARS, REPETITION_PENALTY,
-  buildMessages, foldSystem, GATE_THRESHOLD, MAX_SENTENCES, passesGate,
+  buildMessages, foldSystem, GATE_THRESHOLD, MAX_SENTENCES, passesGate, systemPrompt,
 } from "../../assets/js/ask/prompt.js";
 
 const passages = [
@@ -79,4 +79,39 @@ test("passesGate needs at least one passage scoring >= threshold", () => {
   assert.equal(passesGate([{ score: 0.449 }]), false);
   assert.equal(passesGate([{ score: 0.45 }]), true);
   assert.equal(passesGate([{ score: 0.7 }, { score: 0.1 }]), true);
+});
+
+// The string the page shipped with before systemPrompt(n) existed.
+const SHIPPED_SYSTEM_PROMPT =
+  "You answer questions about a personal technical blog. " +
+  "Use only the numbered passages provided. " +
+  "Answer in at most 2 sentences. " +
+  "If the passages do not answer the question, say that the blog does not seem to cover it.";
+
+test("SYSTEM_PROMPT is byte-identical to the shipped prompt and equals systemPrompt(MAX_SENTENCES)", () => {
+  assert.equal(SYSTEM_PROMPT, SHIPPED_SYSTEM_PROMPT);
+  assert.equal(systemPrompt(MAX_SENTENCES), SHIPPED_SYSTEM_PROMPT);
+});
+
+test("systemPrompt(n) substitutes the sentence limit", () => {
+  assert.equal(systemPrompt(4), SHIPPED_SYSTEM_PROMPT.replace("at most 2 sentences", "at most 4 sentences"));
+});
+
+test("buildMessages default output is unchanged by the maxSentences option", () => {
+  const plain = buildMessages("q?", passages);
+  assert.deepEqual(buildMessages("q?", passages, {}), plain);
+  assert.deepEqual(buildMessages("q?", passages, { maxSentences: MAX_SENTENCES }), plain);
+  assert.equal(plain[0].content, SHIPPED_SYSTEM_PROMPT);
+});
+
+test("buildMessages with maxSentences: 4 asks for at most 4 sentences and keeps the same user turn", () => {
+  const msgs = buildMessages("q?", passages, { maxSentences: 4 });
+  assert.match(msgs[0].content, /at most 4 sentences/);
+  assert.doesNotMatch(msgs[0].content, /at most 2 sentences/);
+  assert.deepEqual(msgs[1], buildMessages("q?", passages)[1]);
+});
+
+test("buildMessages passage budget does not depend on maxSentences", () => {
+  const many = Array.from({ length: 20 }, (_, i) => ({ title: `P${i}`, heading: null, snippet: "y".repeat(600) }));
+  assert.deepEqual(buildMessages("q?", many, { maxSentences: 6 })[1], buildMessages("q?", many)[1]);
 });

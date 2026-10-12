@@ -30,11 +30,17 @@ export const MAX_PASSAGE_CHARS = 4800;
 // Never add a passage with less body room than this (avoids mid-word fragments).
 export const MIN_PASSAGE_CHARS = 100;
 
-export const SYSTEM_PROMPT =
-  "You answer questions about a personal technical blog. " +
-  "Use only the numbered passages provided. " +
-  "Answer in at most 2 sentences. " +
-  "If the passages do not answer the question, say that the blog does not seem to cover it.";
+/** The system prompt asking for at most `n` sentences (the eval varies n; the page uses MAX_SENTENCES). */
+export function systemPrompt(n) {
+  return (
+    "You answer questions about a personal technical blog. " +
+    "Use only the numbered passages provided. " +
+    `Answer in at most ${n} sentences. ` +
+    "If the passages do not answer the question, say that the blog does not seem to cover it."
+  );
+}
+
+export const SYSTEM_PROMPT = systemPrompt(MAX_SENTENCES);
 
 function label(p, i) {
   return `[${i + 1}] ${p.title}${p.heading ? ` — ${p.heading}` : ""}`;
@@ -43,9 +49,10 @@ function label(p, i) {
 /**
  * @param {string} question
  * @param {Array<{title: string, heading: string|null, snippet: string}>} passages - best first
+ * @param {{maxSentences?: number}} [opts] - sentence limit in the system prompt (eval only)
  * @returns {Array<{role: "system"|"user", content: string}>}
  */
-export function buildMessages(question, passages) {
+export function buildMessages(question, passages, { maxSentences = MAX_SENTENCES } = {}) {
   const parts = [];
   let used = 0;
   for (let i = 0; i < passages.length; i++) {
@@ -59,7 +66,7 @@ export function buildMessages(question, passages) {
   }
   const user = `Passages:\n\n${parts.join("\n\n")}\n\nQuestion: ${question}`;
   return [
-    { role: "system", content: SYSTEM_PROMPT },
+    { role: "system", content: systemPrompt(maxSentences) },
     { role: "user", content: user },
   ];
 }
