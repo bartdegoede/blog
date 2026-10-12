@@ -17,6 +17,8 @@ dependencies = [
     "click",
     "pyyaml",
     "tqdm",
+    "anthropic>=1.13.0",
+    "pydantic>=2.13.4",
 ]
 
 [dependency-groups]
