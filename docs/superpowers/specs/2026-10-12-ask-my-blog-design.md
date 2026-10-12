@@ -88,14 +88,21 @@ Failure modes:
 
 1. **Retrieve**: query through `assets/js/semantic/` (unchanged); take the top
    4 chunks. Render source cards.
-2. **Relevance gate**: if the best chunk's score is below a threshold (tuned in
-   the eval), do **not** call the model. Show "I couldn't find this on the
-   blog" plus the nearest results.
-3. **Prompt**: the model's own chat template. System prompt: answer in at most
-   2 sentences, only from the passages, say so if they don't answer the
-   question. Passages trimmed to a ~1,200-token budget.
-4. **Generate**: greedy decoding (temperature 0), max 120 new tokens, streamed
-   via transformers.js `TextStreamer`. A "Stop" button aborts.
+2. **Relevance gate**: if the best chunk's score is **below 0.45** (chosen in
+   the eval; see results doc §3), or retrieval returns no passages, do **not**
+   call the model. Show "I couldn't find this on the blog" plus the nearest
+   results. The gate catches clearly off-topic questions only; near-misses
+   still reach the model.
+3. **Prompt**: `buildMessages` from `assets/js/ask/prompt.js` (the model's own
+   chat template; Qwen3 with `enable_thinking: false`). System prompt: answer in
+   at most 2 sentences, only from the passages, say so if they don't answer the
+   question. Passages trimmed to `MAX_PASSAGE_CHARS` (4,800).
+4. **Generate**: greedy decoding (`do_sample: false`), `MAX_NEW_TOKENS` (120),
+   `repetition_penalty: REPETITION_PENALTY` (1.15), streamed via transformers.js
+   `TextStreamer`. A "Stop" button aborts. Constants come from `prompt.js`; never
+   duplicate them.
+5. **Post-process for display**: strip a leading passage marker (`[1]`) and
+   consider showing only the first two sentences (results doc §6).
 
 The model runs in a **Web Worker**; it posts progress, tokens and benchmark
 results to the page.
@@ -125,7 +132,8 @@ Bundled with `js.Build` as an ES module, following the pattern in
 - Determinate bar with text: `212 / 579 MB · 37% · ~40 s left` plus current
   throughput. ETA from a smoothed rate over the last few seconds.
 - The overall total is known from the first byte: each offered model ships with
-  its pinned file list and byte sizes (measured by the eval's feasibility probe),
+  its pinned file list and byte sizes (`revision`, `files`, `total_bytes` in
+  `scripts/ask_eval/candidates.json`),
   so the bar does not jump as transformers.js discovers files one by one.
   Per-file `progress` events from the `progress_callback` feed the loaded count.
 - Cached model: bar fills near-instantly, labelled "Loading from cache".
@@ -138,6 +146,10 @@ All animations respect `prefers-reduced-motion` (the model map is hidden; the
 progress bar and static text remain).
 
 ## Eval
+
+> **Status: done.** This section is the eval as designed. Where the outcome
+> overrode it (shipped models, gate threshold, Qwen tiers), the Decisions
+> section above and `2026-10-12-ask-my-blog-results.md` are authoritative.
 
 Goal: pick the two shipped models, tune the relevance threshold, and produce
 the cost/quality curve for the post.
@@ -156,7 +168,7 @@ the cost/quality curve for the post.
 
 | Tier | Arms | Measured cost |
 |---|---|---|
-| In-browser (≤ ~350 MB) | SmolLM2-135M-Instruct, SmolLM2-360M-Instruct, Gemma 3 270M-it, LFM2.5-350M, Qwen3-0.6B, Qwen2.5-0.5B-Instruct | $0; download size |
+| In-browser (≤ ~350 MB) | SmolLM2-135M-Instruct, SmolLM2-360M-Instruct, Gemma 3 270M-it, LFM2.5-350M (Qwen3-0.6B and Qwen2.5-0.5B turned out over budget: Qwen3 was kept as a "midsize" reference and later chosen as default; Qwen2.5 was not run) | $0; download size |
 | Large local / rented GPU | Gemma 4 E2B-it (~3 GB q4f16) | $0 in-browser; USD/1,000 questions for a realistic small cloud GPU at this blog's traffic |
 | Hosted inference | Claude Haiku 5.5 | USD/1,000 questions from measured token usage |
 
@@ -187,11 +199,13 @@ judge uses a different Claude model than the Haiku arm.
 
 ### Outputs / decisions
 
-1. **Relevance threshold**: chosen to block nearly all near-miss negatives
-   while rejecting as few answerable questions as possible; both rates
-   reported.
-2. **Shipped models**: "Small" = smallest arm with ≥ ~75% faithful;
-   "Better" = most faithful arm ≤ ~350 MB.
+1. **Relevance threshold**: ~~chosen to block nearly all near-miss
+   negatives~~. Superseded: near-miss scores overlap answerable ones, so the
+   eval reports a sweep and the author chose **0.45** (blocks off-topic only;
+   9/15 negatives pass, 2/30 answerable rejected).
+2. **Shipped models**: ~~"Small" = smallest arm with ≥ ~75% faithful;
+   "Better" = most faithful arm ≤ ~350 MB~~. Superseded: no ≤350 MB arm
+   exceeded 3/30; see Decisions (Qwen3-0.6B default + three demonstrators).
 3. **Cost/quality table** across all tiers: % faithful, % unsupported,
    latency, USD per 1,000 questions, reader download size.
 

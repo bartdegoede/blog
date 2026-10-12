@@ -168,3 +168,7 @@ download size vs. faithfulness, and the knee is somewhere between 0.6B and 2B.
 - Haiku 5.5 can't be run greedily (temperature not settable), and 9/45 of its
   answers hit the 120-token cap; the judge was told not to penalise truncation.
 - Single run per arm; no variance estimate.
+- The judge saw passages as `[i] title + snippet`; the arms saw `[i] title — heading
+  + snippet`. Same text otherwise; unlikely to move any label, but not identical.
+- `judge.py` uses the SDK's `output_format=` parse argument (worked with
+  `anthropic` 1.13.0; may need updating to `output_config.format` on upgrade).
