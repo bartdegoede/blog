@@ -31,7 +31,10 @@ const state = {
   nextId: 1,
   currentId: null,
   partial: "", // streamed text so far, for a hard stop
+  bench: null, // last benchmark {ttft_ms, tok_s, device} for state.model
+  afterStop: false, // the current load is the reload after a WASM Stop
 };
+let persistAsked = false;
 
 const esc = (s) =>
   String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -188,12 +191,17 @@ function paintProgress() {
   }
 }
 
-async function checkStorage(model) {
+function askPersist() {
+  if (persistAsked) return;
+  persistAsked = true;
   try {
-    await navigator.storage?.persist?.(); // best effort
+    navigator.storage?.persist?.().catch(() => {}); // best effort, never awaited
   } catch {
     /* ignore */
   }
+}
+
+async function checkStorage(model) {
   const est = await storageEstimate();
   if (!est) return;
   const free = est.quota - est.usage;
@@ -205,7 +213,7 @@ async function checkStorage(model) {
   }
 }
 
-function startWorker(model, device) {
+function startWorker(model, device, { skipBench = false } = {}) {
   // Synchronously replace the worker before any await, so a second click
   // can never leave two workers running.
   state.worker?.terminate();
@@ -216,6 +224,8 @@ function startWorker(model, device) {
   state.fromCache = false;
   state.quarter = 0;
   state.progress = new DownloadProgress(model.files);
+  if (!skipBench) state.bench = null;
+  state.afterStop = skipBench;
   $(".ask-machine").hidden = true;
   $(".ask-switch").hidden = true;
   renderLoading(model);
@@ -226,19 +236,22 @@ function startWorker(model, device) {
   worker.onerror = (e) => {
     if (worker === state.worker) onWorkerCrash(e.message || "The model worker failed.", device);
   };
-  (async () => {
-    const cached = await isCached(model);
-    if (worker !== state.worker) return;
-    state.fromCache = cached;
-    if (cached) $(".ask-progress-label").textContent = "Loading from cache";
-    await checkStorage(model);
-    if (worker !== state.worker) return;
-    worker.postMessage({
-      type: "load",
-      model: { repo: model.repo, revision: model.revision, dtype: device === "wasm" ? WASM_DTYPE : model.dtype },
-      device,
-    });
-  })();
+  worker.postMessage({
+    type: "load",
+    model: { repo: model.repo, revision: model.revision, dtype: device === "wasm" ? WASM_DTYPE : model.dtype },
+    device,
+    skipBench,
+  });
+  askPersist();
+  // Both run alongside the load; neither delays it.
+  isCached(model).then((cached) => {
+    if (worker !== state.worker || !cached) return;
+    state.fromCache = true;
+    const label = $(".ask-progress-label");
+    if (label?.textContent === "Starting download…") label.textContent = "Loading from cache";
+    $(".ask-storage-note")?.setAttribute("hidden", "");
+  });
+  checkStorage(model);
 }
 
 function showLoadError(message, device) {
@@ -247,7 +260,8 @@ function showLoadError(message, device) {
   el.hidden = false;
   el.innerHTML = `Loading failed: ${esc(message)}
     <button type="button" class="ask-retry">Retry</button>
-    ${device === "webgpu" && !state.model?.webgpuOnly ? '<button type="button" class="ask-retry-wasm">Try slower mode (CPU)</button>' : ""}`;
+    ${device === "webgpu" && !state.model?.webgpuOnly ? '<button type="button" class="ask-retry-wasm">Try slower mode (CPU)</button>' : ""}
+    <button type="button" class="ask-choose">Choose another model</button>`;
   announce(`Loading failed: ${message}`);
   $(".ask-retry").focus();
 }
@@ -266,7 +280,7 @@ function onWorkerCrash(message, device) {
   const machine = $(".ask-machine");
   machine.insertAdjacentHTML(
     "beforeend",
-    ` <span class="ask-error">The model stopped working. <button type="button" class="ask-reload">Reload model</button></span>`
+    ` <span class="ask-error">The model stopped working. <button type="button" class="ask-reload">Reload model</button> <button type="button" class="ask-choose">Choose another model</button></span>`
   );
   announce("The model stopped working");
 }
@@ -292,18 +306,28 @@ function onWorker(msg, device) {
   }
 }
 
-function onReady({ device, bench }) {
+function onReady(msg) {
+  const device = msg.device;
+  // A reload after Stop skips the benchmark (bench: null): keep the old numbers.
+  const bench = msg.bench ?? state.bench ?? { ttft_ms: null, tok_s: null };
+  state.bench = bench;
   state.ready = true;
   setLoading(false);
   $(".ask-loading").hidden = true;
+  if (state.afterStop) {
+    const meta = $(".ask-meta");
+    if (meta && (/Reloading/.test(meta.textContent) || meta.querySelector(".ask-reload"))) meta.textContent = "Stopped.";
+    state.afterStop = false;
+  }
   const machine = $(".ask-machine");
   machine.hidden = false;
   const speed = bench.tok_s ? `${bench.tok_s.toFixed(1)} tokens/s` : "n/a";
-  machine.innerHTML = `<strong>Your machine:</strong> ${esc(state.model.name)} on ${device === "webgpu" ? "WebGPU" : "CPU (WASM)"} · ${speed} · first token in ${bench.ttft_ms} ms`;
+  machine.innerHTML = `<strong>Your machine:</strong> ${esc(state.model.name)} on ${device === "webgpu" ? "WebGPU" : "CPU (WASM)"} · ${speed}${bench.ttft_ms !== null ? ` · first token in ${bench.ttft_ms} ms` : ""}`;
   $(".ask-models").hidden = true;
   $(".ask-switch").hidden = false;
   announce(`${state.model.name} is ready`);
-  if (!state.busy) $(".ask-input").focus();
+  const active = document.activeElement;
+  if (!state.busy && (!active || active === document.body || $(".ask-loading").contains(active))) $(".ask-input").focus();
   markCached();
   if (!state.fromCache) {
     const model = state.model;
@@ -365,7 +389,9 @@ async function ask(question) {
     return;
   }
   if (!state.ready) {
-    answer.innerHTML = `<p class="ask-note">These are the most relevant passages. Load a model above to get a generated summary.</p>`;
+    answer.innerHTML = state.loading
+      ? `<p class="ask-note">These are the most relevant passages. The model is still loading: ask again once it's ready for a summary.</p>`
+      : `<p class="ask-note">These are the most relevant passages. Load a model above to get a generated summary.</p>`;
     setBusy(false);
     return;
   }
@@ -411,7 +437,7 @@ function onGenerateError(message) {
  * answer ran to its end ~40 s after Stop), so terminate it, keep the partial
  * text, and reload the same model (from cache when the browser kept it).
  */
-function stop() {
+async function stop() {
   if (state.backend !== "wasm") {
     state.worker?.postMessage({ type: "stop" });
     return;
@@ -422,10 +448,17 @@ function stop() {
   state.currentId = null;
   $(".ask-sources").classList.remove("is-reading");
   $(".ask-summary").textContent = `${state.partial || ""} (stopped)`.trim();
-  $(".ask-meta").textContent = "Stopped. Reloading the model…";
   announce("Stopped");
   setBusy(false);
-  startWorker(state.model, state.backend);
+  const model = state.model;
+  // Only reload on our own when it costs no download.
+  if (await isCached(model)) {
+    $(".ask-meta").textContent = "Stopped. Reloading the model…";
+    startWorker(model, state.backend, { skipBench: true });
+  } else {
+    $(".ask-switch").hidden = true;
+    $(".ask-meta").innerHTML = `Stopped. <button type="button" class="ask-reload">Reload model (${mb(totalBytes(model))} download)</button>`;
+  }
 }
 
 async function deleteModels() {
@@ -457,12 +490,13 @@ async function main() {
     const t = e.target;
     if (t.disabled) return;
     if (t.matches(".ask-load")) startWorker(modelById(t.dataset.model), state.backend);
-    else if (t.matches(".ask-retry, .ask-reload")) startWorker(state.model, state.backend);
+    else if (t.matches(".ask-retry")) startWorker(state.model, state.backend);
+    else if (t.matches(".ask-reload")) startWorker(state.model, state.backend, { skipBench: !!state.bench });
     else if (t.matches(".ask-retry-wasm")) {
       state.backend = "wasm";
       startWorker(state.model, "wasm");
     } else if (t.matches(".ask-stop")) stop();
-    else if (t.matches(".ask-switch")) {
+    else if (t.matches(".ask-switch, .ask-choose")) {
       state.worker?.terminate();
       state.worker = null;
       state.ready = false;

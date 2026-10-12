@@ -73,7 +73,7 @@ function rateAt(tokens, tFirst, t) {
 }
 const rate = (tokens, tFirst) => rateAt(tokens, tFirst, performance.now());
 
-async function load({ model, device }) {
+async function load({ model, device, skipBench }) {
   const { pipeline } = await lib();
   generator = await pipeline("text-generation", model.repo, {
     revision: model.revision,
@@ -84,6 +84,11 @@ async function load({ model, device }) {
       else if (e.status === "done") post({ type: "file-done", file: e.file });
     },
   });
+  if (skipBench) {
+    // Reload after a hard Stop: the page keeps its earlier numbers.
+    post({ type: "ready", device, bench: null });
+    return;
+  }
   post({ type: "status", text: "Warming up…" });
   await generate(BENCH_MESSAGES, 1); // untimed: compiles shaders / initialises kernels
   post({ type: "status", text: "Measuring speed on your machine…" });
