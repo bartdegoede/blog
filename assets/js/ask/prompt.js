@@ -1,0 +1,63 @@
+// assets/js/ask/prompt.js
+/**
+ * Prompt assembly for /ask/. Shared verbatim by the browser worker (Part 2)
+ * and the eval harness, so the eval measures exactly what ships.
+ * Zero imports.
+ */
+
+export const TOP_K = 4;
+export const MAX_NEW_TOKENS = 120;
+// Greedy decoding without a repetition penalty makes the ≤360M models loop
+// (measured in the ask eval: most smollm2-135m replies ran to MAX_NEW_TOKENS).
+// The browser worker and the eval harness both pass this to generate().
+export const REPETITION_PENALTY = 1.15;
+// ~1,200 tokens at ~4 chars/token. A safety net: unreachable with today's
+// chunker at TOP_K=4; guards future chunk-size/TOP_K changes and keeps WASM
+// prefill bounded.
+export const MAX_PASSAGE_CHARS = 4800;
+// Never add a passage with less body room than this (avoids mid-word fragments).
+export const MIN_PASSAGE_CHARS = 100;
+
+export const SYSTEM_PROMPT =
+  "You answer questions about a personal technical blog. " +
+  "Use only the numbered passages provided. " +
+  "Answer in at most 2 sentences. " +
+  "If the passages do not answer the question, say that the blog does not seem to cover it.";
+
+function label(p, i) {
+  return `[${i + 1}] ${p.title}${p.heading ? ` — ${p.heading}` : ""}`;
+}
+
+/**
+ * @param {string} question
+ * @param {Array<{title: string, heading: string|null, snippet: string}>} passages - best first
+ * @returns {Array<{role: "system"|"user", content: string}>}
+ */
+export function buildMessages(question, passages) {
+  const parts = [];
+  let used = 0;
+  for (let i = 0; i < passages.length; i++) {
+    const sep = parts.length ? 2 : 0;
+    const head = label(passages[i], i);
+    const room = MAX_PASSAGE_CHARS - used - sep - head.length - 1;
+    if (room < MIN_PASSAGE_CHARS) break;
+    const body = passages[i].snippet.slice(0, room);
+    parts.push(`${head}\n${body}`);
+    used += sep + head.length + 1 + body.length;
+  }
+  const user = `Passages:\n\n${parts.join("\n\n")}\n\nQuestion: ${question}`;
+  return [
+    { role: "system", content: SYSTEM_PROMPT },
+    { role: "user", content: user },
+  ];
+}
+
+/**
+ * For chat templates without a system role: prepend the system prompt to the
+ * first user message. Assumes the message after the system message is a user turn.
+ */
+export function foldSystem(messages) {
+  const [sys, first, ...rest] = messages;
+  if (!sys || sys.role !== "system" || !first) return messages;
+  return [{ role: "user", content: `${sys.content}\n\n${first.content}` }, ...rest];
+}

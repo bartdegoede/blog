@@ -1,0 +1,176 @@
+[
+  {
+    "arm": "smollm2-135m",
+    "tier": "browser",
+    "repo": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "dtype": "q4f16",
+    "download_mb": 120,
+    "system_role": true,
+    "status": "ok",
+    "note": "q4f16 picked: onnx/model_q4f16.onnx is 117 MB vs 182 MB for q4 on HF (q4 measured 184 MB total download); q4f16 is smaller and runs on CPU in Node."
+  },
+  {
+    "arm": "smollm2-360m",
+    "tier": "browser",
+    "repo": "HuggingFaceTB/SmolLM2-360M-Instruct",
+    "dtype": "q4f16",
+    "download_mb": 275,
+    "system_role": true,
+    "status": "ok",
+    "note": "q4f16 picked: onnx/model_q4f16.onnx is 272 MB vs 387 MB for q4 on HF (q4 measured 390 MB total download, over budget); q4f16 is smaller and runs on CPU in Node.",
+    "revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+    "files": [
+      {
+        "path": "config.json",
+        "bytes": 846
+      },
+      {
+        "path": "generation_config.json",
+        "bytes": 132
+      },
+      {
+        "path": "onnx/model_q4f16.onnx",
+        "bytes": 272737275
+      },
+      {
+        "path": "tokenizer.json",
+        "bytes": 2104556
+      },
+      {
+        "path": "tokenizer_config.json",
+        "bytes": 3764
+      }
+    ],
+    "total_bytes": 274846573
+  },
+  {
+    "arm": "gemma3-270m",
+    "tier": "browser",
+    "repo": "onnx-community/gemma-3-270m-it-ONNX",
+    "dtype": "q4f16",
+    "download_mb": 293,
+    "system_role": true,
+    "status": "ok",
+    "note": "q4f16 picked: model_q4f16.onnx_data is 272 MB vs 322 MB for q4 on HF (q4 measured 344 MB total download); q4f16 is smaller and runs on CPU in Node. Template has no native system turn: it folds the system text into the first user turn itself (rendered prompt verified), so passing a system message is safe.",
+    "revision": "2dbbfdb1b59bd034eb959428c6a7da9dd7ea27f0",
+    "files": [
+      {
+        "path": "config.json",
+        "bytes": 1652
+      },
+      {
+        "path": "generation_config.json",
+        "bytes": 202
+      },
+      {
+        "path": "onnx/model_q4f16.onnx",
+        "bytes": 330717
+      },
+      {
+        "path": "onnx/model_q4f16.onnx_data",
+        "bytes": 272626176
+      },
+      {
+        "path": "tokenizer.json",
+        "bytes": 20323013
+      },
+      {
+        "path": "tokenizer_config.json",
+        "bytes": 2313
+      }
+    ],
+    "total_bytes": 293284073
+  },
+  {
+    "arm": "lfm2.5-350m",
+    "tier": "browser",
+    "repo": "onnx-community/LFM2.5-350M-ONNX",
+    "dtype": "q4f16",
+    "download_mb": 258,
+    "system_role": true,
+    "status": "ok",
+    "note": "q4f16 picked: model_q4f16.onnx_data is 254 MB vs 293 MB for q4 on HF (q4 measured 297 MB total download); q4f16 is smaller and runs on CPU in Node.",
+    "revision": "7dd4999565b0342c381ba90a3d8fc467d6df19c4",
+    "files": [
+      {
+        "path": "config.json",
+        "bytes": 1443
+      },
+      {
+        "path": "generation_config.json",
+        "bytes": 136
+      },
+      {
+        "path": "onnx/model_q4f16.onnx",
+        "bytes": 182827
+      },
+      {
+        "path": "onnx/model_q4f16.onnx_data",
+        "bytes": 254965760
+      },
+      {
+        "path": "tokenizer.json",
+        "bytes": 3297793
+      },
+      {
+        "path": "tokenizer_config.json",
+        "bytes": 3825
+      }
+    ],
+    "total_bytes": 258451784
+  },
+  {
+    "arm": "qwen3-0.6b",
+    "tier": "midsize",
+    "repo": "onnx-community/Qwen3-0.6B-ONNX",
+    "dtype": "q4f16",
+    "download_mb": 579,
+    "system_role": true,
+    "status": "ok",
+    "note": "Eval-only midsize reference, not shippable: over the 350 MB browser budget at every dtype. q4f16 picked as smallest: onnx/model_q4f16.onnx is 569 MB vs 919 MB for q4 on HF (q4 measured 928 MB total download). Probed with enable_thinking=false (template emits an empty <think></think> block).",
+    "revision": "1e0a4a196ecabdf9a879664110574563d3f372d3",
+    "files": [
+      {
+        "path": "config.json",
+        "bytes": 912
+      },
+      {
+        "path": "generation_config.json",
+        "bytes": 219
+      },
+      {
+        "path": "onnx/model_q4f16.onnx",
+        "bytes": 569789750
+      },
+      {
+        "path": "tokenizer.json",
+        "bytes": 9117040
+      },
+      {
+        "path": "tokenizer_config.json",
+        "bytes": 10360
+      }
+    ],
+    "total_bytes": 578918281
+  },
+  {
+    "arm": "qwen2.5-0.5b",
+    "tier": "browser",
+    "repo": "onnx-community/Qwen2.5-0.5B-Instruct",
+    "dtype": "q4",
+    "download_mb": 793,
+    "system_role": true,
+    "status": "over-budget",
+    "note": "q4 download is 793 MB (> 350 MB browser budget) | q4f16 is 483 MB on HF, also over budget. Not run in the eval."
+  },
+  {
+    "arm": "gemma4-e2b",
+    "tier": "large",
+    "repo": "onnx-community/gemma-4-E2B-it-ONNX",
+    "dtype": "q4f16",
+    "download_mb": 3131,
+    "system_role": true,
+    "status": "ok",
+    "note": "Loads via the text-generation pipeline: transformers.js maps it to Gemma4ForCausalLM in text-only mode, so only embed_tokens + decoder_model_merged (q4f16) are fetched; the audio/vision encoders are skipped. q4f16 ran on CPU without needing the q4 fallback."
+  }
+]
