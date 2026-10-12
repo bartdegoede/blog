@@ -11,3 +11,4 @@ node_modules/
 assets/jsconfig.json
 backups/
 __pycache__/
+scripts/ask_eval/results/**/*.dryrun.jsonl
