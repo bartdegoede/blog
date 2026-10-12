@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import re
+import statistics
+
 ANSWERABLE = {"exact", "conceptual", "navigational"}
 HOURS_PER_MONTH = 730
 
@@ -73,3 +76,65 @@ def cost_per_1k_hosted(rows: list[dict], in_per_m: float, out_per_m: float) -> f
 
 def cost_per_1k_always_on_gpu(hourly_usd: float, questions_per_month: int) -> float:
     return hourly_usd * HOURS_PER_MONTH / questions_per_month * 1000
+
+
+# Mirrors assets/js/ask/display.js clampSentences(text, n, final=True).
+_SENTENCE_END = re.compile(r"[.!?](?=\s|$)")
+_ABBREVIATION = re.compile(
+    r"(?:\b(?:e\.g|i\.e|etc|vs|cf|approx|Mr|Mrs|Dr)\.)$", re.IGNORECASE
+)
+_LIST_NUMBER = re.compile(r"(?:^|\s)\d+\.$")
+
+
+def count_sentences(text: str) -> int:
+    """Sentences in a finished answer, counted the way the page clamps them.
+
+    A trailing fragment without end punctuation (cut off at the token cap)
+    counts as one more sentence.
+    """
+    count = end = 0
+    for m in _SENTENCE_END.finditer(text):
+        upto = text[: m.start() + 1]
+        if _ABBREVIATION.search(upto) or _LIST_NUMBER.search(upto):
+            continue
+        count += 1
+        end = m.start() + 1
+    return count + (1 if text[end:].strip() else 0)
+
+
+def length_table(judged: list[dict], runs: list[dict]) -> list[dict]:
+    """One row per length arm ("<model>-s<N>"), sorted by model then N.
+
+    judged: judge output rows (arm, id, family, label).
+    runs: generation rows (arm, id, summary, output_tokens, wall_ms, max_sentences).
+    Rates over answerable questions; "invented" = negatives labelled unsupported.
+    judge-refused rows are left out of every denominator.
+    """
+    by_arm: dict[str, list[dict]] = {}
+    for r in runs:
+        by_arm.setdefault(r["arm"], []).append(r)
+    labels = {(j["arm"], j["id"]): j for j in judged if j["label"] != "judge-refused"}
+    out = []
+    for arm, rows in by_arm.items():
+        n = rows[0]["max_sentences"]
+        model = arm.removesuffix(f"-s{n}")
+        js = [labels[(arm, r["id"])] for r in rows if (arm, r["id"]) in labels]
+        ans = [j for j in js if j["family"] in ANSWERABLE]
+        neg = [j for j in js if j["family"] == "negative"]
+        out.append(
+            {
+                "model": model,
+                "n": n,
+                "answerable": len(ans),
+                "faithful": sum(j["label"] == "faithful" for j in ans),
+                "unsupported": sum(j["label"] == "unsupported" for j in ans),
+                "negatives": len(neg),
+                "invented": sum(j["label"] == "unsupported" for j in neg),
+                "mean_sentences": statistics.mean(
+                    count_sentences(r["summary"]) for r in rows
+                ),
+                "mean_tokens": statistics.mean(r["output_tokens"] for r in rows),
+                "median_wall_ms": statistics.median(r["wall_ms"] for r in rows),
+            }
+        )
+    return sorted(out, key=lambda r: (r["model"], r["n"]))
