@@ -59,12 +59,19 @@ async function generate(messages, maxNewTokens, onText) {
     text,
     tokens,
     ttft_ms: Math.round((tFirst ?? t1) - t0),
-    tok_s: tokens > 1 && tFirst !== null ? (tokens - 1) / ((t1 - tFirst) / 1000) : null,
+    tok_s: rateAt(tokens, tFirst, t1),
   };
 }
 
-const rate = (tokens, tFirst) =>
-  tokens > 1 && tFirst !== null ? (tokens - 1) / ((performance.now() - tFirst) / 1000) : null;
+// Tokens/s after the first token. null until there is a second token and at
+// least MIN_RATE_MS since the first, so a burst can't report a huge rate.
+const MIN_RATE_MS = 50;
+function rateAt(tokens, tFirst, t) {
+  if (tokens < 2 || tFirst === null) return null;
+  const dt = t - tFirst;
+  return dt > 0 && dt >= MIN_RATE_MS ? (tokens - 1) / (dt / 1000) : null;
+}
+const rate = (tokens, tFirst) => rateAt(tokens, tFirst, performance.now());
 
 async function load({ model, device }) {
   const { pipeline } = await lib();

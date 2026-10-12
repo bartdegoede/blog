@@ -566,6 +566,11 @@ input[type="search"] {
 }
 
 /* ---------- /ask/ page ---------- */
+.ask-page [hidden] { display: none !important; } /* PaperMod has no [hidden] rule; .ask-form's flex would win */
+.visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.ask-note, .ask-manage-status, .ask-storage-note { font-size: 0.9rem; color: var(--secondary); }
+.ask-manage-status { margin-left: 0.5rem; }
+.ask-kept-note { margin: 0.5rem 0 0; color: var(--primary); }
 .ask-capability, .ask-machine, .ask-meta, .ask-model-stats, .ask-label { font-size: 0.9rem; color: var(--secondary); }
 .ask-model { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1rem 0; background: var(--entry); }
 .ask-model-head { display: flex; gap: 0.75rem; align-items: baseline; flex-wrap: wrap; }

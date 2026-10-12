@@ -13,4 +13,4 @@ Ask a question about anything I've written here. My search finds the most releva
 
 Small models get things wrong, and I [measured how often](/). The passages it read are always shown underneath; trust those over the summary.
 
-Loading a model downloads it once from Hugging Face (your browser keeps it for next time).
+Loading a model downloads it once from Hugging Face, and the code that runs it from jsDelivr (your browser keeps both for next time, storage permitting).
