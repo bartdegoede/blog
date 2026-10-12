@@ -1,0 +1,72 @@
+[
+  {
+    "arm": "smollm2-135m",
+    "tier": "browser",
+    "repo": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "dtype": "q4",
+    "download_mb": 184,
+    "system_role": true,
+    "status": "ok",
+    "note": ""
+  },
+  {
+    "arm": "smollm2-360m",
+    "tier": "browser",
+    "repo": "HuggingFaceTB/SmolLM2-360M-Instruct",
+    "dtype": "q4",
+    "download_mb": 390,
+    "system_role": true,
+    "status": "over-budget",
+    "note": "q4 download is 390 MB (> 350 MB browser budget)"
+  },
+  {
+    "arm": "gemma3-270m",
+    "tier": "browser",
+    "repo": "onnx-community/gemma-3-270m-it-ONNX",
+    "dtype": "q4",
+    "download_mb": 344,
+    "system_role": true,
+    "status": "ok",
+    "note": ""
+  },
+  {
+    "arm": "lfm2.5-350m",
+    "tier": "browser",
+    "repo": "onnx-community/LFM2.5-350M-ONNX",
+    "dtype": "q4",
+    "download_mb": 297,
+    "system_role": true,
+    "status": "ok",
+    "note": ""
+  },
+  {
+    "arm": "qwen3-0.6b",
+    "tier": "browser",
+    "repo": "onnx-community/Qwen3-0.6B-ONNX",
+    "dtype": "q4",
+    "download_mb": 928,
+    "system_role": true,
+    "status": "over-budget",
+    "note": "q4 download is 928 MB (> 350 MB browser budget)"
+  },
+  {
+    "arm": "qwen2.5-0.5b",
+    "tier": "browser",
+    "repo": "onnx-community/Qwen2.5-0.5B-Instruct",
+    "dtype": "q4",
+    "download_mb": 793,
+    "system_role": true,
+    "status": "over-budget",
+    "note": "q4 download is 793 MB (> 350 MB browser budget)"
+  },
+  {
+    "arm": "gemma4-e2b",
+    "tier": "large",
+    "repo": "onnx-community/gemma-4-E2B-it-ONNX",
+    "dtype": "q4f16",
+    "download_mb": 3131,
+    "system_role": true,
+    "status": "ok",
+    "note": "Loads via the text-generation pipeline: transformers.js maps it to Gemma4ForCausalLM in text-only mode, so only embed_tokens + decoder_model_merged (q4f16) are fetched; the audio/vision encoders are skipped. q4f16 ran on CPU without needing the q4 fallback."
+  }
+]
