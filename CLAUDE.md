@@ -101,6 +101,30 @@ confirmation before writing the confirmed slugs into that post's `related:`
 front matter. Never auto-fill `related:`. If nothing clears the threshold, say
 so and leave it empty. The script only prints — it never edits front matter.
 
+### /ask/ page (in-browser RAG)
+
+`content/ask.md` + `layouts/_default/ask.html` mount an "ask my blog" page:
+semantic search retrieves the top 4 passages, and a small LLM (transformers.js,
+WebGPU or single-threaded WASM) streams a ≤2-sentence summary in a Web Worker.
+The page is `noindex`, unlisted and out of the sitemap; it's linked from the
+homepage search box (the Part 3 post will link to it too).
+
+- `assets/js/ask/{retrieve,prompt,display,progress,models}.js` — pure, unit-tested
+  (`tests/js/ask-*.test.mjs`); every rule and number lives here (gate 0.45, two
+  sentences, repetition penalty, prompt). `prompt.js` and `retrieve.js` are shared
+  with the eval in `scripts/ask_eval/`.
+- `assets/js/ask/worker.js` — imports transformers.js from jsDelivr (pinned);
+  `assets/js/ask/page.js` — DOM/state.
+- Model weights come from the Hugging Face Hub, pinned by revision in
+  `assets/js/ask/models.js`; a test keeps it identical to
+  `scripts/ask_eval/candidates.json` (the eval measured exactly those files).
+- Gemma 3 / LFM2.5 are `webgpuOnly` (their q4f16 needs a kernel WASM lacks).
+- End-to-end check (not run by `node --test`):
+  `hugo server --port 1314` then `BASE_URL=http://localhost:1314 node tests/e2e/ask.e2e.mjs`
+  (optional `MODEL=qwen3-0.6b`). Headless Chromium has no WebGPU, so it covers
+  the WASM path; check WebGPU by hand in Chrome.
+- Eval, decisions and numbers: `docs/superpowers/specs/2026-10-12-ask-my-blog-results.md`.
+
 ### Hugo Configuration
 
 - **`config.yml`**: YAML format, base URL `https://bart.degoe.de`

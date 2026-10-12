@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   SYSTEM_PROMPT, TOP_K, MAX_NEW_TOKENS, MAX_PASSAGE_CHARS, REPETITION_PENALTY,
-  buildMessages, foldSystem,
+  buildMessages, foldSystem, GATE_THRESHOLD, MAX_SENTENCES, passesGate,
 } from "../../assets/js/ask/prompt.js";
 
 const passages = [
@@ -67,4 +67,16 @@ test("foldSystem leaves messages without a system turn unchanged and does not th
   const noSys = [{ role: "user", content: "x" }];
   assert.deepEqual(foldSystem(noSys), noSys);
   assert.doesNotThrow(() => foldSystem([{ role: "system", content: "s" }]));
+});
+
+test("gate constants match the results doc", () => {
+  assert.equal(GATE_THRESHOLD, 0.45);
+  assert.equal(MAX_SENTENCES, 2);
+});
+
+test("passesGate needs at least one passage scoring >= threshold", () => {
+  assert.equal(passesGate([]), false);
+  assert.equal(passesGate([{ score: 0.449 }]), false);
+  assert.equal(passesGate([{ score: 0.45 }]), true);
+  assert.equal(passesGate([{ score: 0.7 }, { score: 0.1 }]), true);
 });

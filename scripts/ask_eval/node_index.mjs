@@ -3,8 +3,6 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { WordPiece } from "../../assets/js/semantic/tokenizer.js";
-import { embedQuery } from "../../assets/js/semantic/embed.js";
-import { cosineScores } from "../../assets/js/semantic/search.js";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const DIR = path.join(ROOT, "static", "search");
@@ -27,10 +25,4 @@ export function loadIndexFromDisk() {
   };
 }
 
-/** @returns {Float32Array} one cosine score per chunk (all zeros for an empty/OOV query) */
-export function scoreQuery(idx, query) {
-  const ids = idx.wp.encode(query);
-  const { dims, n_chunks } = idx.manifest;
-  if (ids.length === 0) return new Float32Array(n_chunks);
-  return cosineScores(embedQuery(ids, idx.tokens, idx.scales, dims), idx.docs, n_chunks, dims);
-}
+export { scoreQuery } from "../../assets/js/ask/retrieve.js";

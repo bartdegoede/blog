@@ -1,0 +1,24 @@
+{{- define "main" }}
+<article class="post-single ask-page">
+  <header class="post-header">
+    <h1 class="post-title">{{ .Title }}</h1>
+  </header>
+  <div class="post-content ask-lede">{{ .Content }}</div>
+  {{- $build := dict "minify" true "target" "es2020" "format" "esm" -}}
+  {{- $worker := resources.Get "js/ask/worker.js" | js.Build $build | fingerprint -}}
+  {{- $app := resources.Get "js/ask/page.js" | js.Build $build | fingerprint -}}
+  <div id="ask-app" data-worker="{{ $worker.RelPermalink }}">
+    <noscript><p>This page needs JavaScript: the model runs in your browser.</p></noscript>
+  </div>
+  <footer class="ask-smallprint">
+    <p>Questions never leave your browser. Models download once from Hugging Face and the runtime from jsDelivr; your browser keeps them, storage permitting.</p>
+    <p>Small models get things wrong, and I <a href="{{ .Params.measuredUrl | default "/" }}">measured how often</a>.
+      <span class="ask-manage" hidden>
+        <button type="button" class="ask-delete ask-btn ask-btn-link" title="Deletes all models this site downloaded">Delete downloaded models</button>
+        <span class="ask-manage-status" role="status"></span>
+      </span>
+    </p>
+  </footer>
+  <script type="module" src="{{ $app.RelPermalink }}" integrity="{{ $app.Data.Integrity }}" data-cf-async="false"></script>
+</article>
+{{- end }}

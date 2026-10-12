@@ -1,7 +1,8 @@
 // tests/js/ask-retrieve.test.mjs
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { topChunks } from "../../assets/js/ask/retrieve.js";
+import { topChunks, scoreQuery } from "../../assets/js/ask/retrieve.js";
+import { loadIndexFromDisk } from "../../scripts/ask_eval/node_index.mjs";
 
 const chunks = [
   { post: "a", snippet: "A0" },
@@ -29,4 +30,19 @@ test("k larger than the corpus returns everything", () => {
 
 test("length mismatch throws instead of silently misaligning", () => {
   assert.throws(() => topChunks(new Float32Array(3), chunks, 2), /length/);
+});
+
+test("scoreQuery returns one score per chunk and ranks the bloom post first", () => {
+  const idx = loadIndexFromDisk();
+  const scores = scoreQuery(idx, "how do bloom filters work");
+  assert.equal(scores.length, idx.chunks.length);
+  const top = topChunks(scores, idx.chunks, 1)[0];
+  assert.match(top.chunk.post, /bloom/);
+  assert.ok(top.score > 0.4);
+});
+
+test("scoreQuery on an empty query returns all zeros", () => {
+  const idx = loadIndexFromDisk();
+  const scores = scoreQuery(idx, "");
+  assert.ok(scores.every((s) => s === 0));
 });
