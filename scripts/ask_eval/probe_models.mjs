@@ -43,6 +43,12 @@ function systemRole(tokenizer) {
   }
 }
 
+/** Notes are human-curated; the probe only ever appends to them (and never twice). */
+function appendNote(c, msg) {
+  if (c.note.includes(msg)) return;
+  c.note = c.note ? `${c.note} | ${msg}` : msg;
+}
+
 const only = process.argv[2]; // optional: probe a single arm
 const cands = JSON.parse(readFileSync(FILE, "utf8"));
 if (only && !cands.some((c) => c.arm === only)) throw new Error(`unknown arm: ${only}`);
@@ -70,10 +76,10 @@ for (const c of cands) {
       [...files].reduce((sum, f) => sum + statSync(path.join(env.cacheDir, c.repo, f)).size, 0) / 1e6,
     );
     c.status = "ok";
-    c.note = "";
+    // Only browser-tier arms are budgeted; midsize/large arms are references.
     if (c.tier === "browser" && c.download_mb > BROWSER_BUDGET_MB) {
       c.status = "over-budget";
-      c.note = `${c.dtype} download is ${c.download_mb} MB (> ${BROWSER_BUDGET_MB} MB browser budget)`;
+      appendNote(c, `${c.dtype} download is ${c.download_mb} MB (> ${BROWSER_BUDGET_MB} MB browser budget)`);
     }
     console.log(`\n== ${c.arm} [${c.status}] ${c.download_mb} MB, system_role=${c.system_role}`);
     console.log(`files: ${[...files].sort().join(", ")}`);
@@ -81,7 +87,7 @@ for (const c of cands) {
     console.log(`8 tokens: ${JSON.stringify(reply)}`);
   } catch (e) {
     c.status = "failed";
-    c.note = String(e.message || e).slice(0, 300);
+    appendNote(c, `probe failed (${c.dtype}): ${String(e.message || e).slice(0, 300)}`);
     console.log(`\n== ${c.arm} [failed] ${c.note}`);
   } finally {
     await gen?.dispose();
