@@ -172,3 +172,22 @@ download size vs. faithfulness, and the knee is somewhere between 0.6B and 2B.
   + snippet`. Same text otherwise; unlikely to move any label, but not identical.
 - `judge.py` uses the SDK's `output_format=` parse argument (worked with
   `anthropic` 1.13.0; may need updating to `output_config.format` on upgrade).
+
+## 8. Browser numbers (Part 2)
+
+Measured on the author's Mac. WebGPU in the author's Chrome (spike page); WASM in
+headless Chromium via `tests/e2e/ask.e2e.mjs`. GitHub Pages can't send COOP/COEP,
+so WASM runs single-threaded.
+
+| model | backend | first download → ready | benchmark tok/s | real answer: first token / tok/s |
+|---|---|---|---|---|
+| Qwen3-0.6B | WebGPU | 16.2 s load (spike) | 19.8 | 1.7 s (short prompt, spike) |
+| Qwen3-0.6B | WASM | ~29-36 s | 1.2 | ~16 s / 1.1 (≈60 s per answer) |
+| SmolLM2-360M | WASM | ~18 s | 1.5-1.7 | ~9 s / 1.5 |
+
+- q4f16 works on WASM for Qwen3 and SmolLM2, but **not** for Gemma 3 270M or
+  LFM2.5-350M (`GatherBlockQuantized` has no CPU kernel); those are WebGPU-only.
+- The model file is kept in Cache Storage in a normal Chrome profile; non-persistent
+  or low-quota contexts don't keep it (the page says so).
+- Stop on WASM: the worker never sees a stop message mid-generation, so Stop
+  terminates the worker (≈30 ms) and reloads from cache (2-3.5 s).
