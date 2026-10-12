@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  SYSTEM_PROMPT, TOP_K, MAX_NEW_TOKENS, MAX_PASSAGE_CHARS,
+  SYSTEM_PROMPT, TOP_K, MAX_NEW_TOKENS, MAX_PASSAGE_CHARS, REPETITION_PENALTY,
   buildMessages, foldSystem,
 } from "../../assets/js/ask/prompt.js";
 
@@ -13,7 +13,7 @@ const passages = [
 
 test("constants match the spec", () => {
   assert.equal(TOP_K, 4);
-  assert.equal(MAX_NEW_TOKENS, 120);
+  assert.equal(MAX_NEW_TOKENS, 120); assert.equal(REPETITION_PENALTY, 1.15);
   assert.equal(MAX_PASSAGE_CHARS, 4800);
   assert.match(SYSTEM_PROMPT, /at most 2 sentences/);
 });

@@ -1,5 +1,5 @@
 // scripts/ask_eval/run_local.mjs
-// Run every eval prompt through each local arm: CPU, greedy, ungated (negatives
+// Run every eval prompt through each local arm: CPU, greedy + repetition penalty, ungated (negatives
 // included; the relevance gate is applied later, in the report).
 //
 //   node scripts/ask_eval/run_local.mjs <arm> [<arm> ...]   # or "all"
@@ -16,7 +16,7 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import os from "node:os";
 import { pipeline, env, TextStreamer } from "@huggingface/transformers";
-import { MAX_NEW_TOKENS, foldSystem } from "../../assets/js/ask/prompt.js";
+import { MAX_NEW_TOKENS, REPETITION_PENALTY, foldSystem } from "../../assets/js/ask/prompt.js";
 
 env.cacheDir = path.join(os.homedir(), ".cache", "ask-eval-transformers");
 const here = (p) => new URL(p, import.meta.url);
@@ -53,6 +53,7 @@ async function generate(gen, messages) {
   const out = await gen(messages, {
     max_new_tokens: MAX_NEW_TOKENS,
     do_sample: false,
+    repetition_penalty: REPETITION_PENALTY,
     tokenizer_encode_kwargs: TEMPLATE_KWARGS,
     streamer,
   });

@@ -7,6 +7,10 @@
 
 export const TOP_K = 4;
 export const MAX_NEW_TOKENS = 120;
+// Greedy decoding without a repetition penalty makes the ≤360M models loop
+// (measured in the ask eval: most smollm2-135m replies ran to MAX_NEW_TOKENS).
+// The browser worker and the eval harness both pass this to generate().
+export const REPETITION_PENALTY = 1.15;
 // ~1,200 tokens at ~4 chars/token. A safety net: unreachable with today's
 // chunker at TOP_K=4; guards future chunk-size/TOP_K changes and keeps WASM
 // prefill bounded.
