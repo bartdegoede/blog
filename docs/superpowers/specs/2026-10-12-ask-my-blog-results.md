@@ -1,0 +1,170 @@
+# Ask my blog: eval results
+
+**Date:** 2026-10-12. **Branch:** `ask-my-blog-eval`.
+**Spec:** `2026-10-12-ask-my-blog-design.md`. **Plan:** `../plans/2026-10-12-ask-my-blog-part1-eval.md`.
+**Raw data:** `scripts/ask_eval/results/` (prompts, every arm's runs, judgements,
+spot check, `report.md`).
+
+## 1. Decisions (Part 2 builds on these)
+
+| decision | value |
+|---|---|
+| Default model | **Qwen3-0.6B**, `onnx-community/Qwen3-0.6B-ONNX`, dtype `q4f16`, 579 MB, chat template with `enable_thinking: false` |
+| Demonstrators (labelled "see why size matters") | SmolLM2-360M (`HuggingFaceTB/SmolLM2-360M-Instruct`, q4f16, 275 MB); Gemma 3 270M (`onnx-community/gemma-3-270m-it-ONNX`, q4f16, 293 MB); LFM2.5-350M (`onnx-community/LFM2.5-350M-ONNX`, q4f16, 258 MB) |
+| Not offered | SmolLM2-135M (0/30 faithful); Gemma 4 E2B (3.1 GB; post-only reference) |
+| Relevance gate threshold | **0.45** (best chunk cosine score; below it the model is not called) |
+| Decoding | greedy, `MAX_NEW_TOKENS = 120`, `REPETITION_PENALTY = 1.15` (`assets/js/ask/prompt.js`) |
+| Retrieval | top 4 chunks (`TOP_K`), passage budget 4,800 chars |
+| Weights hosting | Hugging Face Hub (pinned commit per model), not GitHub Pages |
+
+The spec's original rule ("two models ≤ 350 MB, Small = smallest with ≥75% faithful")
+returned nothing: no ≤350 MB model got above 3/30. The shipping decision above was made
+by the author with that in mind; the post is about these numbers.
+
+## 2. Feasibility
+
+All candidates verified on Hugging Face and probed on CPU in Node with
+transformers.js 4.3.1 (`scripts/ask_eval/probe_models.mjs`, `candidates.json`).
+
+| arm | tier | repo | dtype | MB | status |
+|---|---|---|---|---|---|
+| smollm2-135m | browser | HuggingFaceTB/SmolLM2-135M-Instruct | q4f16 | 120 | ok |
+| smollm2-360m | browser | HuggingFaceTB/SmolLM2-360M-Instruct | q4f16 | 275 | ok |
+| gemma3-270m | browser | onnx-community/gemma-3-270m-it-ONNX | q4f16 | 293 | ok (template folds system into user turn) |
+| lfm2.5-350m | browser | onnx-community/LFM2.5-350M-ONNX | q4f16 | 258 | ok |
+| qwen3-0.6b | midsize | onnx-community/Qwen3-0.6B-ONNX | q4f16 | 579 | ok; over the 350 MB budget at every dtype, kept as reference, then chosen as default |
+| qwen2.5-0.5b | browser | onnx-community/Qwen2.5-0.5B-Instruct | q4 | 793 | over budget (483 MB at q4f16); not run |
+| gemma4-e2b | large | onnx-community/gemma-4-E2B-it-ONNX | q4f16 | 3,131 | ok; text-only load skips audio/vision encoders |
+| qwen3.5-0.8b | | | | | excluded up front: no official ONNX build |
+
+**Surprise:** in several repos `q4` is *larger* than `q4f16` (q4 keeps embeddings
+in fp32), so every arm uses q4f16. **Part 2 must verify q4f16 runs on the WASM
+fallback** (it ran on CPU in Node, which is encouraging but not the same runtime).
+
+## 3. Results
+
+Same 45 questions, same 4 retrieved passages, same prompt for every arm. Judged by
+Claude Opus 5.5 against the passages each arm was given.
+
+| arm | tier | MB | faithful | unsupported | non-answer | negatives answered with invented content | median TTFT (CPU) | median tok/s (CPU) | USD / 1k questions |
+|---|---|---|---|---|---|---|---|---|---|
+| smollm2-135m | browser | 120 | 0/30 | 28/30 | 2/30 | 14/15 | 972 ms | 43.4 | 0 |
+| lfm2.5-350m | browser | 258 | 2/30 | 27/30 | 1/30 | 14/15 | 2,039 ms | 25.5 | 0 |
+| smollm2-360m | browser | 275 | 3/30 | 24/30 | 3/30 | 15/15 | 2,620 ms | 22.1 | 0 |
+| gemma3-270m | browser | 293 | 3/30 | 22/30 | 5/30 | 13/15 | 1,777 ms | 23.7 | 0 |
+| **qwen3-0.6b** | midsize | 579 | **15/30** | 15/30 | 0/30 | 5/15 | 4,892 ms | 11.0 | 0 |
+| gemma4-e2b | large | 3,131 | 28/30 | 2/30 | 0/30 | 0/15 | 13,692 ms | 4.3 | 1,032 (always-on GPU) |
+| haiku-5-5 | hosted | n/a | 27/30 | 3/30 | 0/30 | 1/15 | 1,120 ms (end-to-end) | n/a | 0.13 |
+
+Local timings are CPU-in-Node on the author's Mac; browser WebGPU/WASM numbers come
+in Part 3.
+
+### Retrieval
+
+hit@4 on answerable questions: **28/30**. Misses: q03 (mmh3: the token is
+out-of-vocabulary for the static embedding model) and q16 (a conceptual paraphrase
+that lands on unrelated posts). Failures in the table above are model failures, not
+retrieval failures, except on those two.
+
+### Relevance gate
+
+Near-miss negatives score as high as answerable questions (negatives: median 0.525,
+max 0.633; answerable: min 0.374, median 0.643), so a score gate only catches
+clearly off-topic questions.
+
+| threshold | negatives passing | answerable rejected |
+|---|---|---|
+| 0.40 | 11/15 | 1/30 |
+| **0.45** | 9/15 | 2/30 (q04, q16) |
+| 0.50 | 8/15 | 4/30 |
+| 0.61 (plan's "≤10% negatives" rule) | 1/15 | 13/30 |
+
+At 0.45, Qwen3 still invents an answer on 5/15 negatives: those are near-misses
+whose scores clear any sensible gate. The gate mostly protects the demonstrators
+from off-topic rambling. The "generated, may be wrong" label and sources-first
+layout carry the rest.
+
+### Repetition penalty
+
+The first local run used plain greedy decoding (commit `1a96d85`). The tiny models
+looped until the 120-token cap (SmolLM2-135M on 39/45 questions, Gemma 3 270M on
+21/45), e.g. SmolLM2-135M on q05: *"1. Custom Search: Search from your URL bar\n2.
+Search from your URL bar\n3. Search from your URL bar…"*, and Gemma 3 270M on n07:
+*"I'5555555555…"*. With `repetition_penalty = 1.15` (commit `29d7fc6`, the runs
+judged above) the loops are gone, but the tiny models now write long, varied,
+confident text to the cap instead (36/45 and 24/45). The penalty fixes the symptom,
+not the problem: they don't stick to the passages or to two sentences.
+
+## 4. Is renting a GPU or paying for inference worth it?
+
+- **Always-on GPU for Gemma 4 E2B:** $0.707/h (Google Cloud g2-standard-4, 1× L4,
+  us-central1 on-demand, via https://computeprices.com/providers/google/gpus/l4,
+  checked 2026-10-12; a third-party tracker, the GCP page didn't render) × 730 h =
+  **$516/month**. At this blog's traffic (300-500 visitors/month; assumed 500
+  questions/month) that is ~$1,032 per 1,000 questions.
+- **Claude Haiku 5.5:** measured $0.0059 for 45 questions → **$0.07/month** at
+  500 questions/month, with 27/30 faithful and 1/15 invented answers.
+- **In-browser Gemma 4 E2B** matches Haiku on quality (28/30, 0/15) at $0, but
+  costs the reader a 3.1 GB download and ~14 s to first token on CPU.
+
+Plainly: renting a GPU makes no sense at this scale; paying for inference is almost
+free and as good as the best local model; the honest in-browser trade-off is
+download size vs. faithfulness, and the knee is somewhere between 0.6B and 2B.
+
+## 5. Examples for the post (verbatim)
+
+**Good**
+- Qwen3-0.6B, q06 "How did the blog use Cloudflare to get SSL working?": *"The blog
+  used CloudFlare to enable SSL by allowing users to access websites over HTTPS
+  through a free SSL option. This involved setting up a proxy between GitHub sites
+  and users using CloudFlare’s Universal SSL feature."*
+- Gemma 3 270M, q10 "Which Qwen3 model does the local coding agent run?": *"The
+  local coding agent uses the Qwen3-Coder-30B-A3B model."* (one of its 3 faithful)
+- Gemma 4 E2B, n07 "Which GPU should I buy to run Llama 70B locally?": *"The
+  provided passages do not contain information about which GPU you should buy to
+  run Llama 70B locally."*
+
+**Unsupported**
+- SmolLM2-360M, n07: *"…the best option to run Llama 70B locally is likely to be a
+  NVIDIA GTX 960 or GTX 970… ideal for handling large amounts of data such as the
+  6.4 million documents required by Llama 70B."*
+- LFM2.5-350M, q01 "How did the blog use Lunr to add search?": *"Lunr was used to
+  enable a typeahead search mode, allowing users to view results from partial
+  queries like displaying "pyth" after typing "p"…"* (garbles the passages)
+- Qwen3-0.6B, n10 "How does BM25 ranking improve on TF-IDF?": *"BM25 ranking
+  improves on TF-IDF by incorporating additional factors such as word context and
+  relevance…"* (no passage mentions BM25)
+
+**Negatives the ungated model answered anyway**
+- Gemma 3 270M, n01 "How do I bake sourdough bread at home?": *"…The answer is by
+  using a commercial yeast starter. You need to follow these steps: 1. Choose a
+  suitable starter…"* (blocked by the 0.45 gate: score 0.248)
+- Gemma 3 270M, n07: *"I recommend using a high-performance graphics card (GPU)
+  such as a NVIDIA A100 series (e.g., RTX 3090, RTX 3080…)"* (not blocked: score 0.569)
+
+## 6. Notes for Part 2
+
+- Some answers start with or contain passage markers (`[1]`, `[3]`) despite the
+  spec dropping inline citations (Gemma 4, Qwen3). Strip a leading marker, or turn
+  markers into links to the source cards.
+- Answers routinely exceed two sentences; consider displaying only the first two
+  sentences (not evaluated here; it would change what the judge saw).
+- Qwen3 needs `enable_thinking: false` in the chat template kwargs.
+- Model files (names + byte sizes) per pinned revision feed the progress bar's total.
+
+## 7. Caveats
+
+- The question set (45: 30 answerable rephrased from the semantic-search eval,
+  15 negatives) was generated by Claude and reviewed by the author; `relevant`
+  lists were extended for two newer posts with the author's approval.
+- The judge is Claude Opus 5.5, judging against the passages (not the blog as a
+  whole). Human spot check of 20 blind items: **13/20 three-way agreement, 16/20 on
+  faithful-vs-not**, 4/5 on the Haiku arm. Most disagreement is "unsupported" vs
+  "non-answer" on answers both consider bad; on the faithful boundary the judge was
+  stricter twice and more lenient twice. The gap between the tiny models (≤3/30)
+  and Qwen3/Gemma 4/Haiku is far larger than this noise.
+- The judge and one arm are both Claude; the judge never saw arm names, and the
+  Haiku items in the spot check agreed 4/5.
+- Haiku 5.5 can't be run greedily (temperature not settable), and 9/45 of its
+  answers hit the 120-token cap; the judge was told not to penalise truncation.
+- Single run per arm; no variance estimate.
