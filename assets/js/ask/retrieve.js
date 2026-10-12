@@ -3,9 +3,25 @@
  * Chunk-level retrieval for /ask/.
  *
  * The homepage search rolls chunks up to posts; /ask/ needs the passages
- * themselves, so this keeps chunk granularity. Zero imports: runs in the
- * browser, the Web Worker, and under `node --test` unchanged.
+ * themselves, so this keeps chunk granularity. Imports only the sibling semantic-search modules (no third-party code).
+ * Runs in the browser, the Web Worker, and under `node --test` unchanged.
  */
+
+import { embedQuery } from "../semantic/embed.js";
+import { cosineScores } from "../semantic/search.js";
+
+/**
+ * Cosine score of `query` against every chunk. `idx` is what
+ * `assets/js/semantic/index.js` `loadIndex()` returns (or the eval's
+ * on-disk equivalent): {manifest, docs, tokens, scales, chunks, wp}.
+ * @returns {Float32Array} all zeros for an empty or fully out-of-vocabulary query
+ */
+export function scoreQuery(idx, query) {
+  const ids = idx.wp.encode(query);
+  const { dims, n_chunks } = idx.manifest;
+  if (ids.length === 0) return new Float32Array(n_chunks);
+  return cosineScores(embedQuery(ids, idx.tokens, idx.scales, dims), idx.docs, n_chunks, dims);
+}
 
 /**
  * @param {Float32Array|number[]} scores - one cosine score per chunk

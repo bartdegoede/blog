@@ -11,6 +11,18 @@ export const MAX_NEW_TOKENS = 120;
 // (measured in the ask eval: most smollm2-135m replies ran to MAX_NEW_TOKENS).
 // The browser worker and the eval harness both pass this to generate().
 export const REPETITION_PENALTY = 1.15;
+
+// Best-chunk cosine below this: don't call the model at all. Chosen in the
+// eval (results doc §3): blocks clearly off-topic questions only; near-miss
+// questions score like answerable ones and still reach the model.
+export const GATE_THRESHOLD = 0.45;
+// The system prompt asks for at most 2 sentences; the worker stops there.
+export const MAX_SENTENCES = 2;
+
+/** @param {Array<{score: number}>} top - topChunks() output, best first */
+export function passesGate(top) {
+  return top.length > 0 && top[0].score >= GATE_THRESHOLD;
+}
 // ~1,200 tokens at ~4 chars/token. A safety net: unreachable with today's
 // chunker at TOP_K=4; guards future chunk-size/TOP_K changes and keeps WASM
 // prefill bounded.
