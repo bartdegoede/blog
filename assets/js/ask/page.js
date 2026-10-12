@@ -12,6 +12,7 @@ import { scoreQuery, topChunks } from "./retrieve.js";
 import { TOP_K, buildMessages, passesGate } from "./prompt.js";
 import { MODELS, DEFAULT_MODEL_ID, CACHE_NAME, fileUrl, totalBytes, modelById } from "./models.js";
 import { DownloadProgress, tileCount } from "./progress.js";
+import { cleanSnippet } from "./display.js";
 
 const WASM_DTYPE = "q4f16"; // confirmed in Part 2 Task 1
 const root = document.getElementById("ask-app");
@@ -402,17 +403,36 @@ function onReady(msg) {
 
 // ---------------------------------------------------------------- asking
 
+/** Group top chunks by post, in the order of each post's best chunk. */
+function groupByPost(top) {
+  const posts = new Map();
+  for (const { chunk } of top) {
+    const key = chunk.post ?? chunk.href;
+    if (!posts.has(key)) posts.set(key, { title: chunk.title, href: chunk.href, chunks: [] });
+    posts.get(key).chunks.push(chunk);
+  }
+  return [...posts.values()];
+}
+
+function sectionItem(chunk, postHref) {
+  const snippet = cleanSnippet(chunk.snippet, chunk.heading);
+  const href = chunk.heading && chunk.anchor ? `${chunk.href}#${chunk.anchor}` : postHref;
+  return `<li class="ask-section">
+    ${chunk.heading ? `<a class="ask-section-heading" href="${esc(href)}">${esc(chunk.heading)}</a>` : ""}
+    ${snippet ? `<span class="ask-section-snippet">${esc(snippet)}</span>` : ""}
+  </li>`;
+}
+
+// Display only: the prompt still gets the raw chunks in score order.
 function renderSources(top) {
   $(".ask-sources-wrap").hidden = false;
-  $(".ask-sources").innerHTML = top
-    .map(({ chunk }) => {
-      const href = chunk.anchor ? `${chunk.href}#${chunk.anchor}` : chunk.href;
-      return `<li><a class="ask-source" href="${esc(href)}">
-        <span class="ask-source-title">${esc(chunk.title)}</span>
-        ${chunk.heading ? `<span class="ask-source-heading">${esc(chunk.heading)}</span>` : ""}
-        <span class="ask-source-snippet">${esc(chunk.snippet)}</span>
-      </a></li>`;
-    })
+  $(".ask-sources").innerHTML = groupByPost(top)
+    .map(
+      (post) => `<li class="ask-source${post.chunks.length > 1 ? " is-multi" : ""}">
+        <a class="ask-source-title" href="${esc(post.href)}">${esc(post.title)}</a>
+        <ul class="ask-sections">${post.chunks.map((c) => sectionItem(c, post.href)).join("")}</ul>
+      </li>`
+    )
     .join("");
 }
 

@@ -36,3 +36,20 @@ export function clampSentences(text, n, final) {
 export function formatAnswer(raw, n) {
   return clampSentences(stripLeadingMarkers(raw).trim(), n, true).text;
 }
+
+const FOOTNOTE_REF = /\s*\[\^[^\]]+\]/g;
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/**
+ * Display-only cleanup of an index snippet (the prompt gets the raw text).
+ * The index keeps markdown footnote refs ("filters[^medium_bloom]") and
+ * prepends the section heading to a section's first chunk ("Closing thoughts
+ * Closing thoughts There are…"); drop both and collapse whitespace.
+ * @param {string} snippet
+ * @param {string|null} heading
+ */
+export function cleanSnippet(snippet, heading) {
+  let text = snippet.replace(FOOTNOTE_REF, "");
+  if (heading) text = text.replace(new RegExp(`^\\s*${escapeRe(heading.trim())}(?:\\s+|$)`), "");
+  return text.replace(/\s+/g, " ").trim();
+}
