@@ -29,3 +29,9 @@ test("fileUrl pins the revision", () => {
   const m = MODELS[0];
   assert.equal(fileUrl(m, "config.json"), `https://huggingface.co/${m.repo}/resolve/${m.revision}/config.json`);
 });
+
+test("exactly the q4f16 demos without a CPU kernel are webgpuOnly; the default is not", () => {
+  const only = MODELS.filter((m) => m.webgpuOnly === true).map((m) => m.id).sort();
+  assert.deepEqual(only, ["gemma3-270m", "lfm2.5-350m"]);
+  assert.notEqual(MODELS.find((m) => m.id === DEFAULT_MODEL_ID).webgpuOnly, true);
+});

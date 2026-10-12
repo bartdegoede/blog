@@ -73,10 +73,13 @@ export class DownloadProgress {
   }
 
   label() {
-    const mb = (x) => Math.round(x / 1e6);
-    const pct = Math.floor(this.fraction * 100);
+    const loaded = this.loadedBytes;
+    const done = loaded === this.total;
+    // Floor the loaded MB like the percentage, so "258 / 258 MB" only appears at 100%.
+    const loadedMb = done ? Math.round(loaded / 1e6) : Math.floor(loaded / 1e6);
+    const pct = done ? 100 : Math.floor(this.fraction * 100);
     const eta = this.etaSeconds;
-    const tail = eta !== null && pct < 100 ? ` · ~${formatEta(eta)} left` : "";
-    return `${mb(this.loadedBytes)} / ${mb(this.total)} MB · ${pct}%${tail}`;
+    const tail = eta !== null && !done ? ` · ~${formatEta(eta)} left` : "";
+    return `${loadedMb} / ${Math.round(this.total / 1e6)} MB · ${pct}%${tail}`;
   }
 }

@@ -14,7 +14,7 @@ const WASM_DTYPE = "q4f16"; // confirmed in Part 2 Task 1
 const root = document.getElementById("ask-app");
 const WORKER_URL = root?.dataset.worker;
 
-const state = { backend: null, model: null, worker: null, progress: null, busy: false, nextId: 1, currentId: null };
+const state = { backend: null, model: null, worker: null, progress: null, fromCache: false, busy: false, nextId: 1, currentId: null };
 
 const esc = (s) =>
   String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -45,7 +45,8 @@ async function isCached(model) {
   }
 }
 
-function modelCard(m) {
+function modelCard(m, backend) {
+  const blocked = backend === "wasm" && m.webgpuOnly;
   const stats = `In my eval: <strong>${m.faithful}/30</strong> faithful answers; made something up for <strong>${m.invented}/15</strong> questions the blog doesn't answer.`;
   return `
     <div class="ask-model" data-model="${m.id}">
@@ -55,7 +56,8 @@ function modelCard(m) {
         <span class="ask-model-cached" hidden>Cached, loads instantly</span>
       </div>
       <p class="ask-model-stats">${stats}</p>
-      <button type="button" class="ask-load" data-model="${m.id}">Load ${esc(m.name)} (${mb(totalBytes(m))})</button>
+      <button type="button" class="ask-load" data-model="${m.id}"${blocked ? " disabled" : ""}>Load ${esc(m.name)} (${mb(totalBytes(m))})</button>
+      ${blocked ? '<p class="ask-model-blocked">Needs WebGPU (not available in this browser)</p>' : ""}
     </div>`;
 }
 
@@ -70,11 +72,11 @@ function renderIdle(cap) {
   // (GitHub Pages can't send COOP/COEP, so no WASM threads).
   root.innerHTML = `
     <p class="ask-capability">${esc(backend)}${cap.memoryGb ? ` Device memory: ~${cap.memoryGb} GB.` : ""}</p>
-    ${def.map(modelCard).join("")}
+    ${def.map((m) => modelCard(m, cap.device)).join("")}
     <details class="ask-demos">
       <summary>See why size matters: three smaller models</summary>
       <p>These are smaller, but in my eval they were almost never faithful to the passages. Try one to see what that looks like.</p>
-      ${demos.map(modelCard).join("")}
+      ${demos.map((m) => modelCard(m, cap.device)).join("")}
     </details>
     <p class="ask-manage"><button type="button" class="ask-delete">Delete downloaded models</button></p>
     <div class="ask-loading" hidden></div>
@@ -116,17 +118,19 @@ function paintProgress() {
   const pct = Math.floor(p.fraction * 100);
   $(".ask-progress").setAttribute("aria-valuenow", String(pct));
   $(".ask-progress-fill").style.width = `${pct}%`;
-  $(".ask-progress-label").textContent = pct >= 100 ? "Preparing model…" : p.label();
+  $(".ask-progress-label").textContent = pct >= 100 ? "Preparing model…" : state.fromCache ? "Loading from cache" : p.label();
   const tiles = root.querySelectorAll(".ask-tile");
   const filled = Math.floor(p.fraction * tiles.length);
   tiles.forEach((t, i) => t.classList.toggle("is-filled", i < filled));
 }
 
-function startWorker(model, device) {
+async function startWorker(model, device) {
   state.worker?.terminate();
   state.model = model;
   state.progress = new DownloadProgress(model.files);
+  state.fromCache = await isCached(model);
   renderLoading(model);
+  if (state.fromCache) $(".ask-progress-label").textContent = "Loading from cache";
   const worker = new Worker(WORKER_URL, { type: "module" });
   state.worker = worker;
   worker.onmessage = ({ data }) => onWorker(data, device);
@@ -143,7 +147,7 @@ function showLoadError(message, device) {
   el.hidden = false;
   el.innerHTML = `Loading failed: ${esc(message)}
     <button type="button" class="ask-retry">Retry</button>
-    ${device === "webgpu" ? '<button type="button" class="ask-retry-wasm">Try slower mode (CPU)</button>' : ""}`;
+    ${device === "webgpu" && !state.model?.webgpuOnly ? '<button type="button" class="ask-retry-wasm">Try slower mode (CPU)</button>' : ""}`;
 }
 
 function onWorker(msg, device) {

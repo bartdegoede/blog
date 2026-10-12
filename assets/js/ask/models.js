@@ -37,6 +37,8 @@ export const MODELS = [
   {
     id: "gemma3-270m", name: "Gemma 3 270M", role: "demo", params: "270M",
     repo: "onnx-community/gemma-3-270m-it-ONNX", revision: "2dbbfdb1b59bd034eb959428c6a7da9dd7ea27f0", dtype: "q4f16",
+    // q4f16 uses GatherBlockQuantized, which has no CPU/WASM kernel in onnxruntime-web (measured in Part 2).
+    webgpuOnly: true,
     faithful: 3, invented: 13,
     files: [
       { path: "config.json", bytes: 1652 },
@@ -50,6 +52,8 @@ export const MODELS = [
   {
     id: "lfm2.5-350m", name: "LFM2.5-350M", role: "demo", params: "350M",
     repo: "onnx-community/LFM2.5-350M-ONNX", revision: "7dd4999565b0342c381ba90a3d8fc467d6df19c4", dtype: "q4f16",
+    // q4f16 uses GatherBlockQuantized, which has no CPU/WASM kernel in onnxruntime-web (measured in Part 2).
+    webgpuOnly: true,
     faithful: 2, invented: 14,
     files: [
       { path: "config.json", bytes: 1443 },

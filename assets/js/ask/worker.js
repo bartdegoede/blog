@@ -12,7 +12,9 @@ import { clampSentences, formatAnswer, stripLeadingMarkers } from "./display.js"
 // the import() alone instead of trying to bundle a URL.
 const TRANSFORMERS_URL = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1/+esm";
 const BENCH_MESSAGES = [{ role: "user", content: "In one paragraph, explain what a search index is." }];
-const BENCH_TOKENS = 64;
+// Single-threaded WASM runs ~1.2 tok/s, so 64 tokens would mean ~50 s of waiting.
+const BENCH_TOKENS_WEBGPU = 64;
+const BENCH_TOKENS_WASM = 16;
 
 let tf = null;
 let generator = null;
@@ -77,7 +79,8 @@ async function load({ model, device }) {
   });
   post({ type: "status", text: "Warming up…" });
   await generate(BENCH_MESSAGES, 1); // untimed: compiles shaders / initialises kernels
-  const bench = await generate(BENCH_MESSAGES, BENCH_TOKENS);
+  post({ type: "status", text: "Measuring speed on your machine…" });
+  const bench = await generate(BENCH_MESSAGES, device === "wasm" ? BENCH_TOKENS_WASM : BENCH_TOKENS_WEBGPU);
   post({ type: "ready", device, bench: { ttft_ms: bench.ttft_ms, tok_s: bench.tok_s } });
 }
 

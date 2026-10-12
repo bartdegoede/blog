@@ -572,6 +572,7 @@ input[type="search"] {
 .ask-model-name { font-weight: 600; }
 .ask-model-size, .ask-model-cached { font-size: 0.85rem; color: var(--secondary); }
 .ask-model-cached { color: var(--primary); }
+.ask-model-blocked { font-size: 0.85rem; color: var(--secondary); margin: 0.5rem 0 0; }
 .ask-page button { border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.8rem; background: var(--theme); color: var(--primary); cursor: pointer; }
 .ask-page button:disabled { opacity: 0.5; cursor: default; }
 .ask-demos { margin: 1rem 0; }

@@ -55,3 +55,21 @@ test("formatEta and tileCount", () => {
   assert.equal(tileCount(578918281), 145);
   assert.equal(tileCount(1), 1);
 });
+
+test("label shows 100% and no ETA once every byte is in", () => {
+  const now = clock();
+  const p = new DownloadProgress([{ path: "a", bytes: 258451784 }], now);
+  p.update("a", 0);
+  now.advance(1000);
+  p.update("a", 100000000);
+  now.advance(1000);
+  p.update("a", 258451784); // exact size, via update()
+  assert.equal(p.loadedBytes, p.total);
+  assert.equal(p.label(), "258 / 258 MB · 100%");
+});
+
+test("label never shows the full MB total before every byte is in", () => {
+  const p = new DownloadProgress([{ path: "a", bytes: 258451784 }], clock());
+  p.update("a", 257900000); // 99.8%: rounding the MB would read "258 / 258 MB · 99%"
+  assert.match(p.label(), /^257 \/ 258 MB · 99%/);
+});
