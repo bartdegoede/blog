@@ -7,9 +7,12 @@
 
 export const TOP_K = 4;
 export const MAX_NEW_TOKENS = 120;
-// ~1,200 tokens at ~4 chars/token. Four chunks average ~1,900 chars, so this
-// only bites on unusually long chunks; it exists to keep WASM prefill bounded.
+// ~1,200 tokens at ~4 chars/token. A safety net: unreachable with today's
+// chunker at TOP_K=4; guards future chunk-size/TOP_K changes and keeps WASM
+// prefill bounded.
 export const MAX_PASSAGE_CHARS = 4800;
+// Never add a passage with less body room than this (avoids mid-word fragments).
+export const MIN_PASSAGE_CHARS = 100;
 
 export const SYSTEM_PROMPT =
   "You answer questions about a personal technical blog. " +
@@ -30,13 +33,13 @@ export function buildMessages(question, passages) {
   const parts = [];
   let used = 0;
   for (let i = 0; i < passages.length; i++) {
-    if (used >= MAX_PASSAGE_CHARS) break;
+    const sep = parts.length ? 2 : 0;
     const head = label(passages[i], i);
-    const room = MAX_PASSAGE_CHARS - used - head.length - 2;
-    if (room <= 0) break;
+    const room = MAX_PASSAGE_CHARS - used - sep - head.length - 1;
+    if (room < MIN_PASSAGE_CHARS) break;
     const body = passages[i].snippet.slice(0, room);
     parts.push(`${head}\n${body}`);
-    used += head.length + body.length + 2;
+    used += sep + head.length + 1 + body.length;
   }
   const user = `Passages:\n\n${parts.join("\n\n")}\n\nQuestion: ${question}`;
   return [
@@ -47,10 +50,10 @@ export function buildMessages(question, passages) {
 
 /**
  * For chat templates without a system role: prepend the system prompt to the
- * first user message.
+ * first user message. Assumes the message after the system message is a user turn.
  */
 export function foldSystem(messages) {
   const [sys, first, ...rest] = messages;
-  if (sys.role !== "system") return messages;
+  if (!sys || sys.role !== "system" || !first) return messages;
   return [{ role: "user", content: `${sys.content}\n\n${first.content}` }, ...rest];
 }
