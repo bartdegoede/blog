@@ -1,0 +1,15 @@
+{{- define "main" }}
+<article class="post-single ask-page">
+  <header class="post-header">
+    <h1 class="post-title">{{ .Title }}</h1>
+  </header>
+  <div class="post-content">{{ .Content }}</div>
+  {{- $build := dict "minify" true "target" "es2020" "format" "esm" -}}
+  {{- $worker := resources.Get "js/ask/worker.js" | js.Build $build | fingerprint -}}
+  {{- $app := resources.Get "js/ask/page.js" | js.Build $build | fingerprint -}}
+  <div id="ask-app" data-worker="{{ $worker.RelPermalink }}">
+    <noscript><p>This page needs JavaScript: the model runs in your browser.</p></noscript>
+  </div>
+  <script type="module" src="{{ $app.RelPermalink }}" integrity="{{ $app.Data.Integrity }}" data-cf-async="false"></script>
+</article>
+{{- end }}

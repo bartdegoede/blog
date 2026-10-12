@@ -564,3 +564,49 @@ input[type="search"] {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+/* ---------- /ask/ page ---------- */
+.ask-capability, .ask-machine, .ask-meta, .ask-model-stats, .ask-label { font-size: 0.9rem; color: var(--secondary); }
+.ask-model { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1rem 0; background: var(--entry); }
+.ask-model-head { display: flex; gap: 0.75rem; align-items: baseline; flex-wrap: wrap; }
+.ask-model-name { font-weight: 600; }
+.ask-model-size, .ask-model-cached { font-size: 0.85rem; color: var(--secondary); }
+.ask-model-cached { color: var(--primary); }
+.ask-page button { border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.8rem; background: var(--theme); color: var(--primary); cursor: pointer; }
+.ask-page button:disabled { opacity: 0.5; cursor: default; }
+.ask-demos { margin: 1rem 0; }
+.ask-demos summary { cursor: pointer; }
+
+.ask-progress { height: 10px; border-radius: 5px; background: var(--border); overflow: hidden; }
+.ask-progress-fill { height: 100%; width: 0; background: var(--primary); transition: width 0.2s linear; }
+.ask-progress-label { font-variant-numeric: tabular-nums; font-size: 0.9rem; margin: 0.5rem 0; }
+.ask-map { display: grid; grid-template-columns: repeat(auto-fill, minmax(10px, 1fr)); gap: 3px; margin: 0.75rem 0; }
+.ask-tile { aspect-ratio: 1; border-radius: 2px; background: var(--border); transition: background 0.3s; }
+.ask-tile.is-filled { background: var(--primary); }
+.ask-error { color: #c0392b; }
+
+.ask-form { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+.ask-input { flex: 1 1 16rem; padding: 0.6rem 0.8rem; border: 1px solid var(--border); border-radius: 8px; background: var(--entry); color: var(--primary); }
+.ask-answer { border-left: 3px solid var(--primary); padding: 0.25rem 0 0.25rem 1rem; margin: 1rem 0; }
+.ask-summary { font-size: 1.05rem; }
+.ask-skeleton { display: block; height: 0.9em; margin: 0.4em 0; border-radius: 4px; background: var(--border); animation: ask-pulse 1.2s ease-in-out infinite; }
+.ask-skeleton + .ask-skeleton { width: 60%; }
+.ask-cursor { display: inline-block; width: 0.5em; height: 1em; margin-left: 2px; vertical-align: text-bottom; background: var(--primary); animation: ask-blink 1s steps(1) infinite; }
+
+.ask-sources { padding-left: 1.25rem; }
+.ask-source { margin: 0.75rem 0; border-radius: 6px; }
+.ask-source blockquote { font-size: 0.9rem; margin: 0.25rem 0 0; }
+.ask-sources.is-reading .ask-source { background: linear-gradient(90deg, transparent 0%, var(--border) 50%, transparent 100%); background-size: 200% 100%; animation: ask-sweep 1.6s linear infinite; }
+.ask-sources.is-reading .ask-source:nth-child(2) { animation-delay: 0.2s; }
+.ask-sources.is-reading .ask-source:nth-child(3) { animation-delay: 0.4s; }
+.ask-sources.is-reading .ask-source:nth-child(4) { animation-delay: 0.6s; }
+
+@keyframes ask-pulse { 50% { opacity: 0.4; } }
+@keyframes ask-blink { 50% { opacity: 0; } }
+@keyframes ask-sweep { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ask-map { display: none; }
+  .ask-skeleton, .ask-cursor, .ask-sources.is-reading .ask-source { animation: none; }
+  .ask-progress-fill, .ask-tile { transition: none; }
+}
