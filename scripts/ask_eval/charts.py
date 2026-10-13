@@ -153,7 +153,7 @@ def quality_vs_size(judgements, cands) -> str:
 
 
 def length_chart(judged_len) -> str:
-    w, h, left, right, top, bottom = 680, 340, 64, 150, 36, 56
+    w, h, left, right, top, bottom = 680, 340, 64, 180, 36, 56
     ns = (2, 4, 6)
     series = (("gemma4-e2b", "Gemma 4 E2B", "viz-s1"), ("qwen3-0.6b", "Qwen3-0.6B", "viz-s2"))
 
