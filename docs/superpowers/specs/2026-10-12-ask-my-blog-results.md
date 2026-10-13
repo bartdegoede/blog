@@ -192,3 +192,28 @@ so WASM runs single-threaded.
 - Stop on WASM: the worker never sees a stop message mid-generation, so Stop
   terminates the worker (≈30 ms); if the model is cached it reloads (2-3.5 s),
   otherwise it offers a "Reload model (N MB download)" button instead of downloading silently.
+
+## 9. Answer length vs faithfulness
+
+Does letting the model say more help? Qwen3-0.6B and Gemma 4 E2B, same 45
+questions and passages, system prompt "at most N sentences", `max_new_tokens = 60·N`,
+early stop at N sentences (exactly what the page does), judged by Opus 5.5 with
+"do not penalise length". Generations: `scripts/ask_eval/results/length/`;
+judgements: `results/judgements-length.jsonl`; table: `results/length/report.md`.
+
+| model | N | faithful | unsupported | invented on negatives | mean sentences |
+|---|---|---|---|---|---|
+| Qwen3-0.6B | 2 | 15/30 (50%) | 15/30 | 5/15 | 1.7 |
+| Qwen3-0.6B | 4 | 9/30 (30%) | 21/30 | 7/15 | 2.9 |
+| Qwen3-0.6B | 6 | 5/30 (17%) | 24/30 | 6/15 | 3.8 |
+| Gemma 4 E2B | 2 | 28/30 (93%) | 2/30 | 0/15 | 1.6 |
+| Gemma 4 E2B | 4 | 26/30 (87%) | 4/30 | 0/15 | 2.4 |
+| Gemma 4 E2B | 6 | 24/30 (80%) | 6/30 | 0/15 | 2.8 |
+
+- Faithfulness falls with length for both; steeply for the small model
+  (50% → 17%), gently for the large one (93% → 80%).
+- Gemma 4 barely uses the extra room (2.8 sentences when allowed 6) and never
+  invents an answer to a question the blog doesn't cover.
+- N=2 reproduces the main eval exactly (Qwen 15/30, Gemma 28/30) with early stop
+  on: the page's two-sentence clamp didn't change the measured quality.
+- Decision: keep the two-sentence cap; no "longer answer" feature.
