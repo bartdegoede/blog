@@ -2,6 +2,8 @@
 """Label every arm's summary as faithful / unsupported / non-answer against its passages."""
 
 import json
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Literal
 
@@ -13,9 +15,9 @@ HERE = Path(__file__).parent
 JUDGE = "claude-opus-5-5"
 IN_PER_M, OUT_PER_M = 4.00, 20.00  # USD, Claude Opus 5.5
 
-INSTRUCTIONS = """You are grading a short answer written by a small language model.
+INSTRUCTIONS_TEMPLATE = """You are grading a short answer written by a small language model.
 The model was given numbered passages from a blog and a question, and told to answer
-in at most 2 sentences using only the passages.
+in at most {n} sentences using only the passages.
 
 Label the answer:
 - "faithful": every factual claim in the answer is supported by the passages, and it
@@ -27,7 +29,16 @@ Label the answer:
   passages do (declines wrongly, rambles, repeats the question, empty).
 
 An answer that is cut off mid-sentence is judged on what it says, not penalised for the
-cut-off itself. Judge only against the passages, not your own knowledge of the topic."""
+cut-off itself. Judge only against the passages, not your own knowledge of the topic.{extra}"""
+INSTRUCTIONS = INSTRUCTIONS_TEMPLATE.format(n=2, extra="")
+LENGTH_NOTE = " Do not penalise length; judge only whether claims are supported."
+
+
+def instructions(max_sentences: int | None) -> str:
+    """Rows without max_sentences (the original eval) get the original text byte-for-byte."""
+    if max_sentences is None:
+        return INSTRUCTIONS
+    return INSTRUCTIONS_TEMPLATE.format(n=max_sentences, extra=LENGTH_NOTE)
 
 
 class Verdict(BaseModel):
@@ -40,17 +51,20 @@ def load_jsonl(path: Path) -> list[dict]:
     return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
 
 
-def render(p: dict, summary: str) -> str:
+def render(p: dict, summary: str, max_sentences: int | None = None) -> str:
     passages = "\n\n".join(
         f"[{i + 1}] {x['title']}\n{x['snippet']}" for i, x in enumerate(p["passages"])
     )
     return (
-        f"{INSTRUCTIONS}\n\n<passages>\n{passages}\n</passages>\n\n"
+        f"{instructions(max_sentences)}\n\n<passages>\n{passages}\n</passages>\n\n"
         f"<question>{p['question']}</question>\n\n<answer>{summary}</answer>"
     )
 
 
-def arm_files() -> dict[str, Path]:
+def arm_files(runs_dir: Path | None = None) -> dict[str, Path]:
+    """Default: results/local/ plus the hosted arm. With runs_dir: just its *.jsonl."""
+    if runs_dir is not None:
+        return {p.stem: p for p in sorted(runs_dir.glob("*.jsonl"))}
     files = {p.stem: p for p in sorted((HERE / "results" / "local").glob("*.jsonl"))}
     hosted = HERE / "results" / "hosted" / "haiku-5-5.jsonl"
     if hosted.exists():
@@ -71,14 +85,44 @@ def cost(inp: int, out: int) -> float:
 @click.command()
 @click.option("--arm", "arms", multiple=True, help="Only judge these arms.")
 @click.option("--limit", type=int, default=None, help="Judge only the first N rows.")
-@click.option("--dry-run", is_flag=True, help="Write to judgements.dryrun.jsonl.")
-def main(arms: tuple[str, ...], limit: int | None, dry_run: bool) -> None:
+@click.option("--dry-run", is_flag=True, help="Write to <out stem>.dryrun.jsonl.")
+@click.option(
+    "--runs-dir",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=None,
+    help="Judge every *.jsonl here (relative to scripts/ask_eval/) instead of "
+    "results/local + hosted.",
+)
+@click.option(
+    "--out",
+    "out_path",
+    type=click.Path(dir_okay=False, path_type=Path),
+    default=Path("results/judgements.jsonl"),
+    show_default=True,
+    help="Judgements file, relative to scripts/ask_eval/.",
+)
+@click.option(
+    "--workers",
+    type=click.IntRange(1, 8),
+    default=1,
+    show_default=True,
+    help="Concurrent judge requests (the SDK retries 429s).",
+)
+def main(
+    arms: tuple[str, ...],
+    limit: int | None,
+    dry_run: bool,
+    runs_dir: Path | None,
+    out_path: Path,
+    workers: int,
+) -> None:
     results = HERE / "results"
-    real_out = results / "judgements.jsonl"
-    out = results / ("judgements.dryrun.jsonl" if dry_run else "judgements.jsonl")
+    runs_dir = HERE / runs_dir if runs_dir is not None else None
+    real_out = HERE / out_path
+    out = real_out.with_suffix(".dryrun.jsonl") if dry_run else real_out
 
     prompts = {p["id"]: p for p in load_jsonl(results / "prompts.jsonl")}
-    files = arm_files()
+    files = arm_files(runs_dir)
     if arms:
         unknown = [a for a in arms if a not in files]
         if unknown:
@@ -95,35 +139,60 @@ def main(arms: tuple[str, ...], limit: int | None, dry_run: bool) -> None:
 
     client = anthropic.Anthropic()
     tok_in = tok_out = 0
-    with out.open("a") as f:
-        for r in todo:
-            p = prompts[r["id"]]
-            resp = client.messages.parse(
-                model=JUDGE,
-                max_tokens=16000,
-                messages=[{"role": "user", "content": render(p, r["summary"])}],
-                output_format=Verdict,
-            )
-            tok_in += resp.usage.input_tokens
-            tok_out += resp.usage.output_tokens
-            if resp.stop_reason == "refusal" or resp.parsed_output is None:
-                verdict = {
-                    "label": "judge-refused",
-                    "unsupported_claims": [],
-                    "reason": str(resp.stop_reason),
+    lock = threading.Lock()
+
+    def judge_one(r: dict) -> tuple[dict, anthropic.types.Usage]:
+        p = prompts[r["id"]]
+        resp = client.messages.parse(
+            model=JUDGE,
+            max_tokens=16000,
+            messages=[
+                {
+                    "role": "user",
+                    "content": render(p, r["summary"], r.get("max_sentences")),
                 }
-            else:
-                verdict = resp.parsed_output.model_dump()
-            line = {"arm": r["arm"], "id": r["id"], "family": p["family"], **verdict}
-            f.write(json.dumps(line) + "\n")
-            f.flush()
-            click.echo(".", nl=False)
+            ],
+            output_format=Verdict,
+        )
+        if resp.stop_reason == "refusal" or resp.parsed_output is None:
+            verdict = {
+                "label": "judge-refused",
+                "unsupported_claims": [],
+                "reason": str(resp.stop_reason),
+            }
+        else:
+            verdict = resp.parsed_output.model_dump()
+        line = {"arm": r["arm"], "id": r["id"], "family": p["family"], **verdict}
+        return line, resp.usage
+
+    # Rows are keyed by (arm, id), so completion order doesn't matter; the
+    # lock keeps each JSONL line whole and the token totals consistent.
+    with out.open("a") as f, ThreadPoolExecutor(max_workers=workers) as pool:
+        failed = 0
+        for fut in as_completed(pool.submit(judge_one, r) for r in todo):
+            try:
+                line, usage = fut.result()
+            except anthropic.APIError as e:
+                # Leave the row unjudged; re-running the command resumes it.
+                failed += 1
+                click.echo(f"\n[error] {type(e).__name__}: {e}", err=True)
+                continue
+            with lock:
+                tok_in += usage.input_tokens
+                tok_out += usage.output_tokens
+                f.write(json.dumps(line) + "\n")
+                f.flush()
+                click.echo(".", nl=False)
     click.echo()
+    if failed:
+        click.echo(f"{failed} rows failed; re-run to resume them.")
 
     spent = cost(tok_in, tok_out)
     click.echo(f"tokens: {tok_in} in, {tok_out} out; cost ${spent:.4f}")
     if todo:
-        all_rows = [r for path in arm_files().values() for r in load_jsonl(path)]
+        all_rows = [
+            r for path in arm_files(runs_dir).values() for r in load_jsonl(path)
+        ]
         real_done = done_pairs(real_out)
         remaining = sum(1 for r in all_rows if (r["arm"], r["id"]) not in real_done)
         per_row = spent / len(todo)
