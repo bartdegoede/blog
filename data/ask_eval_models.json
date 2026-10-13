@@ -1,0 +1,86 @@
+[
+  {
+    "name": "SmolLM2-135M",
+    "group": "budget",
+    "download": "120 MB",
+    "mb": 120,
+    "faithful": 0,
+    "n": 30,
+    "invented": 14,
+    "nn": 15,
+    "series": "",
+    "default": false
+  },
+  {
+    "name": "LFM2.5-350M",
+    "group": "budget",
+    "download": "258 MB",
+    "mb": 258,
+    "faithful": 2,
+    "n": 30,
+    "invented": 14,
+    "nn": 15,
+    "series": "",
+    "default": false
+  },
+  {
+    "name": "SmolLM2-360M",
+    "group": "budget",
+    "download": "275 MB",
+    "mb": 275,
+    "faithful": 3,
+    "n": 30,
+    "invented": 15,
+    "nn": 15,
+    "series": "",
+    "default": false
+  },
+  {
+    "name": "Gemma 3 270M",
+    "group": "budget",
+    "download": "293 MB",
+    "mb": 293,
+    "faithful": 3,
+    "n": 30,
+    "invented": 13,
+    "nn": 15,
+    "series": "",
+    "default": false
+  },
+  {
+    "name": "Qwen3-0.6B",
+    "group": "larger",
+    "download": "579 MB",
+    "mb": 579,
+    "faithful": 15,
+    "n": 30,
+    "invented": 5,
+    "nn": 15,
+    "series": "s2",
+    "default": true
+  },
+  {
+    "name": "Gemma 4 E2B",
+    "group": "larger",
+    "download": "3.1 GB",
+    "mb": 3131,
+    "faithful": 28,
+    "n": 30,
+    "invented": 0,
+    "nn": 15,
+    "series": "s1",
+    "default": false
+  },
+  {
+    "name": "Haiku 5.5",
+    "group": "api",
+    "download": "API",
+    "mb": 0,
+    "faithful": 27,
+    "n": 30,
+    "invented": 1,
+    "nn": 15,
+    "series": "",
+    "default": false
+  }
+]

@@ -1,0 +1,39 @@
+{{- /*
+  The /ask/ eval results table, rendered from data/ask_eval_models.json
+  (written by scripts/ask_eval/charts.py, so it can't drift from the eval).
+  Usage: {{< eval-table >}}
+*/ -}}
+{{- $rows := site.Data.ask_eval_models -}}
+{{- $groups := slice (dict "id" "budget" "label" "Fits a 350 MB download") (dict "id" "larger" "label" "Larger downloads") (dict "id" "api" "label" "Hosted API") -}}
+<div class="eval-table-wrap">
+<table class="eval-table">
+  <thead>
+    <tr>
+      <th scope="col">Model</th>
+      <th scope="col" class="num">Download</th>
+      <th scope="col" class="num">Faithful <span class="eval-of">of 30</span></th>
+      <th scope="col" class="num" title="Made up an answer to one of the 15 questions the blog doesn't answer">Invented <span class="eval-of">of 15</span></th>
+    </tr>
+  </thead>
+  {{- range $groups }}
+  {{- $gid := .id }}
+  <tbody>
+    <tr class="eval-group"><th colspan="4" scope="rowgroup">{{ .label }}</th></tr>
+    {{- range where $rows "group" $gid }}
+    <tr{{ if .default }} class="eval-default"{{ end }}>
+      <th scope="row">
+        {{- with .series }}<span class="eval-dot eval-{{ . }}" aria-hidden="true"></span>{{ end -}}
+        {{ .name }}{{ if .default }} <span class="eval-tag">default</span>{{ end }}
+      </th>
+      <td class="num eval-muted">{{ .download }}</td>
+      <td class="num">
+        <span class="eval-track" aria-hidden="true"><span class="eval-fill{{ with .series }} eval-{{ . }}{{ end }}" style="width: {{ mul (div (float .faithful) .n) 100 }}%"></span></span>
+        <span class="eval-val">{{ .faithful }}</span>
+      </td>
+      <td class="num"><span class="eval-val">{{ .invented }}</span></td>
+    </tr>
+    {{- end }}
+  </tbody>
+  {{- end }}
+</table>
+</div>

@@ -203,10 +203,38 @@ def length_chart(judged_len) -> str:
     return "\n".join(lines)
 
 
+def table_rows(judgements, cands) -> list[dict]:
+    """Rows for the post's {{< eval-table >}} shortcode (data/ask_eval_models.json)."""
+    tier = {c["arm"]: c for c in cands}
+    rows = []
+    for arm, name in NAMES.items():
+        judged = [j for j in judgements if j["arm"] == arm]
+        if not judged:
+            continue
+        f, n, inv, nn = counts(judged)
+        c = tier.get(arm)
+        mb = c["download_mb"] if c else None
+        group = "api" if c is None else ("budget" if mb <= 350 else "larger")
+        rows.append({
+            "name": "Haiku 5.5" if arm == "haiku-5-5" else name,
+            "group": group,
+            "download": "API" if mb is None else (f"{mb / 1000:.1f} GB" if mb >= 1000 else f"{mb} MB"),
+            "mb": mb or 0,
+            "faithful": f, "n": n, "invented": inv, "nn": nn,
+            "series": {"gemma4-e2b": "s1", "qwen3-0.6b": "s2"}.get(arm, ""),
+            "default": arm == "qwen3-0.6b",
+        })
+    order = {"budget": 0, "larger": 1, "api": 2}
+    return sorted(rows, key=lambda r: (order[r["group"]], r["mb"]))
+
+
 def main() -> None:
     results = HERE / "results"
     cands = json.loads((HERE / "candidates.json").read_text())
     OUT.mkdir(parents=True, exist_ok=True)
+    data = ROOT / "data" / "ask_eval_models.json"
+    data.parent.mkdir(exist_ok=True)
+    data.write_text(json.dumps(table_rows(load(results / "judgements.jsonl"), cands), indent=2) + "\n")
     (OUT / "quality-vs-size.svg").write_text(quality_vs_size(load(results / "judgements.jsonl"), cands))
     (OUT / "faithfulness-vs-length.svg").write_text(length_chart(load(results / "judgements-length.jsonl")))
     # Sanity: the arm_summary rates agree with the counts drawn.
