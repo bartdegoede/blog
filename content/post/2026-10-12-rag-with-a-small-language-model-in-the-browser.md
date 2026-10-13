@@ -6,6 +6,9 @@ slug: "rag-with-a-small-language-model-in-the-browser"
 categories: ["machine learning", "ai", "search", "javascript", "hugo"]
 keywords: ["rag", "retrieval augmented generation", "small language models", "transformers.js", "webgpu", "wasm", "qwen3", "gemma", "llm evaluation", "static site", "browser"]
 description: "My blog does semantic search in your browser. Now it also runs a (small) language model in your browser."
+cover:
+    image: "/img/2026-10-12-rag-with-a-small-language-model-in-the-browser/cover.jpg"
+    alt: "Pencil sketch of a laptop running ask my blog, a mug reading two sentences max, and sticky notes: retrieve, summarize, check the sources"
 related:
   - semantic-search-in-your-browser
   - building-a-semantic-search-engine-in-250-lines-of-python
