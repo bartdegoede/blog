@@ -719,3 +719,30 @@ input[type="search"] {
 .video-quality { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.75rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 6px; border: 1px solid var(--border); background: var(--theme); color: var(--primary); opacity: 0.85; cursor: pointer; }
 .video-quality:hover, .video-quality:focus-visible { opacity: 1; }
 .video-figure figcaption { font-size: 0.85rem; color: var(--secondary); margin-top: 0.5rem; text-align: center; }
+
+/* ---------- inline SVG charts (scripts/ask_eval/charts.py) ---------- */
+/* Series colours: validated categorical slots 1-2 (dataviz reference palette), stepped for dark. */
+.viz { --viz-s1: #2a78d6; --viz-s2: #eb6834; width: 100%; height: auto; display: block; font-family: inherit; }
+.dark .viz { --viz-s1: #3987e5; --viz-s2: #d95926; }
+.viz text { font-size: 12px; }
+.viz .viz-tick { fill: var(--secondary); font-variant-numeric: tabular-nums; }
+.viz .viz-axis { fill: var(--secondary); font-size: 12px; }
+.viz .viz-label { fill: var(--primary); font-size: 12px; }
+.viz .viz-note { fill: var(--secondary); font-size: 11px; font-style: italic; }
+.viz .viz-grid { stroke: var(--border); stroke-width: 1; }
+.viz .viz-baseline { stroke: var(--secondary); stroke-width: 1; opacity: 0.6; }
+.viz .viz-sep { stroke: var(--secondary); stroke-width: 1; stroke-dasharray: 3 4; opacity: 0.6; }
+.viz .viz-band { fill: var(--tertiary); opacity: 0.35; }
+.viz .viz-dot { stroke: var(--theme); stroke-width: 2; }
+.viz .viz-dot.viz-s1 { fill: var(--viz-s1); }
+.viz .viz-dot.viz-s2 { fill: var(--viz-s2); }
+.viz .viz-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.viz .viz-line.viz-s1 { stroke: var(--viz-s1); }
+.viz .viz-line.viz-s2 { stroke: var(--viz-s2); }
+.viz .viz-hit { fill: transparent; }
+.viz g:hover .viz-dot { stroke: var(--primary); }
+.viz-figure { margin: 1.5rem 0; }
+.viz-figure figcaption { font-size: 0.85rem; color: var(--secondary); margin-top: 0.5rem; text-align: center; }
+.viz .viz-dot.viz-muted { fill: var(--secondary); }
+.viz .viz-dot.viz-hollow { fill: var(--theme); stroke: var(--secondary); stroke-width: 2; }
+.viz .viz-sub { fill: var(--secondary); }
