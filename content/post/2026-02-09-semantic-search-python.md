@@ -15,6 +15,7 @@ related:
   - building-a-full-text-search-engine-150-lines-of-code
   - semantic-search-in-your-browser
   - modernizing-python-search-engine
+  - rag-with-a-small-language-model-in-the-browser
 ---
 
 {{<audio src="/audio/2026-02-09-semantic-search-python.mp3" type="mp3">}}

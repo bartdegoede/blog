@@ -12,6 +12,7 @@ related:
   - building-a-semantic-search-engine-in-250-lines-of-python
   - building-a-full-text-search-engine-150-lines-of-code
   - searching-your-hugo-site-with-lunr
+  - rag-with-a-small-language-model-in-the-browser
 ---
 
 {{<audio src="/audio/2026-07-10-semantic-search-in-your-browser.mp3" type="mp3">}}
