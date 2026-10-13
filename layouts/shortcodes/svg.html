@@ -1,0 +1,13 @@
+{{- /*
+  Inline an SVG from assets/svg/<post file stem>/<name> so it can use the page's
+  CSS (theme-aware charts). Usage: {{< svg "quality-vs-size.svg" "Optional caption" >}}
+*/ -}}
+{{- $path := printf "svg/%s/%s" .Page.File.ContentBaseName (.Get 0) -}}
+{{- with resources.Get $path -}}
+<figure class="viz-figure">
+  {{ .Content | safeHTML }}
+  {{- with $.Get 1 }}<figcaption>{{ . | markdownify }}</figcaption>{{ end }}
+</figure>
+{{- else -}}
+{{- errorf "svg shortcode: %s not found" $path -}}
+{{- end -}}

@@ -41,6 +41,13 @@ Converts blog post markdown to an MP3 using a **local** Kokoro-82M model (via
 - Python dependencies are in `pyproject.toml` / `uv.lock`; run everything with `uv run`.
 - Needs `espeak-ng` and `ffmpeg` (Homebrew) for Kokoro's G2P and MP3 encoding.
 - Pronunciation of jargon is fixed with the shared lexicon `scripts/tts_lexicon.yaml`.
+- **Before every render, run `uv run python scripts/text_to_speech.py --check <post>`**
+  and add each word it lists to the lexicon until it prints "no unknown words".
+  Kokoro's G2P (misaki) silently drops or garbles words it doesn't know: model
+  names (Qwen, Smol), units (MB, tok/s), slang, compounds (shortcode,
+  leaderboard) and typos. Plain respellings often aren't known either; use
+  misaki's inline phoneme override, e.g. `Qwen3: "[Qwen](/kwˈɛn/) three"`, and
+  re-check. Letterless leftovers (`#`, `>`, `[1]`) are dropped and not reported.
 - `--all` backs existing audio up to `backups/` (copy, never delete) before re-rendering.
 - Outputs to `assets/audio/<markdown-stem>.mp3` (content-hashed into the page by Hugo's `fingerprint` so re-rendered audio busts caches).
 

@@ -1,0 +1,56 @@
+{{- /*
+  Responsive, lazy video for screen recordings.
+
+  Usage: {{< video name="ask-webgpu" caption="Optional caption" >}}
+
+  Expects files made by scripts/encode_video.sh in static/video/<post file stem>/:
+  <name>-720.mp4, <name>-1080.mp4 and the poster <name>.jpg. Nothing downloads
+  until the reader presses play (preload="none" + poster). Wide screens get the
+  1080 source via a media query on <source>; browsers that ignore `media` pick
+  the first <source>, so the small file is listed first. The HD/SD button swaps
+  sources and keeps the playback position.
+*/ -}}
+{{- $name := .Get "name" -}}
+{{- $base := printf "/video/%s/%s" .Page.File.ContentBaseName $name -}}
+<figure class="video-figure">
+  <div class="video-wrap">
+    <video controls playsinline preload="none" poster="{{ $base }}.jpg"
+           data-sd="{{ $base }}-720.mp4" data-hd="{{ $base }}-1080.mp4">
+      <source src="{{ $base }}-720.mp4" type="video/mp4" media="(max-width: 899px)">
+      <source src="{{ $base }}-1080.mp4" type="video/mp4" media="(min-width: 900px)">
+    </video>
+    <button type="button" class="video-quality" hidden aria-label="Switch video quality">HD</button>
+  </div>
+  {{- with .Get "caption" }}<figcaption>{{ . | markdownify }}</figcaption>{{ end }}
+</figure>
+{{- if not (.Page.Scratch.Get "videoScriptAdded") }}
+{{- .Page.Scratch.Set "videoScriptAdded" true }}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".video-figure video").forEach(function (video) {
+    var btn = video.parentNode.querySelector(".video-quality");
+    // Before the first play (preload="none") currentSrc is empty: infer from the media query.
+    var isHd = function () {
+      return video.currentSrc ? video.currentSrc.indexOf("-1080.mp4") > -1 : matchMedia("(min-width: 900px)").matches;
+    };
+    var label = function () { btn.textContent = isHd() ? "HD" : "SD"; };
+    btn.hidden = false;
+    video.addEventListener("loadedmetadata", label);
+    label();
+    btn.addEventListener("click", function () {
+      var hd = !isHd();
+      var t = video.currentTime, playing = !video.paused;
+      video.querySelectorAll("source").forEach(function (s) { s.remove(); });
+      video.src = hd ? video.dataset.hd : video.dataset.sd;
+      video.addEventListener("loadedmetadata", function seek() {
+        video.removeEventListener("loadedmetadata", seek);
+        video.currentTime = t;
+        if (playing) video.play();
+      });
+      video.load();
+      btn.textContent = hd ? "HD" : "SD";
+    });
+  });
+});
+</script>
+{{- end }}

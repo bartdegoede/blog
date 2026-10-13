@@ -38,7 +38,8 @@ that worth it?**
 - **Repetition penalty 1.15** with greedy decoding (`REPETITION_PENALTY` in
   `assets/js/ask/prompt.js`); without it the tiny models loop.
 - **Runtime**: transformers.js (ONNX Runtime Web), WebGPU with automatic WASM
-  fallback. WebLLM and wllama are covered in the post, not used on the page.
+  fallback. (WebLLM / wllama were dropped from scope on 2026-10-12: not used,
+  not benchmarked, not covered in the post.)
 - **Big/hosted models are eval-only**: Gemma 4 E2B (~3 GB) and a hosted API
   model are measured as reference tiers; they never appear on `/ask/`.
 - **Post angle**: these numbers, and what it would take to make the tiny
@@ -211,8 +212,7 @@ the cost/quality curve for the post.
 **Feasibility gate (first step)**: verify each candidate on its Hugging Face
 `onnx-community` (or equivalent) page — actual q4 size and transformers.js
 compatibility. Drop anything that doesn't load; record why. Qwen3.5-0.8B is
-excluded up front (no official ONNX build) and mentioned under WebLLM in the
-post.
+excluded up front (no official ONNX build).
 
 ### Harness
 
@@ -247,10 +247,8 @@ judge uses a different Claude model than the Haiku arm.
 
 ### Browser runtime measurements
 
-A separate headless-Chromium run (Node can't measure WebGPU) records
-WebGPU vs WASM TTFT and tokens/s for the shipped models, plus the same small
-model (SmolLM2-135M) under WebLLM and wllama for the "other runtimes" table.
-If a runtime is too painful to set up, say so and describe it qualitatively.
+Done in Part 2 for transformers.js only (results doc §8). The WebLLM / wllama
+comparison was dropped from scope.
 
 ## Post
 
@@ -263,7 +261,9 @@ browser"* — follow-up to the semantic-search post.
 3. How `/ask/` works: retrieval → gate → prompt → streaming, with a diagram.
 4. The eval: cost/quality curve, best and worst summaries.
 5. Is renting a GPU or paying for an API worth it? The answer, in numbers.
-6. Other ways to run this: WebLLM, wllama, measured comparison table.
+6. ~~Other ways to run this: WebLLM, wllama~~ (dropped). Instead: the
+   answer-length result (results doc §9), with charts as inline SVG generated
+   from the eval data (theme-aware, no JS).
 7. Try it: link to `/ask/`.
 
 Afterwards: related-posts suggestions presented for confirmation (never

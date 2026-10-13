@@ -1,0 +1,49 @@
+<svg class="viz" viewBox="0 0 680 380" role="img" aria-labelledby="viz-size-t viz-size-d" xmlns="http://www.w3.org/2000/svg">
+<title id="viz-size-t">Faithful answers vs download size</title><desc id="viz-size-d">Share of 30 answerable questions answered faithfully, per model, against download size on a log scale. Models up to 350 MB score 0 to 3 out of 30; Qwen3-0.6B (579 MB) 15; Gemma 4 E2B (3.1 GB) 28; Claude Haiku 5.5 via API 27.</desc>
+<rect class="viz-band" x="64" y="20" width="172.5" height="300"/>
+<text class="viz-note" x="70" y="34">fits a 350 MB budget</text>
+<line class="viz-grid" x1="64" x2="656" y1="320.0" y2="320.0"/>
+<text class="viz-tick" x="56" y="324.0" text-anchor="end">0%</text>
+<line class="viz-grid" x1="64" x2="656" y1="245.0" y2="245.0"/>
+<text class="viz-tick" x="56" y="249.0" text-anchor="end">25%</text>
+<line class="viz-grid" x1="64" x2="656" y1="170.0" y2="170.0"/>
+<text class="viz-tick" x="56" y="174.0" text-anchor="end">50%</text>
+<line class="viz-grid" x1="64" x2="656" y1="95.0" y2="95.0"/>
+<text class="viz-tick" x="56" y="99.0" text-anchor="end">75%</text>
+<line class="viz-grid" x1="64" x2="656" y1="20.0" y2="20.0"/>
+<text class="viz-tick" x="56" y="24.0" text-anchor="end">100%</text>
+<text class="viz-axis" transform="translate(14 170.0) rotate(-90)" text-anchor="middle">Faithful answers (of 30)</text>
+<text class="viz-tick" x="77.4" y="338" text-anchor="middle">100 MB</text>
+<text class="viz-tick" x="216.9" y="338" text-anchor="middle">300 MB</text>
+<text class="viz-tick" x="369.9" y="338" text-anchor="middle">1 GB</text>
+<text class="viz-tick" x="509.5" y="338" text-anchor="middle">3 GB</text>
+<line class="viz-sep" x1="586" x2="586" y1="20" y2="320"/>
+<text class="viz-tick" x="610" y="338" text-anchor="middle">API</text>
+<text class="viz-axis" x="305.0" y="366" text-anchor="middle">Download size (log scale)</text>
+<line class="viz-baseline" x1="64" x2="656" y1="320.0" y2="320.0"/>
+<g><title>SmolLM2-135M: 0/30 faithful; invented an answer for 14/15 questions the blog doesn't cover (120 MB download)</title>
+<circle class="viz-hit" cx="100.5" cy="320.0" r="12"/>
+<circle class="viz-dot viz-muted" cx="100.5" cy="320.0" r="5"/></g>
+<g><title>SmolLM2-360M: 3/30 faithful; invented an answer for 15/15 questions the blog doesn't cover (275 MB download)</title>
+<circle class="viz-hit" cx="205.9" cy="290.0" r="12"/>
+<circle class="viz-dot viz-muted" cx="205.9" cy="290.0" r="5"/></g>
+<g><title>Gemma 3 270M: 3/30 faithful; invented an answer for 13/15 questions the blog doesn't cover (293 MB download)</title>
+<circle class="viz-hit" cx="213.9" cy="290.0" r="12"/>
+<circle class="viz-dot viz-muted" cx="213.9" cy="290.0" r="5"/></g>
+<g><title>LFM2.5-350M: 2/30 faithful; invented an answer for 14/15 questions the blog doesn't cover (258 MB download)</title>
+<circle class="viz-hit" cx="197.8" cy="300.0" r="12"/>
+<circle class="viz-dot viz-muted" cx="197.8" cy="300.0" r="5"/></g>
+<g><title>Qwen3-0.6B: 15/30 faithful; invented an answer for 5/15 questions the blog doesn't cover (579 MB download)</title>
+<circle class="viz-hit" cx="300.5" cy="170.0" r="12"/>
+<circle class="viz-dot viz-s2" cx="300.5" cy="170.0" r="5"/></g>
+<g><title>Gemma 4 E2B: 28/30 faithful; invented an answer for 0/15 questions the blog doesn't cover (3131 MB download)</title>
+<circle class="viz-hit" cx="514.9" cy="40.0" r="12"/>
+<circle class="viz-dot viz-s1" cx="514.9" cy="40.0" r="5"/></g>
+<g><title>Claude Haiku 5.5: 27/30 faithful; invented an answer for 1/15 questions the blog doesn't cover</title>
+<circle class="viz-hit" cx="610.0" cy="50.0" r="12"/>
+<circle class="viz-dot viz-hollow" cx="610.0" cy="50.0" r="5"/></g>
+<text class="viz-label" x="610" y="38.0" text-anchor="middle">Haiku 5.5 · 27/30</text>
+<text class="viz-label" x="72" y="218.0"><tspan x="72">4 models up to 293 MB</tspan><tspan class="viz-sub" x="72" dy="16">0 to 3 of 30 faithful</tspan></text>
+<text class="viz-label" x="310.5" y="174.0" text-anchor="start">Qwen3-0.6B · 15/30</text>
+<text class="viz-label" x="504.9" y="44.0" text-anchor="end">Gemma 4 E2B · 28/30</text>
+</svg>

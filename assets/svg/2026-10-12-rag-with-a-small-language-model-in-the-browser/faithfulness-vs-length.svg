@@ -1,0 +1,47 @@
+<svg class="viz" viewBox="0 0 680 340" role="img" aria-labelledby="viz-length-t viz-length-d" xmlns="http://www.w3.org/2000/svg">
+<title id="viz-length-t">Faithful answers vs allowed answer length</title><desc id="viz-length-d">Faithful answers out of 30 when the model may answer in at most 2, 4 or 6 sentences. Gemma 4 E2B: 28, 26, 24. Qwen3-0.6B: 15, 9, 5.</desc>
+<circle class="viz-dot viz-s1" cx="69" cy="14" r="5"/>
+<text class="viz-label" x="80" y="18">Gemma 4 E2B</text>
+<circle class="viz-dot viz-s2" cx="209" cy="14" r="5"/>
+<text class="viz-label" x="220" y="18">Qwen3-0.6B</text>
+<line class="viz-grid" x1="64" x2="520" y1="284.0" y2="284.0"/>
+<text class="viz-tick" x="56" y="288.0" text-anchor="end">0%</text>
+<line class="viz-grid" x1="64" x2="520" y1="222.0" y2="222.0"/>
+<text class="viz-tick" x="56" y="226.0" text-anchor="end">25%</text>
+<line class="viz-grid" x1="64" x2="520" y1="160.0" y2="160.0"/>
+<text class="viz-tick" x="56" y="164.0" text-anchor="end">50%</text>
+<line class="viz-grid" x1="64" x2="520" y1="98.0" y2="98.0"/>
+<text class="viz-tick" x="56" y="102.0" text-anchor="end">75%</text>
+<line class="viz-grid" x1="64" x2="520" y1="36.0" y2="36.0"/>
+<text class="viz-tick" x="56" y="40.0" text-anchor="end">100%</text>
+<text class="viz-axis" transform="translate(14 160.0) rotate(-90)" text-anchor="middle">Faithful answers (of 30)</text>
+<text class="viz-tick" x="64.0" y="302" text-anchor="middle">2</text>
+<text class="viz-tick" x="282.0" y="302" text-anchor="middle">4</text>
+<text class="viz-tick" x="500.0" y="302" text-anchor="middle">6</text>
+<text class="viz-axis" x="282.0" y="326" text-anchor="middle">Sentences the model may use</text>
+<line class="viz-baseline" x1="64" x2="520" y1="284.0" y2="284.0"/>
+<path class="viz-line viz-s1" d="M64.0,52.5 L282.0,69.1 L500.0,85.6"/>
+<g><title>Gemma 4 E2B, at most 2 sentences: 28/30 faithful; invented an answer for 0/15 off-blog questions</title>
+<circle class="viz-hit" cx="64.0" cy="52.5" r="12"/>
+<circle class="viz-dot viz-s1" cx="64.0" cy="52.5" r="5"/></g>
+<g><title>Gemma 4 E2B, at most 4 sentences: 26/30 faithful; invented an answer for 0/15 off-blog questions</title>
+<circle class="viz-hit" cx="282.0" cy="69.1" r="12"/>
+<circle class="viz-dot viz-s1" cx="282.0" cy="69.1" r="5"/></g>
+<g><title>Gemma 4 E2B, at most 6 sentences: 24/30 faithful; invented an answer for 0/15 off-blog questions</title>
+<circle class="viz-hit" cx="500.0" cy="85.6" r="12"/>
+<circle class="viz-dot viz-s1" cx="500.0" cy="85.6" r="5"/></g>
+<text class="viz-label" x="72.0" y="42.5">28/30</text>
+<text class="viz-label" x="512.0" y="89.6">Gemma 4 E2B · 24/30</text>
+<path class="viz-line viz-s2" d="M64.0,160.0 L282.0,209.6 L500.0,242.7"/>
+<g><title>Qwen3-0.6B, at most 2 sentences: 15/30 faithful; invented an answer for 5/15 off-blog questions</title>
+<circle class="viz-hit" cx="64.0" cy="160.0" r="12"/>
+<circle class="viz-dot viz-s2" cx="64.0" cy="160.0" r="5"/></g>
+<g><title>Qwen3-0.6B, at most 4 sentences: 9/30 faithful; invented an answer for 7/15 off-blog questions</title>
+<circle class="viz-hit" cx="282.0" cy="209.6" r="12"/>
+<circle class="viz-dot viz-s2" cx="282.0" cy="209.6" r="5"/></g>
+<g><title>Qwen3-0.6B, at most 6 sentences: 5/30 faithful; invented an answer for 6/15 off-blog questions</title>
+<circle class="viz-hit" cx="500.0" cy="242.7" r="12"/>
+<circle class="viz-dot viz-s2" cx="500.0" cy="242.7" r="5"/></g>
+<text class="viz-label" x="72.0" y="150.0">15/30</text>
+<text class="viz-label" x="512.0" y="246.7">Qwen3-0.6B · 5/30</text>
+</svg>

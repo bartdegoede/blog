@@ -167,7 +167,7 @@ code.language-python {
 .post-content blockquote {
     background: var(--code-bg);
     border-left: 4px solid var(--primary);
-    padding: 0rem 1.5rem 1rem 1.5rem;
+    padding: 1rem 1.5rem;
     margin: 2rem 0;
     border-radius: 8px;
     font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Consolas', 'Courier New', monospace;
@@ -710,4 +710,68 @@ input[type="search"] {
   .ask-skeleton, .ask-cursor, .ask-dot, .ask-sources.is-reading .ask-source { animation: none; }
   .ask-tile, .ask-source, .ask-source::after { transition: none; }
   .ask-source:hover { transform: none; }
+}
+
+/* ---------- {{< video >}} shortcode ---------- */
+.video-figure { margin: 1.5rem 0; }
+.video-wrap { position: relative; }
+.video-wrap video { display: block; width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--border); background: var(--entry); }
+.video-quality { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.75rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 6px; border: 1px solid var(--border); background: var(--theme); color: var(--primary); opacity: 0.85; cursor: pointer; }
+.video-quality:hover, .video-quality:focus-visible { opacity: 1; }
+.video-figure figcaption { font-size: 0.85rem; color: var(--secondary); margin-top: 0.5rem; text-align: center; }
+
+/* ---------- inline SVG charts (scripts/ask_eval/charts.py) ---------- */
+/* Series colours: validated categorical slots 1-2 (dataviz reference palette), stepped for dark. */
+.viz { --viz-s1: #2a78d6; --viz-s2: #eb6834; width: 100%; height: auto; display: block; font-family: inherit; }
+.dark .viz { --viz-s1: #3987e5; --viz-s2: #d95926; }
+.viz text { font-size: 14px; }
+.viz .viz-tick { fill: var(--secondary); font-variant-numeric: tabular-nums; }
+.viz .viz-axis { fill: var(--secondary); font-size: 14px; }
+.viz .viz-label { fill: var(--primary); font-size: 14px; }
+.viz .viz-note { fill: var(--secondary); font-size: 13px; font-style: italic; }
+.viz .viz-grid { stroke: var(--border); stroke-width: 1; }
+.viz .viz-baseline { stroke: var(--secondary); stroke-width: 1; opacity: 0.6; }
+.viz .viz-sep { stroke: var(--secondary); stroke-width: 1; stroke-dasharray: 3 4; opacity: 0.6; }
+.viz .viz-band { fill: var(--tertiary); opacity: 0.35; }
+.viz .viz-dot { stroke: var(--theme); stroke-width: 2; }
+.viz .viz-dot.viz-s1 { fill: var(--viz-s1); }
+.viz .viz-dot.viz-s2 { fill: var(--viz-s2); }
+.viz .viz-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.viz .viz-line.viz-s1 { stroke: var(--viz-s1); }
+.viz .viz-line.viz-s2 { stroke: var(--viz-s2); }
+.viz .viz-hit { fill: transparent; }
+.viz g:hover .viz-dot { stroke: var(--primary); }
+.viz-figure { margin: 1.5rem 0; }
+.viz-figure figcaption { font-size: 0.85rem; color: var(--secondary); margin-top: 0.5rem; text-align: center; }
+.viz .viz-dot.viz-muted { fill: var(--secondary); }
+.viz .viz-dot.viz-hollow { fill: var(--theme); stroke: var(--secondary); stroke-width: 2; }
+.viz .viz-sub { fill: var(--secondary); }
+
+/* ---------- {{< eval-table >}} ---------- */
+.eval-table-wrap { overflow-x: auto; margin: 1.5rem 0; }
+.post-content .eval-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; font-variant-numeric: tabular-nums; display: table; }
+.post-content .eval-table th, .post-content .eval-table td { padding: 0.45rem 0.75rem; border-bottom: 1px solid var(--border); text-align: left; font-weight: 400; vertical-align: middle; }
+.post-content .eval-table thead th { font-size: 0.8rem; font-weight: 600; color: var(--secondary); text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid var(--border); }
+.eval-table .eval-of { font-weight: 400; text-transform: none; letter-spacing: 0; }
+.post-content .eval-table .num { text-align: right; white-space: nowrap; }
+.post-content .eval-table tbody th[scope="row"] { color: var(--primary); white-space: nowrap; }
+.post-content .eval-table .eval-group th { padding-top: 1rem; font-size: 0.75rem; font-weight: 600; color: var(--secondary); text-transform: uppercase; letter-spacing: 0.04em; border-bottom: none; }
+.eval-table .eval-muted { color: var(--secondary); }
+.eval-table .eval-track { display: inline-block; width: 64px; height: 6px; margin-right: 0.6rem; border-radius: 3px; background: var(--border); vertical-align: middle; overflow: hidden; }
+.eval-table .eval-fill { display: block; height: 100%; border-radius: 3px; background: var(--secondary); }
+.eval-table .eval-val { display: inline-block; min-width: 1.5em; }
+.eval-table .eval-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 0.5rem; vertical-align: middle; }
+.eval-table .eval-s1 { background: #2a78d6; }
+.eval-table .eval-s2 { background: #eb6834; }
+.dark .eval-table .eval-s1 { background: #3987e5; }
+.dark .eval-table .eval-s2 { background: #d95926; }
+.eval-table .eval-tag { font-size: 0.7rem; padding: 0.05rem 0.4rem; margin-left: 0.4rem; border: 1px solid var(--border); border-radius: 999px; color: var(--secondary); vertical-align: middle; }
+.eval-table .eval-default th, .eval-table .eval-default td { background: color-mix(in srgb, var(--tertiary) 18%, transparent); }
+@media (max-width: 480px) {
+  .eval-table .eval-track, .eval-table .eval-of { display: none; }
+  .post-content .eval-table th, .post-content .eval-table td { padding: 0.4rem 0.25rem; }
+  .post-content .eval-table { font-size: 0.82rem; }
+  .post-content .eval-table thead th { font-size: 0.7rem; letter-spacing: 0; }
+  .eval-table .eval-dot { margin-right: 0.3rem; }
+  .eval-table .eval-tag { display: none; }
 }
