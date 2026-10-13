@@ -107,7 +107,7 @@ The other idea is the homepage search box: if you've already loaded a model on [
 
 [^petitgpt]: It was in turn inspired by [petitgpt](https://github.com/yangqi0/petitgpt). I didn't reuse any MicroLLM lab code (the repository doesn't say what license it's under); the page here is built on transformers.js directly.
 
-[^RAG]: [Retrieval-augmented generation](https://en.wikipedia.org/wiki/Retrieval-augmented_generation). The TLDR is that you use a search tool or engine to find the appropriatae context for a LLM to do its inference. It's like how Claude Code greps through your code, or when ChatGPT searches the web. Is this overkill for the couple of posts I have? Absolutely. Fun tho.
+[^RAG]: [Retrieval-augmented generation](https://en.wikipedia.org/wiki/Retrieval-augmented_generation). The TLDR is that you use a search tool or engine to find the appropriate context for a LLM to do its inference. It's like how Claude Code greps through your code, or when ChatGPT searches the web. Is this overkill for the couple of posts I have? Absolutely. Fun tho.
 
 [^naming]: Naming things is the hardest thing in computer science amirite.
 

@@ -10,6 +10,7 @@ cover:
     image: "/img/2026-06-29-running-a-coding-agent-locally/cover.jpg"
 related:
   - ai-agent-dungeon-crawl
+  - rag-with-a-small-language-model-in-the-browser
 ---
 
 {{<audio src="/audio/2026-06-29-running-a-coding-agent-locally.mp3" type="mp3">}}
