@@ -2,6 +2,8 @@
 """Label every arm's summary as faithful / unsupported / non-answer against its passages."""
 
 import json
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Literal
 
@@ -99,12 +101,20 @@ def cost(inp: int, out: int) -> float:
     show_default=True,
     help="Judgements file, relative to scripts/ask_eval/.",
 )
+@click.option(
+    "--workers",
+    type=click.IntRange(1, 8),
+    default=1,
+    show_default=True,
+    help="Concurrent judge requests (the SDK retries 429s).",
+)
 def main(
     arms: tuple[str, ...],
     limit: int | None,
     dry_run: bool,
     runs_dir: Path | None,
     out_path: Path,
+    workers: int,
 ) -> None:
     results = HERE / "results"
     runs_dir = HERE / runs_dir if runs_dir is not None else None
@@ -129,35 +139,53 @@ def main(
 
     client = anthropic.Anthropic()
     tok_in = tok_out = 0
-    with out.open("a") as f:
-        for r in todo:
-            p = prompts[r["id"]]
-            resp = client.messages.parse(
-                model=JUDGE,
-                max_tokens=16000,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": render(p, r["summary"], r.get("max_sentences")),
-                    }
-                ],
-                output_format=Verdict,
-            )
-            tok_in += resp.usage.input_tokens
-            tok_out += resp.usage.output_tokens
-            if resp.stop_reason == "refusal" or resp.parsed_output is None:
-                verdict = {
-                    "label": "judge-refused",
-                    "unsupported_claims": [],
-                    "reason": str(resp.stop_reason),
+    lock = threading.Lock()
+
+    def judge_one(r: dict) -> tuple[dict, anthropic.types.Usage]:
+        p = prompts[r["id"]]
+        resp = client.messages.parse(
+            model=JUDGE,
+            max_tokens=16000,
+            messages=[
+                {
+                    "role": "user",
+                    "content": render(p, r["summary"], r.get("max_sentences")),
                 }
-            else:
-                verdict = resp.parsed_output.model_dump()
-            line = {"arm": r["arm"], "id": r["id"], "family": p["family"], **verdict}
-            f.write(json.dumps(line) + "\n")
-            f.flush()
-            click.echo(".", nl=False)
+            ],
+            output_format=Verdict,
+        )
+        if resp.stop_reason == "refusal" or resp.parsed_output is None:
+            verdict = {
+                "label": "judge-refused",
+                "unsupported_claims": [],
+                "reason": str(resp.stop_reason),
+            }
+        else:
+            verdict = resp.parsed_output.model_dump()
+        line = {"arm": r["arm"], "id": r["id"], "family": p["family"], **verdict}
+        return line, resp.usage
+
+    # Rows are keyed by (arm, id), so completion order doesn't matter; the
+    # lock keeps each JSONL line whole and the token totals consistent.
+    with out.open("a") as f, ThreadPoolExecutor(max_workers=workers) as pool:
+        failed = 0
+        for fut in as_completed(pool.submit(judge_one, r) for r in todo):
+            try:
+                line, usage = fut.result()
+            except anthropic.APIError as e:
+                # Leave the row unjudged; re-running the command resumes it.
+                failed += 1
+                click.echo(f"\n[error] {type(e).__name__}: {e}", err=True)
+                continue
+            with lock:
+                tok_in += usage.input_tokens
+                tok_out += usage.output_tokens
+                f.write(json.dumps(line) + "\n")
+                f.flush()
+                click.echo(".", nl=False)
     click.echo()
+    if failed:
+        click.echo(f"{failed} rows failed; re-run to resume them.")
 
     spent = cost(tok_in, tok_out)
     click.echo(f"tokens: {tok_in} in, {tok_out} out; cost ${spent:.4f}")
