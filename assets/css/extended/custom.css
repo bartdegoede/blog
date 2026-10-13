@@ -711,3 +711,11 @@ input[type="search"] {
   .ask-tile, .ask-source, .ask-source::after { transition: none; }
   .ask-source:hover { transform: none; }
 }
+
+/* ---------- {{< video >}} shortcode ---------- */
+.video-figure { margin: 1.5rem 0; }
+.video-wrap { position: relative; }
+.video-wrap video { display: block; width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--border); background: var(--entry); }
+.video-quality { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.75rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 6px; border: 1px solid var(--border); background: var(--theme); color: var(--primary); opacity: 0.85; cursor: pointer; }
+.video-quality:hover, .video-quality:focus-visible { opacity: 1; }
+.video-figure figcaption { font-size: 0.85rem; color: var(--secondary); margin-top: 0.5rem; text-align: center; }
