@@ -13,7 +13,7 @@ related:
 
 {{<audio src="/audio/2026-07-11-narrating-my-blog-with-a-local-model.mp3" type="mp3">}}
 
-Seven years ago I [used Google's text-to-speech API to create audio versions of my posts](/use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts/). There was [a Python script](https://github.com/bartdegoede/blog/blob/26539d24a96cd5c66d6a521e253537b83b0c99ed/scripts/text_to_speech.py) that parsed the Markdown file, cleaned it up, chunked it to stay under Google's 5000 byte limit, convert each chunk to an MP3, stitch them together, and finally embed the resulting file with a Hugo shortcode that is essentiall a fancy `<audio>` tag. It worked, it was free[^free], and I was pretty pleased with it. The little audio player has been sitting at the top of my posts ever since.
+Seven years ago I [used Google's text-to-speech API to create audio versions of my posts](/use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts/). There was [a Python script](https://github.com/bartdegoede/blog/blob/26539d24a96cd5c66d6a521e253537b83b0c99ed/scripts/text_to_speech.py) that parsed the Markdown file, cleaned it up, chunked it to stay under Google's 5000 byte limit, convert each chunk to an MP3, stitch them together, and finally embed the resulting file with a Hugo shortcode that is essentially a fancy `<audio>` tag. It worked, it was free[^free], and I was pretty pleased with it. The little audio player has been sitting at the top of my posts ever since.
 
 However, it does sound a little like 2010. Every time I hit play I hear the flat, slightly seasick cadence of a Wavenet voice, and it needs a Google Cloud project, an API key, and a billing account to regenerate[^gcloud]. Now that the blog does [fancy semantic search in the browser from a 4 MB lookup table](/semantic-search-in-your-browser/), the narration should not be the most dated thing on the page, and text-to-speech models have come really far recently.
 
@@ -99,7 +99,7 @@ uv run python scripts/text_to_speech.py --all                      # the whole b
 
 ## Free, local, and yours
 
-In 2019 I needed a cloud API and a billing account to make my blog talk. In 2026 an 82-million-parameter model does it better, on a laptop with no fan, and the only account involved is the one I use to `git push`. Ssame story as [the search box on the front page](/semantic-search-in-your-browser/): a capability that used to mean a datacenter now fits on the machine already on your desk[^old].
+In 2019 I needed a cloud API and a billing account to make my blog talk. In 2026 an 82-million-parameter model does it better, on a laptop with no fan, and the only account involved is the one I use to `git push`. Same story as [the search box on the front page](/semantic-search-in-your-browser/): a capability that used to mean a datacenter now fits on the machine already on your desk[^old].
 
 [^free]: First million characters per month are free with a Google Cloud account.
 [^gcloud]: I've had to recreate the keys more than once, forgetting about them when migrating laptops.

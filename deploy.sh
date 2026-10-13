@@ -50,6 +50,11 @@ hugo
 
 [ -d "public" ] || fail "Error: Hugo build failed - public directory not found"
 
+# Remove fingerprinted assets (old CSS/JS bundles, superseded narration MP3s)
+# that the fresh build no longer references. Stands in for --cleanDestinationDir,
+# which we can't use (see above).
+uv run python scripts/prune_public.py
+
 # --- 3. Verify every indexed heading anchor exists in the rendered HTML --------
 #
 # Nothing reads chunks.json's `anchor` field at query time; it is indexed so that
