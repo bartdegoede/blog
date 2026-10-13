@@ -2,6 +2,7 @@
 
     uv run python scripts/text_to_speech.py content/post/foo.md   # one post
     uv run python scripts/text_to_speech.py --all                 # whole catalogue
+    uv run python scripts/text_to_speech.py --check content/post/foo.md  # unknown words, no render
 
 Batch mode backs up existing audio first (copy, never move/delete) and shows a
 tqdm progress bar. Output MP3s are named by the markdown file stem, matching the
@@ -30,13 +31,17 @@ LEXICON_PATH = Path(__file__).resolve().parent.parent / "tts_lexicon.yaml"
 SAMPLE_RATE = 24000
 
 
+def narration_chunks(md_path, lexicon):
+    """Exactly the text chunks Kokoro will read for a post (shared by render and --check)."""
+    prose = apply_lexicon(to_narration(Path(md_path).read_text()), lexicon)
+    return sentence_chunks(apply_pronunciation_rules(prose))
+
+
 def render_post(md_path, voice, speed, lexicon, synth_fn, audio_dir=AUDIO_DIR):
     """Render one markdown post to MP3. Returns the output path, or None if the
     post has no narratable prose."""
     md_path = Path(md_path)
-    prose = apply_lexicon(to_narration(md_path.read_text()), lexicon)
-    prose = apply_pronunciation_rules(prose)
-    chunks = sentence_chunks(prose)
+    chunks = narration_chunks(md_path, lexicon)
     if not chunks:
         return None
     segments = [synth_fn(c, voice=voice, speed=speed) for c in chunks]
@@ -62,14 +67,34 @@ def backup_existing_audio(audio_dir=AUDIO_DIR, backup_dir=BACKUP_DIR):
 @click.argument("filename", required=False, type=click.Path(exists=True, path_type=Path))
 @click.option("--all", "all_posts", is_flag=True, help="Re-render every post in content/post.")
 @click.option("--peaks", "peaks_only", is_flag=True, help="(Re)generate waveform peaks for every MP3 in assets/audio, without synthesizing.")
+@click.option("--check", "check_only", is_flag=True, help="List words Kokoro can't pronounce (after the lexicon) without rendering; exits 1 if any.")
 @click.option("--voice", default="af_heart", show_default=True, help="Kokoro voice preset.")
 @click.option("--speed", default=1.0, show_default=True, type=float)
-def main(filename, all_posts, peaks_only, voice, speed):
+def main(filename, all_posts, peaks_only, check_only, voice, speed):
     if peaks_only:
         mp3s = sorted(AUDIO_DIR.glob("*.mp3"))
         for mp3 in tqdm(mp3s, desc="Peaks", unit="file"):
             write_peaks(mp3)
         click.echo(f"wrote peaks for {len(mp3s)} files")
+        return
+
+    if check_only:
+        from tts.check import make_g2p, unknown_words
+
+        if not filename and not all_posts:
+            raise click.UsageError("Provide a FILENAME or use --all with --check.")
+        lexicon = load_lexicon(LEXICON_PATH)
+        g2p = make_g2p()
+        posts = sorted(POSTS_DIR.glob("*.md")) if all_posts else [Path(filename)]
+        found = False
+        for post in posts:
+            words = unknown_words(narration_chunks(post, lexicon), g2p)
+            if words:
+                found = True
+                click.echo(f"{post.name}: {', '.join(words)}")
+        if found:
+            raise SystemExit("add these to scripts/tts_lexicon.yaml (plain spellings, or [word](/phonemes/))")
+        click.echo("no unknown words")
         return
 
     from tts.synth import preload, synth as synth_fn
