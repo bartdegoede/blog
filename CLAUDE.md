@@ -30,6 +30,7 @@ Builds the site, commits the output in the `public/` folder, and pushes to GitHu
 - Change detection (skips deployment if no changes)
 - Colored output for better visibility
 - Success confirmation with site URL
+- IndexNow ping after the push: `scripts/indexnow.py` submits the pages changed by `public/`'s HEAD commit (filtered to `sitemap.xml`) to Bing et al. The key file is `static/1ccacb48aa3c4776ac3c84a0b3db89d7.txt`. Use `--dry-run` to preview or `--all` to submit the whole sitemap. A failed ping only warns.
 
 ### Generate audio versions of blog posts
 ```bash
