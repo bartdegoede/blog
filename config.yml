@@ -30,7 +30,7 @@ menu:
 params:
   env: production
   title: Bart de Goede
-  description: "Random ramblings about programming, tech, and anything else really."
+  description: "Bart de Goede writes about search engineering: full-text and semantic search, small language models in your browser and on your laptop, Python, and Hugo."
   keywords: [tech, programming, python, elasticsearch, search, ssl]
   author: Bart de Goede
 

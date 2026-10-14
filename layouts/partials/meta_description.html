@@ -1,0 +1,31 @@
+{{- /*
+  Meta description. PaperMod falls back to the site tagline for every list page,
+  which gave all category pages the same 67-character description (Bing flags
+  both short and duplicate descriptions). List pages instead name their posts,
+  topped up with the newest post's description, and are cut at ~160 characters.
+*/ -}}
+{{- $d := "" -}}
+{{- if .Description -}}
+  {{- $d = .Description -}}
+{{- else if .IsPage -}}
+  {{- $d = .Summary | plainify | default (printf "%s - %s" .Title site.Title) -}}
+{{- else if and (in (slice "term" "section") .Kind) .Pages -}}
+  {{- $titles := slice -}}
+  {{- range .Pages }}{{ $titles = $titles | append .Title }}{{ end -}}
+  {{- $intro := cond (eq .Kind "term") (printf "Posts about %s by %s" .Title site.Title) (printf "All %d posts by %s" (len .Pages) site.Title) -}}
+  {{- $d = printf "%s: %s" $intro (delimit $titles "; ") -}}
+  {{- if not (findRE `[.?!]$` $d) }}{{ $d = printf "%s." $d }}{{ end -}}
+  {{- if lt (len $d) 150 -}}
+    {{- with index .Pages 0 }}{{ $d = printf "%s %s" $d (.Description | default .Summary | plainify) }}{{ end -}}
+  {{- end -}}
+{{- else if and (eq .Kind "taxonomy") .Pages -}}
+  {{- $terms := slice -}}
+  {{- range .Pages }}{{ $terms = $terms | append .Title }}{{ end -}}
+  {{- $d = printf "Every topic %s has written about: %s." site.Title (delimit $terms ", ") -}}
+{{- else -}}
+  {{- $d = site.Params.description -}}
+{{- end -}}
+{{- /* truncate and plainify HTML-escape, so unescape, and return a plain string
+  (not template.HTML) so the attribute is escaped exactly once */ -}}
+{{- if not .IsPage }}{{ $d = $d | plainify | htmlUnescape | truncate 160 | htmlUnescape }}{{ end -}}
+{{- return (string $d) -}}
