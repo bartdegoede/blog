@@ -8,6 +8,7 @@ keywords: ["local ai", "coding agent", "qwen", "mlx", "lm studio", "claude code"
 description: "The all-you-can-eat AI coding era is over. So what do you do on the 22nd of the month, when the token budget's gone and there's over a week of work left? Here's a local coding agent (Pi plus Qwen3-Coder on a MacBook) that's decent enough for the routine stuff and runs for free (if you have enough RAM)."
 cover:
     image: "/img/2026-06-29-running-a-coding-agent-locally/cover.jpg"
+    alt: "Sketch of a laptop at night showing the Pi agent talking to a model server running Qwen3-Coder-30B on MLX, with a sticky note reading 'Budget: $0.00' and a mug saying 'free > $1500/mo'"
 related:
   - ai-agent-dungeon-crawl
   - rag-with-a-small-language-model-in-the-browser

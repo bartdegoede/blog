@@ -11,6 +11,7 @@ include_js: ["mathjax-config.js"]
 include_cdn: ["https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"]
 cover:
     image: "/img/2026-02-09-semantic-search-python/cover.jpg"
+    alt: "Cosine similarity on a dark background: vectors A (an orange) and B (an apple) separated by angle theta, with the formula cos(theta) = A·B / (||A|| ||B||)"
 related:
   - building-a-full-text-search-engine-150-lines-of-code
   - semantic-search-in-your-browser
@@ -171,7 +172,7 @@ Now we have vectors for our query and for every document. How do we find the mos
 
 ## The formula
 
-{{< figure src="/img/2026-02-09-semantic-search-python/cosine-similarity.webp" title="Nicked from https://aitechtrend.com/how-cosine-similarity-can-improve-your-machine-learning-models/" >}}
+{{< figure src="/img/2026-02-09-semantic-search-python/cosine-similarity.webp" alt="Cosine similarity diagram: vectors A (an orange) and B (an apple) at angle theta, with Sim(A, B) = cos(theta) = A·B / (||A|| ||B||)" title="Nicked from https://aitechtrend.com/how-cosine-similarity-can-improve-your-machine-learning-models/" >}}
 
 Cosine similarity measures the cosine of the angle between two vectors. Two vectors pointing in the same direction have a cosine of 1. Two perpendicular vectors have a cosine of 0. Two vectors pointing in opposite directions have a cosine of -1.
 
