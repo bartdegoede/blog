@@ -83,6 +83,17 @@ params:
     minMatchCharLength: 0
     keys: ["title", "permalink", "summary", "content"]
 
+  # Structured data: the site is a person, not an organization. sameAs links the
+  # author entity to the same person elsewhere (search engines and AI answer
+  # engines use it to attribute posts); without it PaperMod falls back to
+  # socialIcons, which includes the RSS feed.
+  schema:
+    publisherType: Person
+    sameAs:
+      - "https://github.com/bartdegoede"
+      - "https://www.linkedin.com/in/bart-de-goede/"
+      - "https://twitter.com/bartdegoede"
+
   # Enable syntax highlighting
   assets:
     disableHLJS: false
