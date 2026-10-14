@@ -14,7 +14,7 @@ related:
 {{<audio src="/audio/2018-05-02-free-ssl-on-github-pages-with-a-custom-domain-part-2.mp3" type="mp3" backup_src="/audio/2018-05-02-free-ssl-on-github-pages-with-a-custom-domain-part-2.ogg" backup_type="ogg">}}
 
 # Let's Encrypt
-GitHub has partnered with [Let's Encrypt](https://letsencrypt.org/), which is a free, open and automated certificate authority (CA). It is run by the [Internet Security Research Group (ISRG)](https://letsencrypt.org/isrg/), which is a public benefit corporation[^pbccalifornia] [funded](https://letsencrypt.org/sponsors/) by donations and a bunch of large corporations and non-profits.
+GitHub has partnered with [Let's Encrypt](https://letsencrypt.org/), which is a free, open and automated certificate authority (CA). It is run by the [Internet Security Research Group (ISRG)](https://www.abetterinternet.org/), which is a public benefit corporation[^pbccalifornia] [funded](https://letsencrypt.org/sponsors/) by donations and a bunch of large corporations and non-profits.
 
 The goal of this initiative is to secure the web by making it very easy to obtain a free, trusted SSL certificate. Moreover, it lets web servers run a piece of software that not only gets a valid SSL certificate, but will also configure your web server and automatically renew the certificate when it expires.
 
@@ -55,7 +55,7 @@ Optionally, you can [enforce HTTPS](https://help.github.com/articles/securing-yo
 If you use `A` records to route traffic to your website, you need to update your [DNS settings](https://help.github.com/articles/setting-up-an-apex-domain/) at your registrar. These IP addresses are new, and have an added benefit of putting your static site behind a CDN (just like we did with Cloudflare in the [previous post]({{< ref "2018-03-28-free-ssl-on-github-pages-with-a-custom-domain.md" >}})).
 
 # SSL all the things
-Let's Encrypt makes securing the web easy. [More and more websites](https://letsencrypt.org/stats/) are served over HTTPS only, so it is getting increasingly difficult for script kiddies to [sniff your web traffic](https://motherboard.vice.com/en_us/article/jpgmxp/how-to-go-from-0-to-sniffing-packets-in-10-minutes) on free WiFi networks. Moreover, they provide this service world-wide, to anyone, _for free_. Help them help you (and the rest of the world), and [buy them a coffee](https://letsencrypt.org/donate/)!
+Let's Encrypt makes securing the web easy. [More and more websites](https://letsencrypt.org/stats/) are served over HTTPS only, so it is getting increasingly difficult for script kiddies to [sniff your web traffic](https://web.archive.org/web/20190317013728/https://motherboard.vice.com/en_us/article/jpgmxp/how-to-go-from-0-to-sniffing-packets-in-10-minutes) on free WiFi networks. Moreover, they provide this service world-wide, to anyone, _for free_. Help them help you (and the rest of the world), and [buy them a coffee](https://letsencrypt.org/donate/)!
 
 [^yesterday]: At time of writing, yesterday is May 1, 2018.
 [^pbccalifornia]: One in [California](https://en.wikipedia.org/wiki/Public-benefit_corporation#California), to be specific.

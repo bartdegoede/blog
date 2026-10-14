@@ -70,7 +70,7 @@ I use [`Gruntjs`](https://gruntjs.com/)[^grunt_to_go] to build the index file, a
 $ npm install --save-dev grunt string gray-matter
 </code>
 
-This is my [`Gruntfile.js`](https://github.com/bartdegoede/blog/blob/master/Gruntfile.js) that lives in the root of my project. It will walk through the `content/` directory and parse all the markdown files it finds. It will parse out `title`, `categories` and `href` (this will be the reference to the post; i.e. the URL of the page we want to point to) from the front matter, and the `content` from the rest of the post. It also skips posts that are labeled `draft`, because I don't want the posts I'm still working on to already show up in the search results.
+This is my [`Gruntfile.js`](https://github.com/bartdegoede/blog/blob/7eccae434335c6ab6ec5e10240dbc89884a194ad/Gruntfile.js) that lives in the root of my project. It will walk through the `content/` directory and parse all the markdown files it finds. It will parse out `title`, `categories` and `href` (this will be the reference to the post; i.e. the URL of the page we want to point to) from the front matter, and the `content` from the rest of the post. It also skips posts that are labeled `draft`, because I don't want the posts I'm still working on to already show up in the search results.
 
 ```
 var matter = require('gray-matter');
@@ -147,7 +147,7 @@ Now we've built the index, we need a way of obtaining it client-side, and then q
 <input type="text" id="search">
 ```
 
-For my blog, I have one [`search.js` file](https://github.com/bartdegoede/blog/blob/master/static/js/search/search.js) that will download the index file, initialise the UI, and run the searches. For the sake of readability, I've split up the relevant functions below and added some comments to the code.
+For my blog, I have one [`search.js` file](https://github.com/bartdegoede/blog/blob/b73e42517b6dbf2904d160edf359b05e629f86d8/static/js/search/search.js) that will download the index file, initialise the UI, and run the searches. For the sake of readability, I've split up the relevant functions below and added some comments to the code.
 
 This function fetches the index file we've generated with the Grunt task, initialises the relevant fields, and then adds the each of the documents to the index. The `pagesIndex` variable will store the documents as we indexed them, and the `searchIndex` variable will store the statistics and data structures we need to rank our documents for a query efficiently.
 

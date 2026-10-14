@@ -16,7 +16,7 @@ related:
 
 {{<audio src="/audio/2019-07-12-use-output-format-for-index-generation.mp3" type="mp3" backup_src="/audio/2019-07-12-use-output-format-for-index-generation.ogg" backup_type="ogg">}}
 
-I have been wanting forever to have Hugo build that file for me instead[^gh_issue]. As it turns out, [Output Formats](https://gohugo.io/templates/output-formats/#output-formats-for-pages)[^hugo] make building that index file _very_ easy. Output formats let you generate your content in other formats than HTML, such as AMP or [XML for an RSS feed](https://bart.degoe.de/index.xml), and it also speaks JSON.
+I have been wanting forever to have Hugo build that file for me instead[^gh_issue]. As it turns out, [Output Formats](https://gohugo.io/configuration/output-formats/)[^hugo] make building that index file _very_ easy. Output formats let you generate your content in other formats than HTML, such as AMP or [XML for an RSS feed](https://bart.degoe.de/index.xml), and it also speaks JSON.
 
 The search on my blog lives on the homepage, where some [(very ugly) Javascript](https://github.com/bartdegoede/blog/blob/335d19e81016633823ccfb6fbb2038c891182bbb/static/js/search/search.js) downloads the index file, parses it contents into an [inverted index](https://en.wikipedia.org/wiki/Inverted_index), and replaces the content on the page with search results whenever someone starts typing. Essentially, I want to create some JSON output on my homepage ([`index.json`](/index.json) instead of [`index.html`](/index.html)).
 

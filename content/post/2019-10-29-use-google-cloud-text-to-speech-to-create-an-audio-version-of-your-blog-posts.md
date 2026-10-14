@@ -40,7 +40,7 @@ With all that, we can get started on our script to process some Markdown!
 
 # Write a script to transform text to audio
 
-I'm using Python for most of my scripting and hacking, so I've got [`virtualenv`](https://docs.python-guide.org/dev/virtualenvs/) set up on my machine; this essentially installs a Python interpreter for every project, so I can keep dependencies separated. For this project we have the following [requirements](https://github.com/bartdegoede/blog/blob/master/requirements.txt); install them with `pip install -r requirements.txt`, or individually (i.e. `pip install Click==7.0` etc.):
+I'm using Python for most of my scripting and hacking, so I've got [`virtualenv`](https://docs.python-guide.org/dev/virtualenvs/) set up on my machine; this essentially installs a Python interpreter for every project, so I can keep dependencies separated. For this project we have the following [requirements](https://github.com/bartdegoede/blog/blob/fe7cbb7eb30650662fae16389131c78d79334e70/requirements.txt); install them with `pip install -r requirements.txt`, or individually (i.e. `pip install Click==7.0` etc.):
 
 ```
 beautifulsoup4==4.8.1
@@ -254,7 +254,7 @@ This will include an audio player looking like this in your blog post. I've adde
 {{< figure src="/img/2019-10-29-use-google-cloud-text-to-speech-to-create-an-audio-version-of-your-blog-posts/audio-player.png" title="Basic HTML5 audio player" >}}
 
 [^infinite_dial]: https://www.edisonresearch.com/infinite-dial-2019/
-[^accessibility]: Not to mention that audio content is more easily accessible for people that suffer from dyslexia or poor sight, or seems to be a lot better for [user engagement](https://play.ht/blog/increasing-user-engagement-with-text-to-speech-case-study-by-play-ht/).
+[^accessibility]: Not to mention that audio content is more easily accessible for people that suffer from dyslexia or poor sight, or seems to be a lot better for [user engagement](https://web.archive.org/web/20191119231001/https://play.ht/blog/increasing-user-engagement-with-text-to-speech-case-study-by-play-ht/).
 [^gcloud]: It has all kinds of funky stuff, like multiple languages, API clients in your favorite programming language, pitch, speaking rates and volume controls, and even optimizations around where your audio is going to play, such as headphones or phone lines.
 [^free]: Free is my favorite price.
 [^hugo]: My website is a static website generated from Markdown files with [Hugo](https://gohugo.io/), hosted on [GitHub Pages](https://pages.github.com/), so you may need to make some small changes to make it work with [Jekyll](https://jekyllrb.com/), [Next.js](https://nextjs.org/) or [whichever other static site generator you're using](https://www.staticgen.com/).
