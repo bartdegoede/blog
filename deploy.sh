@@ -111,5 +111,9 @@ git push origin master
 # Come back to project root
 cd ..
 
+# Ping IndexNow (Bing et al.) with the pages this commit changed. Never fails the deploy.
+echo -e "${GREEN}Submitting changed pages to IndexNow...${NC}"
+uv run python scripts/indexnow.py || echo -e "${YELLOW}IndexNow step failed; deploy is unaffected${NC}"
+
 echo -e "${GREEN}✓ Deployment complete!${NC}"
 echo -e "${CYAN}Your site should be live at: https://bart.degoe.de${NC}"
