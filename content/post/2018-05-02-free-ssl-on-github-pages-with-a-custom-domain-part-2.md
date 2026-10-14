@@ -50,7 +50,7 @@ In the [previous post]({{< ref "2018-03-28-free-ssl-on-github-pages-with-a-custo
 
 Optionally, you can [enforce HTTPS](https://help.github.com/articles/securing-your-github-pages-site-with-https/) in the settings of your repository. This will upgrade all users requesting stuff from your site over HTTP to be automatically redirected to HTTPS.
 
-{{< figure src="/img/2018-05-02-free-ssl-on-github-pages-with-a-custom-domain-part-2/github-pages-enforce-https.png" >}}
+{{< figure src="/img/2018-05-02-free-ssl-on-github-pages-with-a-custom-domain-part-2/github-pages-enforce-https.png" alt="GitHub Pages repository settings with the Enforce HTTPS checkbox ticked" >}}
 
 If you use `A` records to route traffic to your website, you need to update your [DNS settings](https://help.github.com/articles/setting-up-an-apex-domain/) at your registrar. These IP addresses are new, and have an added benefit of putting your static site behind a CDN (just like we did with Cloudflare in the [previous post]({{< ref "2018-03-28-free-ssl-on-github-pages-with-a-custom-domain.md" >}})).
 

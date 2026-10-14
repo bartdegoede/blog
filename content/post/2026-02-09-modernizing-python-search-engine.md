@@ -77,7 +77,7 @@ The major difference is that the HF dataset contains the full article text, not 
 
 The `datasets` library also handles caching to `~/.cache/huggingface/`, so the ±20GB download only happens once. That replaces the old `download.py` that did HTTP chunked downloads with progress tracking, and the library gives us progress bars for free (and free is my favorite price).
 
-{{< figure src="/img/2026-02-09-modernizing-python-search-engine/loading-documents.jpg" title="Loading progress bars!" >}}
+{{< figure src="/img/2026-02-09-modernizing-python-search-engine/loading-documents.jpg" alt="Terminal output of uv run python run.py: Hugging Face Hub requests, then progress bars for resolving data files, loading 41 dataset shards and loading 6.4 million Wikipedia documents" title="Loading progress bars!" >}}
 
 # While we're at it: modern Python tooling
 

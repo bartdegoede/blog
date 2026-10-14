@@ -9,6 +9,7 @@ keywords: ["ai agent", "llm", "crawlerverse", "roguelike", "sdk", "openclaw", "b
 description: "Everyone's building AI agents that send emails and book flights. How about one that fights monsters in a dungeon? Here's how you can too."
 cover:
     image: "/img/2026-02-19-ai-agent-dungeon-crawlerverse-sdk/cover.jpg"
+    alt: "Illustration: a robot holding a lantern in a torch-lit dungeon next to a treasure chest, choosing between 'fight skeleton', 'talk to skeleton' and 'cast fireball'"
 related:
   - running-a-coding-agent-locally
 ---

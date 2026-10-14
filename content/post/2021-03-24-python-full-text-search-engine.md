@@ -7,6 +7,7 @@ categories: ["how-to", "search", "full-text search", "python"]
 keywords: ["how-to", "search", "full-text search", "python"]
 cover:
     image: "/img/2021-03-24-building-a-full-text-search-engine-150-lines-of-code/cover.jpg"
+    alt: "Illustration: a magnifying glass over a search box with 'query here', linked to documents that feed a list of top results, titled 'Building a Full-Text Search Engine in 150 Lines of Code'"
 description: Full-text search is everywhere. From finding a book on Scribd, a movie on Netflix, toilet paper on Amazon, or anything else on the web through Google (like [how to do your job as a software engineer](https://localghost.dev/2019/09/everything-i-googled-in-a-week-as-a-professional-software-engineer/)), you've searched vast amounts of unstructured data multiple times today. What's even more amazing, is that you've even though you searched millions (or [billions](https://www.worldwidewebsize.com/)) of records, you got a response in milliseconds. In this post, we are going to build a basic full-text search engine that can search across millions of documents and rank them according to their relevance to the query in milliseconds, in less than 150 lines of code!
 related:
   - building-a-semantic-search-engine-in-250-lines-of-python
@@ -101,7 +102,7 @@ Practically, what this means is that we're going to create a dictionary where we
 
 Note that in the example above the words in the dictionary are lowercased; before building the index we are going to break down or `analyze` the raw text into a list of words or `tokens`. The idea is that we first break up or `tokenize` the text into words, and then apply zero or more `filters` (such as lowercasing or stemming) on each token to improve the odds of matching queries to text.
 
-{{< figure src="/img/2021-03-24-building-a-full-text-search-engine-150-lines-of-code/tokenization.png" title="Tokenization" >}}
+{{< figure src="/img/2021-03-24-building-a-full-text-search-engine-150-lines-of-code/tokenization.png" alt="Diagram: the sentence 'The London Beer Flood was an accident at Meux & Co's Horse Shoe Brewery' is tokenized into words, then filtered into lowercase stemmed tokens like 'london', 'beer', 'flood', 'breweri'" title="Tokenization" >}}
 
 ## Analysis
 
@@ -312,7 +313,7 @@ In order to address that, we'll add another component to our scoring algorithm t
 
 We'll compute the _inverse document frequency_ for a term by dividing the number of documents (*N*) in the index by the amount of documents that contain the term, and take a logarithm of that.
 
-{{< figure src="/img/2021-03-24-building-a-full-text-search-engine-150-lines-of-code/idf.jpg" title="IDF; taken from https://moz.com/blog/inverse-document-frequency-and-the-importance-of-uniqueness" >}}
+{{< figure src="/img/2021-03-24-building-a-full-text-search-engine-150-lines-of-code/idf.jpg" alt="Inverse document frequency formula: idf of term j equals the log of n, the number of documents, divided by df of j, the number of documents containing the term" title="IDF; taken from https://moz.com/blog/inverse-document-frequency-and-the-importance-of-uniqueness" >}}
 
 We'll then simply multiple the term frequency with the inverse document frequency during our ranking, so matches on terms that are rare in the corpus will contribute more to the relevancy score[^moretfidf]. We can easily compute the inverse document frequency from the data available in our index:
 

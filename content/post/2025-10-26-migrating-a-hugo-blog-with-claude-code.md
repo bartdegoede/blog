@@ -19,7 +19,7 @@ I haven't really touched my blog since 2019. The theme was ancient, jQuery was e
 
 It's October 2025, and my blog is running on a Hugo theme from 2018 (the inimitable `hyde-x`) that was last updated when people still thought cryptocurrency was going to revolutionize everything[^crypto]. The site worked fine (Google Analytics tells me there were at least three people who stumbled on my posts every month), but every time I thought about writing something new, I'd open the repo and would immediately run head-first into approximately all of the tech debt.
 
-{{< figure src="/img/2025-10-26-migrating-a-hugo-blog-with-claude-code/2019-called.jpg" title="2019 called, they want their blog theme back" >}}
+{{< figure src="/img/2025-10-26-migrating-a-hugo-blog-with-claude-code/2019-called.jpg" alt="Screenshot of the old hyde-x blog theme: a red sidebar with the site name and social icons next to the full-text search engine post" title="2019 called, they want their blog theme back" >}}
 
 If you want to see the old site in all its pre-covid glory, the [Internet Archive](https://web.archive.org/web/20250124111723/https://bart.degoe.de/) has you covered.
 
@@ -36,7 +36,7 @@ I'd been meaning to fix this for years. I've tried. And then one change broke th
 
 # We could let... an LLM do it?
 
-{{< figure src="/img/2025-10-26-migrating-a-hugo-blog-with-claude-code/gollum.gif" title="Clever little hobbitses?" >}}
+{{< figure src="/img/2025-10-26-migrating-a-hugo-blog-with-claude-code/gollum.gif" alt="Gollum from The Lord of the Rings asking 'clever little hobbitses?'" title="Clever little hobbitses?" >}}
 
 I've been using [Claude Code](https://claude.ai/code) at work a lot, and this seems like a great project for an LLM to solve. It can deal with all the nitty-gritty fixes and find random changes I made to a template 5 years ago.
 
