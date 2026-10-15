@@ -1,5 +1,5 @@
 baseURL: 'https://bart.degoe.de/'
-languageCode: 'en-us'
+locale: 'en-us'
 title: 'Bart de Goede'
 theme: 'PaperMod'
 

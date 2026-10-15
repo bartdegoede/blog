@@ -3,7 +3,7 @@
   (written by scripts/ask_eval/charts.py, so it can't drift from the eval).
   Usage: {{< eval-table >}}
 */ -}}
-{{- $rows := site.Data.ask_eval_models -}}
+{{- $rows := hugo.Data.ask_eval_models -}}
 {{- $groups := slice (dict "id" "budget" "label" "Fits a 350 MB download") (dict "id" "larger" "label" "Larger downloads") (dict "id" "api" "label" "Hosted API") -}}
 <div class="eval-table-wrap">
 <table class="eval-table">
