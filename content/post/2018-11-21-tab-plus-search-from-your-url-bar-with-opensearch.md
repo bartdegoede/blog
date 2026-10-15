@@ -33,7 +33,7 @@ This will let the browser add some nice UI elements to the search input box, lik
 
 ## Word of warning
 
-Because once upon a time [apple.com](https://www.apple.com/) relied on the `type` attribute to give their search box a more "Mac-like" feel, [Safari will basically ignore any CSS](http://diveintohtml5.info/forms.html#type-search) applied to `<input type="search">` elements. If you need Safari to treat your search field like any other input field for display purposes, you can add the following to your CSS:
+Because once upon a time [apple.com](https://www.apple.com/) relied on the `type` attribute to give their search box a more "Mac-like" feel, [Safari will basically ignore any CSS](https://web.archive.org/web/20190118174823/http://diveintohtml5.info/forms.html#type-search) applied to `<input type="search">` elements. If you need Safari to treat your search field like any other input field for display purposes, you can add the following to your CSS:
 
 ```
 input[type="search"] {
