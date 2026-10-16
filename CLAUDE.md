@@ -77,6 +77,30 @@ The site extends PaperMod via its extension system rather than forking the theme
 - **`layouts/_default/single.html`**: Custom post template with Buy Me a Coffee button
 - **`layouts/index.json`**: Generates JSON search index at `/index.json` with title, categories, href, content
 - **`assets/css/extended/custom.css`**: Custom styles (PaperMod auto-loads from this path)
+- **`assets/css/extended/charts.css`**: Styles for the inline SVG charts (see "Charts" below)
+
+### Charts
+
+Post charts are inline SVG, not images: `{{< svg "name.svg" "caption" >}}`
+(`layouts/shortcodes/svg.html`) inlines `assets/svg/<post file stem>/name.svg`, so
+the chart can use the page's CSS. The SVGs carry only `viz-*` classes and no
+colours. Every colour comes from `assets/css/extended/charts.css`: series colours
+`--viz-s1` / `--viz-s2` with dark-mode values, and PaperMod's `--primary`,
+`--secondary`, `--border`, `--theme`. That way the charts follow the theme toggle.
+
+- **Generate the SVGs with a script, never by hand.** `scripts/ask_eval/charts.py`
+  draws the RAG post's charts from the eval data. The small-rag-finetune repo's
+  `small-rag-finetune loss-chart` draws loss curves in the same style.
+- **Reuse the existing classes.** Lines `viz-line` (+ `viz-faint`), dots `viz-dot`
+  (+ `viz-muted` / `viz-hollow` / `viz-light`), `viz-ring` for a highlighted
+  point, `viz-grid` / `viz-baseline` / `viz-sep` for axes, and `viz-tick` /
+  `viz-axis` / `viz-label` / `viz-note` / `viz-sub` for text. Series are
+  `viz-s1` / `viz-s2`. If a chart needs a new class, add it to `charts.css` with
+  both theme variants, not inline `style=` or `fill=` colours.
+- Hover details go in a native SVG `<title>` inside a `<g>`, with a transparent
+  `viz-hit` circle for a bigger target. Each SVG needs a `<title>`/`<desc>` pair
+  referenced by `aria-labelledby`, with ids unique on the page.
+- Check both themes before publishing: `hugo server`, then toggle dark mode.
 
 ### Search Functionality
 
@@ -119,7 +143,11 @@ homepage search box (the Part 3 post will link to it too).
 
 - `assets/js/ask/{retrieve,prompt,display,progress,models}.js` — pure, unit-tested
   (`tests/js/ask-*.test.mjs`); every rule and number lives here (gate 0.45, two
-  sentences, repetition penalty, prompt). `prompt.js` and `retrieve.js` are shared
+  sentences, repetition penalty, prompt). The repetition penalty is set per model:
+  `repetitionPenalty` in `models.js`, defaulting to `REPETITION_PENALTY` (1.15) in
+  `prompt.js`. It's off (1.0) for Qwen3 and LFM2.5, which answer more faithfully
+  without it and don't loop. `candidates.json` must carry the same value
+  (`repetition_penalty`), which a test checks, so the eval runs what ships. `prompt.js` and `retrieve.js` are shared
   with the eval in `scripts/ask_eval/`.
 - `assets/js/ask/worker.js` — imports transformers.js from jsDelivr (pinned);
   `assets/js/ask/page.js` — DOM/state.
