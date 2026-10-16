@@ -3,7 +3,8 @@
  * Models offered on /ask/. Pinned to the exact Hugging Face revisions and
  * files the eval measured (scripts/ask_eval/candidates.json; a test keeps
  * them in sync). `faithful` / `invented` are the eval's numbers, shown on
- * the model cards. Zero imports.
+ * the model cards, measured at the model's repetition penalty
+ * (`repetitionPenalty`, default prompt.js REPETITION_PENALTY). Zero imports.
  */
 
 export const DEFAULT_MODEL_ID = "qwen3-0.6b";
@@ -13,7 +14,8 @@ export const MODELS = [
   {
     id: "qwen3-0.6b", name: "Qwen3-0.6B", role: "default", params: "0.6B",
     repo: "onnx-community/Qwen3-0.6B-ONNX", revision: "1e0a4a196ecabdf9a879664110574563d3f372d3", dtype: "q4f16",
-    faithful: 15, invented: 5,
+    repetitionPenalty: 1.0, // no looping without it, and 18/30 instead of 15/30
+    faithful: 18, invented: 6,
     files: [
       { path: "config.json", bytes: 912 },
       { path: "generation_config.json", bytes: 219 },
@@ -54,7 +56,8 @@ export const MODELS = [
     repo: "onnx-community/LFM2.5-350M-ONNX", revision: "7dd4999565b0342c381ba90a3d8fc467d6df19c4", dtype: "q4f16",
     // q4f16 uses GatherBlockQuantized, which has no CPU/WASM kernel in onnxruntime-web (measured in Part 2).
     webgpuOnly: true,
-    faithful: 2, invented: 14,
+    repetitionPenalty: 1.0, // no looping without it, and 11/30 instead of 2/30
+    faithful: 11, invented: 13,
     files: [
       { path: "config.json", bytes: 1443 },
       { path: "generation_config.json", bytes: 136 },

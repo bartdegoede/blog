@@ -7,9 +7,12 @@
 
 export const TOP_K = 4;
 export const MAX_NEW_TOKENS = 120;
-// Greedy decoding without a repetition penalty makes the ≤360M models loop
+// Greedy decoding without a repetition penalty makes the smallest models loop
 // (measured in the ask eval: most smollm2-135m replies ran to MAX_NEW_TOKENS).
-// The browser worker and the eval harness both pass this to generate().
+// This is the default; a model can override it with `repetitionPenalty` in
+// models.js. transformers.js also penalises prompt tokens, so the penalty
+// pushes a model away from the passages' own words: Qwen3-0.6B and LFM2.5-350M
+// don't loop without it and answer more faithfully (results doc §10).
 export const REPETITION_PENALTY = 1.15;
 
 // Best-chunk cosine below this: don't call the model at all. Chosen in the
