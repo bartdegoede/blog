@@ -217,3 +217,38 @@ judgements: `results/judgements-length.jsonl`; table: `results/length/report.md`
 - N=2 reproduces the main eval exactly (Qwen 15/30, Gemma 28/30) with early stop
   on: the page's two-sentence clamp didn't change the measured quality.
 - Decision: keep the two-sentence cap; no "longer answer" feature.
+
+## 10. Repetition penalty per model (2026-10-16)
+
+transformers.js applies `repetition_penalty` to every token in the sequence,
+prompt included, so 1.15 also pushes a model away from the words in the passages
+it should repeat. Found while fine-tuning Qwen3-0.6B for this page (separate repo,
+small-rag-finetune). Re-run of the main eval for every local model at 1.0
+(`run_local.mjs --repetition-penalty 1.0 --out-dir results/rp1`, judged into
+`results/judgements-rp1.jsonl`). Same 45 prompts and judge as §3.
+
+| model | faithful, 1.15 → 1.0 | invented (of 15), 1.15 → 1.0 | looping replies at 1.0 (1.15) |
+|---|---|---|---|
+| Qwen3-0.6B | 15 → **18** | 5 → 6 | 0 (0) |
+| LFM2.5-350M | 2 → **11** | 14 → 13 | 1 (0) |
+| SmolLM2-360M | 3 → 8 | 15 → 12 | 10 (1) |
+| SmolLM2-135M | 0 → 1 | 14 → 7 | 30 (3) |
+| Gemma 3 270M | 3 → 2 | 13 → 12 | 13 (3) |
+| Gemma 4 E2B | 28 → 29 | 0 → 0 | 0 (0) |
+
+"Looping" = the reply repeats some four-word sequence 3+ times
+(`scripts/ask_eval` has no counter for this; counted on the result files).
+
+- The penalty exists for the smallest models, and they still need it: without
+  it SmolLM2 and Gemma 3 270M loop in a quarter to two-thirds of replies.
+- Qwen3 and LFM2.5 don't loop either way and answer better without it. LFM2.5
+  jumps from 2 to 11; it still invents an answer to almost every off-blog
+  question, so it stays a demonstrator.
+- Gemma 4 E2B barely changes (28 → 29 is within judge noise on 30 questions).
+- One-question differences are noise; 15 → 18 and 2 → 11 are not.
+
+Decision: the penalty is per model. `repetitionPenalty` in `models.js` (default
+`REPETITION_PENALTY` = 1.15 in `prompt.js`) is 1.0 for Qwen3-0.6B and
+LFM2.5-350M. `candidates.json` carries the same `repetition_penalty`, so
+`run_local.mjs` measures what ships, and a test keeps the two in sync. The model
+cards show the 1.0 numbers. The post keeps the numbers as published.

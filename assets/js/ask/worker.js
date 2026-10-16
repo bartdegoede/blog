@@ -19,6 +19,7 @@ const BENCH_TOKENS_WASM = 16;
 let tf = null;
 let generator = null;
 let stopper = null;
+let penalty = REPETITION_PENALTY;
 
 const post = (msg) => self.postMessage(msg);
 
@@ -49,7 +50,7 @@ async function generate(messages, maxNewTokens, onText) {
   await generator(messages, {
     max_new_tokens: maxNewTokens,
     do_sample: false,
-    repetition_penalty: REPETITION_PENALTY,
+    repetition_penalty: penalty,
     tokenizer_encode_kwargs: { enable_thinking: false }, // Qwen3; other templates ignore it
     streamer,
     stopping_criteria: stopper,
@@ -75,6 +76,7 @@ const rate = (tokens, tFirst) => rateAt(tokens, tFirst, performance.now());
 
 async function load({ model, device, skipBench }) {
   const { pipeline } = await lib();
+  penalty = model.repetitionPenalty ?? REPETITION_PENALTY;
   generator = await pipeline("text-generation", model.repo, {
     revision: model.revision,
     dtype: model.dtype,

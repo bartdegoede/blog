@@ -16,6 +16,10 @@
 // <out-dir>/<arm>-s<N>.jsonl. --out-dir is relative to scripts/ask_eval/
 // (default results/local). Without --sentences the behaviour
 // is unchanged: stored messages, MAX_NEW_TOKENS, no early stop, no clamp.
+// Each arm runs at its candidates.json repetition_penalty (default
+// REPETITION_PENALTY), the value models.js ships.
+// --repetition-penalty P overrides it for every arm; rows get arm "<arm>-rp<P>"
+// and the file is <out-dir>/<arm>-rp<P>.jsonl (P as given, e.g. 1.0).
 // Each arm's file is written as soon as it finishes; with --sentences, an arm
 // whose output file already has one row per prompt is skipped unless --force.
 //
@@ -52,12 +56,17 @@ const { values: opts, positionals: wanted } = parseArgs({
     sentences: { type: "string" },
     "out-dir": { type: "string", default: "results/local" },
     force: { type: "boolean", default: false },
+    "repetition-penalty": { type: "string" },
   },
 });
 const sentences = opts.sentences === undefined ? null : Number(opts.sentences);
 if (sentences !== null && !(Number.isInteger(sentences) && sentences > 0)) {
   throw new Error(`--sentences must be a positive integer, got ${opts.sentences}`);
 }
+const penaltyArg = opts["repetition-penalty"];
+const override = penaltyArg === undefined ? null : Number(penaltyArg);
+if (override !== null && !(override >= 1)) throw new Error(`--repetition-penalty must be >= 1, got ${penaltyArg}`);
+const suffix = penaltyArg === undefined ? "" : `-rp${penaltyArg}`;
 const maxNewTokens = sentences === null ? MAX_NEW_TOKENS : 60 * sentences;
 const arms = wanted[0] === "all" ? cands : cands.filter((c) => wanted.includes(c.arm));
 if (arms.length === 0) throw new Error(`no runnable arms match ${wanted.join(" ")}`);
@@ -76,7 +85,7 @@ function clean(text) {
   return text.replace(/^\s*<think>\s*<\/think>\s*/, "").trim();
 }
 
-async function generate(gen, messages) {
+async function generate(gen, messages, penalty) {
   const t0 = performance.now();
   let tFirst = null;
   let nTokens = 0;
@@ -103,7 +112,7 @@ async function generate(gen, messages) {
   const out = await gen(messages, {
     max_new_tokens: maxNewTokens,
     do_sample: false,
-    repetition_penalty: REPETITION_PENALTY,
+    repetition_penalty: penalty,
     tokenizer_encode_kwargs: TEMPLATE_KWARGS,
     streamer,
     ...(stopper ? { stopping_criteria: stopper } : {}),
@@ -114,7 +123,7 @@ async function generate(gen, messages) {
 }
 
 for (const c of arms) {
-  const name = sentences === null ? c.arm : `${c.arm}-s${sentences}`;
+  const name = (sentences === null ? c.arm : `${c.arm}-s${sentences}`) + suffix;
   const outFile = path.join(outDir, `${name}.jsonl`);
   if (sentences !== null && !opts.force && existsSync(outFile)) {
     const n = readFileSync(outFile, "utf8").split("\n").filter((l) => l.trim()).length;
@@ -128,19 +137,20 @@ for (const c of arms) {
   const prep = (msgs) => (c.system_role ? msgs : foldSystem(msgs));
 
   // Untimed warm-up so row 1's TTFT excludes session init.
-  await generate(gen, prep(messagesFor(prompts[0])));
+  const penalty = override ?? c.repetition_penalty ?? REPETITION_PENALTY;
+  await generate(gen, prep(messagesFor(prompts[0])), penalty);
 
   const rows = [];
   let thinkStripped = 0;
   for (const p of prompts) {
-    const { raw, t0, t1, tFirst, nTokens, stopReason } = await generate(gen, prep(messagesFor(p)));
+    const { raw, t0, t1, tFirst, nTokens, stopReason } = await generate(gen, prep(messagesFor(p)), penalty);
     const cleaned = clean(raw);
     if (cleaned !== raw.trim()) thinkStripped++;
     const summary = sentences === null ? cleaned : formatAnswer(cleaned, sentences);
     if (/<think>|<\/think>/.test(summary)) throw new Error(`${c.arm} ${p.id}: think block in reply`);
     if (TEMPLATE_JUNK.test(summary)) throw new Error(`${c.arm} ${p.id}: template token in reply: ${summary}`);
     const row = {
-      arm: sentences === null ? c.arm : `${c.arm}-s${sentences}`,
+      arm: name,
       id: p.id,
       summary,
       ttft_ms: Math.round((tFirst ?? t1) - t0),

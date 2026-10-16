@@ -16,6 +16,7 @@ test("registry matches the evaluated candidates (repo, revision, dtype, files)",
     assert.equal(m.dtype, c.dtype);
     assert.deepEqual(m.files, c.files);
     assert.equal(totalBytes(m), c.total_bytes);
+    assert.equal(m.repetitionPenalty, c.repetition_penalty, `${m.id} repetition penalty`);
   }
 });
 

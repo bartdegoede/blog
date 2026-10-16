@@ -82,7 +82,7 @@
     "total_bytes": 293284073
   },
   {
-    "arm": "lfm2.5-350m",
+    "arm": "lfm2.5-350m", "repetition_penalty": 1.0,
     "tier": "browser",
     "repo": "onnx-community/LFM2.5-350M-ONNX",
     "dtype": "q4f16",
@@ -120,7 +120,7 @@
     "total_bytes": 258451784
   },
   {
-    "arm": "qwen3-0.6b",
+    "arm": "qwen3-0.6b", "repetition_penalty": 1.0,
     "tier": "midsize",
     "repo": "onnx-community/Qwen3-0.6B-ONNX",
     "dtype": "q4f16",
