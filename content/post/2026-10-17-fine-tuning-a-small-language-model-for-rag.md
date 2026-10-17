@@ -6,6 +6,9 @@ slug: "fine-tuning-a-small-language-model-for-rag"
 categories: ["machine learning", "ai", "search", "javascript"]
 keywords: ["fine-tuning", "lora", "mlx", "qwen3", "small language models", "rag", "retrieval augmented generation", "transformers.js", "distillation", "llm evaluation", "onnx", "browser"]
 description: "Fine-tuning Qwen3-0.6B on a Mac so it stops making things up when it summarises my blog in your browser. What worked, what didn't, and how to do it for your own site."
+cover:
+    image: "/img/2026-10-17-fine-tuning-a-small-language-model-for-rag/cover.jpg"
+    alt: "Pencil sketch of a Mac mini and a laptop showing a loss chart and an answers chart both going down, a mug reading one sentence, and sticky notes: v1, v2 and v4 crossed out, v3 ticked"
 related:
   - rag-with-a-small-language-model-in-the-browser
   - semantic-search-in-your-browser
