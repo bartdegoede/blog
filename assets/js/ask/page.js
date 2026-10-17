@@ -161,8 +161,8 @@ function renderStripIdle() {
       ${cpu ? '<span class="ask-strip-note">Runs on your CPU here: ~30 to 60 s per answer.</span>' : ""}
     </div>
     <details class="ask-demos">
-      <summary>Other models (smaller, see why size matters)</summary>
-      <p class="ask-demos-intro">Smaller and faster to download, but in my eval they were rarely faithful to the passages. Try one to see what that looks like.</p>
+      <summary>Other models (compare)</summary>
+      <p class="ask-demos-intro">Qwen3-0.6B before fine-tuning, and three smaller models. In my eval they made more things up: try one to see what that looks like.</p>
       <ul class="ask-demo-list">${demos.map(demoRow).join("")}</ul>
     </details>`;
   markCached();
