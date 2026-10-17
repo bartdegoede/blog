@@ -75,6 +75,10 @@ def point(lines, x, y, cls, tip, r=5):
     lines.append(f'<circle class="{cls}" cx="{x:.1f}" cy="{y:.1f}" r="{r}"/></g>')
 
 
+def fmt_mb(mb: int) -> str:
+    return f"{mb / 1000:.1f} GB" if mb >= 1000 else f"{mb} MB"
+
+
 def quality_vs_size(judgements, cands) -> str:
     w, h, left, right, top, bottom = 680, 380, 64, 24, 20, 60
     lane_x = w - right - 46  # the "API" column, outside the log scale
@@ -96,13 +100,19 @@ def quality_vs_size(judgements, cands) -> str:
         mb = next((c["download_mb"] for c in cands if c["arm"] == arm), None)
         rows.append((arm, name, mb, f, n, inv, nn))
 
-    lines = svg_open(
-        w, h, "viz-size",
-        "Faithful answers vs download size",
+    by = {r[0]: r for r in rows}
+    # The low-scoring small models share one label; any other model gets its own.
+    small = [by[a] for a in ("smollm2-135m", "smollm2-360m", "gemma3-270m") if a in by]
+    named = [r for r in rows if r not in small and r[0] != "haiku-5-5"]
+    fs = sorted(r[3] for r in small)
+    desc = (
         "Share of 30 answerable questions answered faithfully, per model, against "
-        "download size on a log scale. Models up to 350 MB score 0 to 3 out of 30; "
-        "Qwen3-0.6B (579 MB) 15; Gemma 4 E2B (3.1 GB) 28; Claude Haiku 5.5 via API 27.",
+        f"download size on a log scale. {len(small)} models up to "
+        f"{max(r[2] for r in small)} MB score {fs[0]} to {fs[-1]} out of 30; "
+        + "; ".join(f"{r[1]} ({fmt_mb(r[2])}) {r[3]}" for r in sorted(named, key=lambda r: r[2]))
+        + (f"; Claude Haiku 5.5 via API {by['haiku-5-5'][3]}." if "haiku-5-5" in by else ".")
     )
+    lines = svg_open(w, h, "viz-size", "Faithful answers vs download size", desc)
     # Budget band: what fits the "click to load" budget.
     bx = xmap(350)
     lines.append(f'<rect class="viz-band" x="{left}" y="{top}" width="{bx - left:.1f}" height="{h - top - bottom}"/>')
@@ -128,18 +138,17 @@ def quality_vs_size(judgements, cands) -> str:
         else:
             tip += f" ({mb} MB download)"
             point(lines, xmap(mb), ymap(pct), cls, tip)
-    # Selective direct labels (the 258-293 MB cluster gets one shared label).
-    by = {r[0]: r for r in rows}
+    # Selective direct labels (the low-scoring small models get one shared label).
     lab = []
-    small = [by[a] for a in ("smollm2-135m", "lfm2.5-350m", "smollm2-360m", "gemma3-270m") if a in by]
     if small:
-        fs = sorted(r[3] for r in small)
-        biggest = max(r[2] for r in small)
         lines.append(
-            f'<text class="viz-label" x="{left + 8}" y="{ymap(34):.1f}">'
-            f'<tspan x="{left + 8}">{len(small)} models up to {biggest} MB</tspan>'
+            f'<text class="viz-label" x="{left + 8}" y="{ymap(24):.1f}">'
+            f'<tspan x="{left + 8}">{len(small)} models up to {max(r[2] for r in small)} MB</tspan>'
             f'<tspan class="viz-sub" x="{left + 8}" dy="16">{fs[0]} to {fs[-1]} of 30 faithful</tspan></text>'
         )
+    if "lfm2.5-350m" in by:
+        r = by["lfm2.5-350m"]
+        lab.append((xmap(r[2]) - 10, ymap(100 * r[3] / r[4]) + 4, "end", f"LFM2.5-350M · {r[3]}/30"))
     if "qwen3-0.6b" in by:
         r = by["qwen3-0.6b"]
         lab.append((xmap(r[2]) + 10, ymap(100 * r[3] / r[4]) + 4, "start", f"Qwen3-0.6B · {r[3]}/30"))
@@ -163,11 +172,15 @@ def length_chart(judged_len) -> str:
     def ymap(pct):
         return top + (100 - pct) / 100 * (h - top - bottom)
 
+    per_series = {
+        name: [counts([j for j in judged_len if j["arm"] == f"{arm}-s{n}"])[0] for n in ns]
+        for arm, name, _ in series
+    }
     lines = svg_open(
         w, h, "viz-length",
         "Faithful answers vs allowed answer length",
         "Faithful answers out of 30 when the model may answer in at most 2, 4 or 6 "
-        "sentences. Gemma 4 E2B: 28, 26, 24. Qwen3-0.6B: 15, 9, 5.",
+        "sentences. " + " ".join(f"{name}: {', '.join(map(str, fs))}." for name, fs in per_series.items()),
     )
     # Legend (identity is also carried by the direct labels at the line ends).
     lx = left
@@ -238,7 +251,9 @@ def main() -> None:
     (OUT / "quality-vs-size.svg").write_text(quality_vs_size(load(results / "judgements.jsonl"), cands))
     (OUT / "faithfulness-vs-length.svg").write_text(length_chart(load(results / "judgements-length.jsonl")))
     # Sanity: the arm_summary rates agree with the counts drawn.
-    assert abs(arm_summary([j for j in load(results / "judgements.jsonl") if j["arm"] == "qwen3-0.6b"])["faithful"] - 0.5) < 1e-9
+    judged = [j for j in load(results / "judgements.jsonl") if j["arm"] == "qwen3-0.6b"]
+    f, n, _, _ = counts(judged)
+    assert abs(arm_summary(judged)["faithful"] - f / n) < 1e-9
     print(f"wrote {OUT}")
 
 

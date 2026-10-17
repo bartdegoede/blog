@@ -16,9 +16,9 @@
     "group": "budget",
     "download": "258 MB",
     "mb": 258,
-    "faithful": 2,
+    "faithful": 11,
     "n": 30,
-    "invented": 14,
+    "invented": 13,
     "nn": 15,
     "series": "",
     "default": false
@@ -52,9 +52,9 @@
     "group": "larger",
     "download": "579 MB",
     "mb": 579,
-    "faithful": 15,
+    "faithful": 18,
     "n": 30,
-    "invented": 5,
+    "invented": 6,
     "nn": 15,
     "series": "s2",
     "default": true

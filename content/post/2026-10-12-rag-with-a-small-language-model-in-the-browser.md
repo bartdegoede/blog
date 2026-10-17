@@ -51,13 +51,13 @@ Every model got the same four passages and the same prompt, and Opus 5.5 graded 
 
 {{< eval-table >}}
 
-Turns out nothing off the shelf under 350 MB is usable for this. They aren't slightly worse; they're faithful **at most three times out of thirty**, and they'll happily answer almost any question you throw at them. Asked which GPU to buy for Llama 70B, with four passages about embeddings and a coding agent on a MacBook:
+Turns out nothing off the shelf under 350 MB is usable for this. The best of them, LFM2.5-350M, is faithful **11 times out of thirty**, the others **at most three times**, and all of them will happily answer almost any question you throw at them. Asked which GPU to buy for Llama 70B, with four passages about embeddings and a coding agent on a MacBook:
 
 > "...the best option to run Llama 70B locally is likely to be a NVIDIA GTX 960 or GTX 970. [...] They also offer high memory bandwidth, making them ideal for handling large amounts of data such as the 6.4 million documents required by Llama 70B." (SmolLM2-360M)
 
 > "...a high-performance graphics card (GPU) such as a NVIDIA A100 series (e.g., RTX 3090, RTX 3080, 3070, 3080, 3070M, 3080M)" (Gemma 3 270M)
 
-> "...popular options include RTX 3090, RTR 5900, or newer generations like TensorRT 60+ for improved compute efficiency." (LFM2.5-350M)
+> "You should buy an Apple Silicon GPU with an M4 Pro, as it is optimized for Llama 70B and the Apple GPU backend is leveraged automatically." (LFM2.5-350M)
 
 Gemma 4 E2B, for the record, correctly decided that "The provided passages do not contain information about which GPU you should buy to run Llama 70B locally." Good job Google.
 
@@ -67,7 +67,7 @@ Even on questions the blog *does* answer, the small models are prone to garble t
 
 Fast, fluent, and wrong. A Bloom filter isn't a hash table: it's a bit array, and an element counts as "probably in the set" only if every one of its *k* hash functions lands on a bit that's set. The last clause is actually correct (a missing bit means the element was never added, which is why Bloom filters can't give false negatives), but the rest is made up. To be fair to the model, search didn't hand it the section that explains how Bloom filters work; the four passages it got were about use cases and the interactive demo. A summary can only be as good as the passages it reads. Seems like there's some work to do on the relevance scoring in my little search engine that could.
 
-Qwen3-0.6B is the interesting one. At 579 MB it's pretty thicc, and over the budget I'd set myself. It's faithful half the time, which is basically a coin flip. However, it's the smallest model that's a coin flip rather than a pretty much guaranteed miss, so that's what ["ask my blog"](/ask/) loads by default. You can also choose three smaller models so you can see for yourself what a non-finetuned 300 MB model does with your question[^webgpu-only].
+Qwen3-0.6B is the interesting one. At 579 MB it's pretty thicc, and over the budget I'd set myself. It's faithful 18 times out of 30, which is only a bit better than a coin flip. However, it's the smallest model that's better than a coin flip rather than a pretty much guaranteed miss, so that's what ["ask my blog"](/ask/) loads by default. You can also choose three smaller models so you can see for yourself what a non-finetuned 300 MB model does with your question[^webgpu-only].
 
 ## Small models loop
 
@@ -75,7 +75,9 @@ The first time I ran the small models, most of their answers weren't wrong so mu
 
 > "1. Custom Search: Search from your URL bar 2. Search from your URL bar 3. Search from your URL bar 4. Search from your URL bar [1] Custom Search: Search from your URL bar..."
 
-Gemma 3 270M answered the GPU question with `I'5555555555555555555555...` until it ran out of tokens. That's what happens when you always pick the single most likely next token and nothing discourages repeating it: tiny models fall into a groove and can't get out (I saw it happen pretty often when I was playing around with MicroLLMLab too). The easy fix is a repetition penalty (1.15 in this case, which slightly discourages tokens the model has already seen). It doesn't fix the faithfulness or quality; the models just write longer, more varied nonsense instead. All the numbers above are with the penalty set to 1.15.
+Gemma 3 270M answered the GPU question with `I'5555555555555555555555...` until it ran out of tokens. That's what happens when you always pick the single most likely next token and nothing discourages repeating it: tiny models fall into a groove and can't get out (I saw it happen pretty often when I was playing around with MicroLLMLab too). The easy fix is a repetition penalty (1.15 in this case, which slightly discourages tokens the model has already seen). It doesn't fix the faithfulness or quality; the models just write longer, more varied nonsense instead.
+
+There's a catch, though. transformers.js applies the penalty to every token it has seen, including the prompt, so it also nudges the model away from the words in the passages. That's exactly the wrong thing for a summary of those passages. Qwen3-0.6B and LFM2.5 don't loop without the penalty, and they get noticeably better without it: Qwen3 goes from 15 to 18 faithful answers, LFM2.5 from 2 to 11. So the page now sets the penalty per model: off for those two, 1.15 for the ones that loop. All the numbers above use those settings.
 
 ## A relevance gate to catch the obvious ones
 
@@ -91,11 +93,11 @@ Haiku on the other hand answered all 45 eval questions for **$0.006**. At 500 qu
 
 ## Shorter is safer
 
-If two sentences from Qwen3 are only right half the time, would letting it say more help? I ran a quick experiment with Qwen3-0.6B and Gemma 4 E2B, allowing for two, four or six sentences.
+If two sentences from Qwen3 are only right 60% of the time, would letting it say more help? I ran a quick experiment with Qwen3-0.6B and Gemma 4 E2B, allowing for two, four or six sentences.
 
 {{< svg "faithfulness-vs-length.svg" "Faithful answers out of 30 when the model may use 2, 4 or 6 sentences." >}}
 
-Both get *less* faithful with more room, but the smaller model falls off a cliff: Qwen3 goes from 15 to 9 to 5 faithful answers out of 30. Every extra sentence is another chance to hallucinate. At six sentences it stops declining the GPU question altogether and helpfully summarises every passage instead, before concluding that "the answer would depend on whether the user needs a high-performance GPU or a standard one."
+Both get *less* faithful with more room, but the smaller model falls off a cliff: Qwen3 goes from 18 to 8 to 6 faithful answers out of 30. Every extra sentence is another chance to hallucinate. At six sentences it stops trying to answer the GPU question at all and walks through the passages one by one instead, starting with "choosing depends on your use case and GPU availability."
 
 Gemma 4 slips too (28, 26, 24), but it barely uses the extra room (about 2.8 sentences when allowed 6) and never makes up an answer to a question the blog doesn't cover. Shoutout to Gemma 4 btw, this model family is pretty awesome. This is a great option for finetuning.
 

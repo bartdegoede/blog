@@ -251,4 +251,13 @@ Decision: the penalty is per model. `repetitionPenalty` in `models.js` (default
 `REPETITION_PENALTY` = 1.15 in `prompt.js`) is 1.0 for Qwen3-0.6B and
 LFM2.5-350M. `candidates.json` carries the same `repetition_penalty`, so
 `run_local.mjs` measures what ships, and a test keeps the two in sync. The model
-cards show the 1.0 numbers. The post keeps the numbers as published.
+cards show the 1.0 numbers.
+
+The main results now use the shipped settings. `results/local/` and
+`results/judgements.jsonl` hold Qwen3-0.6B and LFM2.5-350M at 1.0 (identical
+answers to the `rp1` run, so its judgements were reused). The 1.15 runs moved to
+`results/rp1.15/` and `results/judgements-rp1.15.jsonl`. The length experiment
+(§9) was re-run for Qwen3 at 1.0: 18, 8, 6 faithful at 2, 4, 6 sentences (was
+15, 9, 5), invented 6, 5, 6. The 1.15 runs are in `results/length-rp1.15/` and
+`results/judgements-length-rp1.15.jsonl`. The post, charts and table were
+updated to match. §3 and §9 above still show the 1.15 numbers as first measured.
