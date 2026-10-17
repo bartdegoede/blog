@@ -1,5 +1,5 @@
 <svg class="viz" viewBox="0 0 680 340" role="img" aria-labelledby="viz-length-t viz-length-d" xmlns="http://www.w3.org/2000/svg">
-<title id="viz-length-t">Faithful answers vs allowed answer length</title><desc id="viz-length-d">Faithful answers out of 30 when the model may answer in at most 2, 4 or 6 sentences. Gemma 4 E2B: 28, 26, 24. Qwen3-0.6B: 15, 9, 5.</desc>
+<title id="viz-length-t">Faithful answers vs allowed answer length</title><desc id="viz-length-d">Faithful answers out of 30 when the model may answer in at most 2, 4 or 6 sentences. Gemma 4 E2B: 28, 26, 24. Qwen3-0.6B: 18, 8, 6.</desc>
 <circle class="viz-dot viz-s1" cx="69" cy="14" r="5"/>
 <text class="viz-label" x="80" y="18">Gemma 4 E2B</text>
 <circle class="viz-dot viz-s2" cx="209" cy="14" r="5"/>
@@ -32,16 +32,16 @@
 <circle class="viz-dot viz-s1" cx="500.0" cy="85.6" r="5"/></g>
 <text class="viz-label" x="72.0" y="42.5">28/30</text>
 <text class="viz-label" x="512.0" y="89.6">Gemma 4 E2B · 24/30</text>
-<path class="viz-line viz-s2" d="M64.0,160.0 L282.0,209.6 L500.0,242.7"/>
-<g><title>Qwen3-0.6B, at most 2 sentences: 15/30 faithful; invented an answer for 5/15 off-blog questions</title>
-<circle class="viz-hit" cx="64.0" cy="160.0" r="12"/>
-<circle class="viz-dot viz-s2" cx="64.0" cy="160.0" r="5"/></g>
-<g><title>Qwen3-0.6B, at most 4 sentences: 9/30 faithful; invented an answer for 7/15 off-blog questions</title>
-<circle class="viz-hit" cx="282.0" cy="209.6" r="12"/>
-<circle class="viz-dot viz-s2" cx="282.0" cy="209.6" r="5"/></g>
-<g><title>Qwen3-0.6B, at most 6 sentences: 5/30 faithful; invented an answer for 6/15 off-blog questions</title>
-<circle class="viz-hit" cx="500.0" cy="242.7" r="12"/>
-<circle class="viz-dot viz-s2" cx="500.0" cy="242.7" r="5"/></g>
-<text class="viz-label" x="72.0" y="150.0">15/30</text>
-<text class="viz-label" x="512.0" y="246.7">Qwen3-0.6B · 5/30</text>
+<path class="viz-line viz-s2" d="M64.0,135.2 L282.0,217.9 L500.0,234.4"/>
+<g><title>Qwen3-0.6B, at most 2 sentences: 18/30 faithful; invented an answer for 6/15 off-blog questions</title>
+<circle class="viz-hit" cx="64.0" cy="135.2" r="12"/>
+<circle class="viz-dot viz-s2" cx="64.0" cy="135.2" r="5"/></g>
+<g><title>Qwen3-0.6B, at most 4 sentences: 8/30 faithful; invented an answer for 5/15 off-blog questions</title>
+<circle class="viz-hit" cx="282.0" cy="217.9" r="12"/>
+<circle class="viz-dot viz-s2" cx="282.0" cy="217.9" r="5"/></g>
+<g><title>Qwen3-0.6B, at most 6 sentences: 6/30 faithful; invented an answer for 6/15 off-blog questions</title>
+<circle class="viz-hit" cx="500.0" cy="234.4" r="12"/>
+<circle class="viz-dot viz-s2" cx="500.0" cy="234.4" r="5"/></g>
+<text class="viz-label" x="72.0" y="125.2">18/30</text>
+<text class="viz-label" x="512.0" y="238.4">Qwen3-0.6B · 6/30</text>
 </svg>
