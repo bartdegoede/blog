@@ -1,0 +1,63 @@
+<svg class="viz" viewBox="0 0 680 318" role="img" aria-labelledby="viz-versions-t viz-versions-d" xmlns="http://www.w3.org/2000/svg">
+<title id="viz-versions-t">Faithful and wrong answers per fine-tune</title><desc id="viz-versions-d">Of the blog's 30 answerable questions. Qwen3-0.6B: 17 faithful, 9 wrong; v1: dense answers: 8 faithful, 18 wrong; v2: without hedges: 9 faithful, 17 wrong; v3: one short extract: 16 faithful, 3 wrong; v4: v3 + broad questions: 13 faithful, 7 wrong.</desc>
+<circle class="viz-dot viz-s1" cx="215" cy="14" r="5"/>
+<text class="viz-label" x="226" y="18">faithful</text>
+<circle class="viz-dot viz-s2" cx="315" cy="14" r="5"/>
+<text class="viz-label" x="326" y="18">wrong (a claim the passages don't support)</text>
+<line class="viz-grid" x1="210.0" x2="210.0" y1="38" y2="264.0"/>
+<text class="viz-tick" x="210.0" y="282.0" text-anchor="middle">0</text>
+<line class="viz-grid" x1="283.3" x2="283.3" y1="38" y2="264.0"/>
+<text class="viz-tick" x="283.3" y="282.0" text-anchor="middle">5</text>
+<line class="viz-grid" x1="356.7" x2="356.7" y1="38" y2="264.0"/>
+<text class="viz-tick" x="356.7" y="282.0" text-anchor="middle">10</text>
+<line class="viz-grid" x1="430.0" x2="430.0" y1="38" y2="264.0"/>
+<text class="viz-tick" x="430.0" y="282.0" text-anchor="middle">15</text>
+<line class="viz-grid" x1="503.3" x2="503.3" y1="38" y2="264.0"/>
+<text class="viz-tick" x="503.3" y="282.0" text-anchor="middle">20</text>
+<line class="viz-grid" x1="576.7" x2="576.7" y1="38" y2="264.0"/>
+<text class="viz-tick" x="576.7" y="282.0" text-anchor="middle">25</text>
+<line class="viz-grid" x1="650.0" x2="650.0" y1="38" y2="264.0"/>
+<text class="viz-tick" x="650.0" y="282.0" text-anchor="middle">30</text>
+<text class="viz-axis" x="430.0" y="310" text-anchor="middle">Answers, of 30 the blog covers</text>
+<text class="viz-label" x="196" y="57.0" text-anchor="end">Qwen3-0.6B</text>
+<line class="viz-grid" x1="342.0" x2="459.3" y1="52.0" y2="52.0"/>
+<g><title>Qwen3-0.6B: 17 of 30 faithful; invented an answer for 2 of 15 questions the blog doesn't cover</title>
+<circle class="viz-hit" cx="459.3" cy="52.0" r="12"/>
+<circle class="viz-dot viz-s1" cx="459.3" cy="52.0" r="6"/></g>
+<g><title>Qwen3-0.6B: 9 of 30 wrong; invented an answer for 2 of 15 questions the blog doesn't cover</title>
+<circle class="viz-hit" cx="342.0" cy="52.0" r="12"/>
+<circle class="viz-dot viz-s2" cx="342.0" cy="52.0" r="6"/></g>
+<text class="viz-label" x="196" y="101.0" text-anchor="end">v1: dense answers</text>
+<line class="viz-grid" x1="327.3" x2="474.0" y1="96.0" y2="96.0"/>
+<g><title>v1: dense answers: 8 of 30 faithful; invented an answer for 0 of 15 questions the blog doesn't cover</title>
+<circle class="viz-hit" cx="327.3" cy="96.0" r="12"/>
+<circle class="viz-dot viz-s1" cx="327.3" cy="96.0" r="6"/></g>
+<g><title>v1: dense answers: 18 of 30 wrong; invented an answer for 0 of 15 questions the blog doesn't cover</title>
+<circle class="viz-hit" cx="474.0" cy="96.0" r="12"/>
+<circle class="viz-dot viz-s2" cx="474.0" cy="96.0" r="6"/></g>
+<text class="viz-label" x="196" y="145.0" text-anchor="end">v2: without hedges</text>
+<line class="viz-grid" x1="342.0" x2="459.3" y1="140.0" y2="140.0"/>
+<g><title>v2: without hedges: 9 of 30 faithful; invented an answer for 0 of 15 questions the blog doesn't cover</title>
+<circle class="viz-hit" cx="342.0" cy="140.0" r="12"/>
+<circle class="viz-dot viz-s1" cx="342.0" cy="140.0" r="6"/></g>
+<g><title>v2: without hedges: 17 of 30 wrong; invented an answer for 0 of 15 questions the blog doesn't cover</title>
+<circle class="viz-hit" cx="459.3" cy="140.0" r="12"/>
+<circle class="viz-dot viz-s2" cx="459.3" cy="140.0" r="6"/></g>
+<text class="viz-label" x="196" y="189.0" text-anchor="end">v3: one short extract</text>
+<line class="viz-grid" x1="254.0" x2="444.7" y1="184.0" y2="184.0"/>
+<circle class="viz-ring viz-s1" cx="444.7" cy="184.0" r="11"/>
+<g><title>v3: one short extract: 16 of 30 faithful; invented an answer for 0 of 15 questions the blog doesn't cover</title>
+<circle class="viz-hit" cx="444.7" cy="184.0" r="12"/>
+<circle class="viz-dot viz-s1" cx="444.7" cy="184.0" r="6"/></g>
+<g><title>v3: one short extract: 3 of 30 wrong; invented an answer for 0 of 15 questions the blog doesn't cover</title>
+<circle class="viz-hit" cx="254.0" cy="184.0" r="12"/>
+<circle class="viz-dot viz-s2" cx="254.0" cy="184.0" r="6"/></g>
+<text class="viz-label" x="196" y="233.0" text-anchor="end">v4: v3 + broad questions</text>
+<line class="viz-grid" x1="312.7" x2="400.7" y1="228.0" y2="228.0"/>
+<g><title>v4: v3 + broad questions: 13 of 30 faithful; invented an answer for 0 of 15 questions the blog doesn't cover</title>
+<circle class="viz-hit" cx="400.7" cy="228.0" r="12"/>
+<circle class="viz-dot viz-s1" cx="400.7" cy="228.0" r="6"/></g>
+<g><title>v4: v3 + broad questions: 7 of 30 wrong; invented an answer for 0 of 15 questions the blog doesn't cover</title>
+<circle class="viz-hit" cx="312.7" cy="228.0" r="12"/>
+<circle class="viz-dot viz-s2" cx="312.7" cy="228.0" r="6"/></g>
+</svg>
