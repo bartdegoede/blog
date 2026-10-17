@@ -82,7 +82,8 @@
     "total_bytes": 293284073
   },
   {
-    "arm": "lfm2.5-350m", "repetition_penalty": 1.0,
+    "arm": "lfm2.5-350m",
+    "repetition_penalty": 1.0,
     "tier": "browser",
     "repo": "onnx-community/LFM2.5-350M-ONNX",
     "dtype": "q4f16",
@@ -120,7 +121,43 @@
     "total_bytes": 258451784
   },
   {
-    "arm": "qwen3-0.6b", "repetition_penalty": 1.0,
+    "arm": "qwen3-0.6b-small-rag",
+    "repetition_penalty": 1.0,
+    "tier": "browser",
+    "repo": "bartdegoede/qwen3-0.6b-small-rag",
+    "dtype": "q4f16",
+    "download_mb": 358,
+    "system_role": true,
+    "status": "ok",
+    "note": "Qwen3-0.6B fine-tuned (LoRA, dataset bartdegoede/small-rag-answers v3) to answer in one short extractive sentence or refuse; github.com/bartdegoede/small-rag-finetune. 358 MB, against 579 MB for the official Qwen3 files: one 4-bit matrix serves as both embedding and LM head (exported with the onnxruntime-genai builder). The embedding uses standard ops, so it runs on WASM.",
+    "revision": "21b0e0580cad63ee0386aeead2c74ada4f8a5454",
+    "files": [
+      {
+        "path": "config.json",
+        "bytes": 816
+      },
+      {
+        "path": "generation_config.json",
+        "bytes": 154
+      },
+      {
+        "path": "onnx/model_q4f16.onnx",
+        "bytes": 346134924
+      },
+      {
+        "path": "tokenizer.json",
+        "bytes": 11422654
+      },
+      {
+        "path": "tokenizer_config.json",
+        "bytes": 9732
+      }
+    ],
+    "total_bytes": 357568280
+  },
+  {
+    "arm": "qwen3-0.6b",
+    "repetition_penalty": 1.0,
     "tier": "midsize",
     "repo": "onnx-community/Qwen3-0.6B-ONNX",
     "dtype": "q4f16",

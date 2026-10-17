@@ -7,12 +7,27 @@
  * (`repetitionPenalty`, default prompt.js REPETITION_PENALTY). Zero imports.
  */
 
-export const DEFAULT_MODEL_ID = "qwen3-0.6b";
+export const DEFAULT_MODEL_ID = "qwen3-0.6b-small-rag";
 export const CACHE_NAME = "transformers-cache"; // confirmed in Part 2 Task 1
 
 export const MODELS = [
   {
-    id: "qwen3-0.6b", name: "Qwen3-0.6B", role: "default", params: "0.6B",
+    id: "qwen3-0.6b-small-rag", name: "Qwen3-0.6B, fine-tuned", role: "default", params: "0.6B",
+    // Trained to answer in one short sentence from the passages or say the blog
+    // doesn't cover it: github.com/bartdegoede/small-rag-finetune.
+    repo: "bartdegoede/qwen3-0.6b-small-rag", revision: "21b0e0580cad63ee0386aeead2c74ada4f8a5454", dtype: "q4f16",
+    repetitionPenalty: 1.0,
+    faithful: 16, invented: 0,
+    files: [
+      { path: "config.json", bytes: 816 },
+      { path: "generation_config.json", bytes: 154 },
+      { path: "onnx/model_q4f16.onnx", bytes: 346134924 },
+      { path: "tokenizer.json", bytes: 11422654 },
+      { path: "tokenizer_config.json", bytes: 9732 },
+    ],
+  },
+  {
+    id: "qwen3-0.6b", name: "Qwen3-0.6B", role: "demo", params: "0.6B",
     repo: "onnx-community/Qwen3-0.6B-ONNX", revision: "1e0a4a196ecabdf9a879664110574563d3f372d3", dtype: "q4f16",
     repetitionPenalty: 1.0, // no looping without it, and 18/30 instead of 15/30
     faithful: 18, invented: 6,
