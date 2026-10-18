@@ -20,10 +20,10 @@ test("registry matches the evaluated candidates (repo, revision, dtype, files)",
   }
 });
 
-test("one default, three demonstrators, default first", () => {
+test("one default, four to compare it with, default first", () => {
   assert.equal(MODELS[0].id, DEFAULT_MODEL_ID);
   assert.equal(MODELS.filter((m) => m.role === "default").length, 1);
-  assert.equal(MODELS.filter((m) => m.role === "demo").length, 3);
+  assert.equal(MODELS.filter((m) => m.role === "demo").length, 4);
 });
 
 test("fileUrl pins the revision", () => {

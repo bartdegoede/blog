@@ -261,3 +261,21 @@ answers to the `rp1` run, so its judgements were reused). The 1.15 runs moved to
 15, 9, 5), invented 6, 5, 6. The 1.15 runs are in `results/length-rp1.15/` and
 `results/judgements-length-rp1.15.jsonl`. The post, charts and table were
 updated to match. §3 and §9 above still show the 1.15 numbers as first measured.
+
+## 11. Default model: the fine-tuned Qwen3-0.6B (2026-10-17)
+
+`qwen3-0.6b-small-rag` ([bartdegoede/qwen3-0.6b-small-rag](https://huggingface.co/bartdegoede/qwen3-0.6b-small-rag),
+trained in [small-rag-finetune](https://github.com/bartdegoede/small-rag-finetune))
+replaces the official Qwen3-0.6B as the default; the official one stays on the page
+to compare. Same eval, penalty 1.0:
+
+| arm | faithful (of 30) | unsupported | non-answer | invented (of 15) | download |
+|---|---|---|---|---|---|
+| qwen3-0.6b (official files) | 18 | | | 6 | 579 MB |
+| qwen3-0.6b-small-rag | 16 | 3 | 11 | 0 | 358 MB |
+
+About as often right, far less often wrong, and it never answers a question the
+blog doesn't cover, which matters most for "ask my blog". It's also smaller (one
+4-bit matrix for embedding and LM head) and runs on WASM. The cost is more
+refusals on answerable questions, mostly broad ones. Not added to the RAG post's
+table or charts (`charts.py` `NAMES`): that post describes the eval as it was.

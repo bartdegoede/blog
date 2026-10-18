@@ -5,7 +5,7 @@
 //   2. Then:               BASE_URL=http://localhost:1314 node tests/e2e/ask.e2e.mjs
 //
 // Optional env: MODEL=<id from assets/js/ask/models.js> (default smollm2-360m;
-// try MODEL=qwen3-0.6b for the default model). The first run downloads the
+// try MODEL=qwen3-0.6b-small-rag for the default model). The first run downloads the
 // model from Hugging Face (minutes). Not picked up by `node --test`.
 import assert from "node:assert/strict";
 import { mkdtempSync, rmSync } from "node:fs";
