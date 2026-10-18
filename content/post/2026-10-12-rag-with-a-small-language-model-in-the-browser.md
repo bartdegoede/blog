@@ -103,7 +103,7 @@ Gemma 4 slips too (28, 26, 24), but it barely uses the extra room (about 2.8 sen
 
 ## What's next
 
-The next step would be making the small models less bad at this one job. A 300 MB model doesn't need to know everything; it needs to read four passages and either summarise them or say they don't answer the question. That sounds like a fine-tuning problem, and maybe a follow-up post.
+The next step would be making the small models less bad at this one job. A 300 MB model doesn't need to know everything; it needs to read four passages and either summarise them or say they don't answer the question. That sounds like a fine-tuning problem, and maybe [a follow-up post](/fine-tuning-a-small-language-model-for-rag/).
 
 The other idea is the homepage search box: if you've already loaded a model on ["ask my blog"](/ask/), the homepage could quietly use it to improve search, without ever downloading anything on its own. In the meantime: [ask my blog something](/ask/), and check the passages before you believe the summary.
 
