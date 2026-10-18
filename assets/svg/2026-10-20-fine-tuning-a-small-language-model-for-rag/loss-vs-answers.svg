@@ -1,0 +1,47 @@
+<svg class="viz" viewBox="0 0 680 420" role="img" aria-labelledby="viz-loss-answers-t viz-loss-answers-d" xmlns="http://www.w3.org/2000/svg">
+<title id="viz-loss-answers-t">Validation loss improves while the answers get worse</title><desc id="viz-loss-answers-d">Validation loss per checkpoint: 0.804, 0.778, 0.760, 0.740. Faithful answers on the blog (of 30): 18, 11, 9; 17 before fine-tuning.</desc>
+<text class="viz-label" x="64" y="24">Validation loss <tspan class="viz-sub" dx="6">(lower is better)</tspan></text>
+<text class="viz-label" x="64" y="214">Faithful answers on the blog <tspan class="viz-sub" dx="6">(of 30, higher is better)</tspan></text>
+<line class="viz-grid" x1="64" x2="530" y1="131.0" y2="131.0"/>
+<text class="viz-tick" x="56" y="135.0" text-anchor="end">0.75</text>
+<line class="viz-grid" x1="64" x2="530" y1="66.0" y2="66.0"/>
+<text class="viz-tick" x="56" y="70.0" text-anchor="end">0.8</text>
+<line class="viz-grid" x1="64" x2="530" y1="360.0" y2="360.0"/>
+<text class="viz-tick" x="56" y="364.0" text-anchor="end">0</text>
+<line class="viz-grid" x1="64" x2="530" y1="316.7" y2="316.7"/>
+<text class="viz-tick" x="56" y="320.7" text-anchor="end">10</text>
+<line class="viz-grid" x1="64" x2="530" y1="273.3" y2="273.3"/>
+<text class="viz-tick" x="56" y="277.3" text-anchor="end">20</text>
+<line class="viz-grid" x1="64" x2="530" y1="230.0" y2="230.0"/>
+<text class="viz-tick" x="56" y="234.0" text-anchor="end">30</text>
+<line class="viz-sep" x1="64" x2="530" y1="286.3" y2="286.3"/>
+<text class="viz-note" x="538" y="290.3">before fine-tuning: 17</text>
+<text class="viz-tick" x="180.5" y="380" text-anchor="middle">0.25</text>
+<text class="viz-tick" x="297.0" y="380" text-anchor="middle">0.5</text>
+<text class="viz-tick" x="413.5" y="380" text-anchor="middle">0.75</text>
+<text class="viz-tick" x="530.0" y="380" text-anchor="middle">1</text>
+<text class="viz-axis" x="297.0" y="410" text-anchor="middle">Epochs of training</text>
+<path class="viz-line viz-s1" d="M180.5,60.8 L297.0,94.6 L413.5,118.0 L530.0,144.0"/>
+<g><title>Epoch 0.25: validation loss 0.804</title>
+<circle class="viz-hit" cx="180.5" cy="60.8" r="12"/>
+<circle class="viz-dot viz-s1" cx="180.5" cy="60.8" r="6"/></g>
+<g><title>Epoch 0.5: validation loss 0.778</title>
+<circle class="viz-hit" cx="297.0" cy="94.6" r="12"/>
+<circle class="viz-dot viz-s1" cx="297.0" cy="94.6" r="6"/></g>
+<g><title>Epoch 0.75: validation loss 0.760</title>
+<circle class="viz-hit" cx="413.5" cy="118.0" r="12"/>
+<circle class="viz-dot viz-s1" cx="413.5" cy="118.0" r="6"/></g>
+<g><title>Epoch 1: validation loss 0.740</title>
+<circle class="viz-hit" cx="530.0" cy="144.0" r="12"/>
+<circle class="viz-dot viz-s1" cx="530.0" cy="144.0" r="6"/></g>
+<path class="viz-line viz-s2" d="M180.5,282.0 L297.0,312.3 L530.0,321.0"/>
+<g><title>Epoch 0.25: 18 of 30 answers faithful</title>
+<circle class="viz-hit" cx="180.5" cy="282.0" r="12"/>
+<circle class="viz-dot viz-s2" cx="180.5" cy="282.0" r="6"/></g>
+<g><title>Epoch 0.5: 11 of 30 answers faithful</title>
+<circle class="viz-hit" cx="297.0" cy="312.3" r="12"/>
+<circle class="viz-dot viz-s2" cx="297.0" cy="312.3" r="6"/></g>
+<g><title>Epoch 1: 9 of 30 answers faithful</title>
+<circle class="viz-hit" cx="530.0" cy="321.0" r="12"/>
+<circle class="viz-dot viz-s2" cx="530.0" cy="321.0" r="6"/></g>
+</svg>

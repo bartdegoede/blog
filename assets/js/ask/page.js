@@ -20,9 +20,9 @@ const page = root?.closest(".ask-page") ?? root; // includes the small-print foo
 const WORKER_URL = root?.dataset.worker;
 
 const EXAMPLES = [
-  "How do bloom filters work?",
-  "How did this blog add search?",
-  "How do I run a coding agent locally?",
+  "What is a bloom filter?",
+  "Which model does the local coding agent run?",
+  "How do I add OpenSearch to my website?",
 ];
 
 const state = {

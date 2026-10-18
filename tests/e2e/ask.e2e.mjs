@@ -82,7 +82,7 @@ try {
 
   // 2. Sources-only mode
   log("2. sources-only");
-  await page.click('.ask-example:has-text("How do bloom filters work?")');
+  await page.click('.ask-example:has-text("What is a bloom filter?")');
   await idle(page, 60_000);
   assert.ok((await page.locator(".ask-source").count()) >= 1, "expected source cards");
   assert.match(await text(page, ".ask-answer"), /Load a model above/);
