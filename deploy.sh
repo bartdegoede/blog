@@ -55,6 +55,12 @@ hugo
 # which we can't use (see above).
 uv run python scripts/prune_public.py
 
+# Drafts, future-dated and expired posts: Hugo skips their pages, but their
+# static/img/<stem>/ folder is copied anyway, and a local `hugo -D` build leaves
+# pages behind. Everything in public/ gets published (`git add .` below).
+echo -e "${GREEN}Removing output of unpublished posts...${NC}"
+uv run python scripts/guard_unpublished.py || fail "Unpublished post content found in public/ (see above)"
+
 # --- 3. Verify every indexed heading anchor exists in the rendered HTML --------
 #
 # Nothing reads chunks.json's `anchor` field at query time; it is indexed so that

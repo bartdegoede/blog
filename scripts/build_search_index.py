@@ -4,8 +4,11 @@ Configuration is not a matter of taste: it is what the eval selected. See
 docs/superpowers/specs/2026-07-08-browser-semantic-search-results.md.
 """
 
+import shutil
+import tempfile
 from pathlib import Path
 
+from publishable import split_posts
 from sss_eval.build import build
 
 CORPUS = Path("content/post")
@@ -33,16 +36,32 @@ def prune_stale(outdir: Path, manifest: dict) -> None:
             path.unlink()
 
 
+def publishable_corpus(corpus: Path, dest: Path) -> list[Path]:
+    """Copy the posts Hugo would publish into dest; return the skipped ones.
+
+    sss_eval indexes every *.md in the directory it's given, drafts included,
+    and the index is served to every visitor.
+    """
+    published, unpublished = split_posts(corpus)
+    for path in published:
+        shutil.copy2(path, dest / path.name)
+    return unpublished
+
+
 def main() -> None:
-    manifest = build(
-        corpus=CORPUS,
-        model_id=MODEL,
-        outdir=OUTDIR,
-        dims=DIMS,
-        chunk_size=CHUNK_SIZE,
-        chunk_overlap=CHUNK_OVERLAP,
-        title_prefix=True,
-    )
+    with tempfile.TemporaryDirectory() as tmp:
+        skipped = publishable_corpus(CORPUS, Path(tmp))
+        for path in skipped:
+            print(f"skipping unpublished post: {path.name}")
+        manifest = build(
+            corpus=Path(tmp),
+            model_id=MODEL,
+            outdir=OUTDIR,
+            dims=DIMS,
+            chunk_size=CHUNK_SIZE,
+            chunk_overlap=CHUNK_OVERLAP,
+            title_prefix=True,
+        )
     prune_stale(OUTDIR, manifest)
     total = sum(
         (OUTDIR / manifest["files"][k]).stat().st_size for k in ("tokens", "scales", "vocab")
