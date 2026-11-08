@@ -121,3 +121,14 @@ minify:
   tdewolff:
     html:
       keepWhitespace: false
+
+# Also expose static/img to the asset pipeline so layouts/partials/cover.html can
+# resize post covers into WebP srcsets. The originals are still published from
+# static/ at their usual URLs (og:image etc.). Declaring an assets mount replaces
+# the default one, so assets/ itself has to be listed again.
+module:
+  mounts:
+    - source: assets
+      target: assets
+    - source: static/img
+      target: assets/img
