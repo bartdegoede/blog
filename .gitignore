@@ -12,3 +12,6 @@ assets/jsconfig.json
 backups/
 __pycache__/
 scripts/ask_eval/results/**/*.dryrun.jsonl
+
+# Hugo image-processing cache
+resources/_gen/

@@ -1,0 +1,72 @@
+{{- /*
+  Override of PaperMod's cover.html.
+
+  Covers live in static/img/, which config.yml also mounts as assets/img/, so
+  they can be resized here. Changes from the theme's version:
+  - The image is looked up directly with resources.Get on its front matter
+    path (the theme only resizes page-bundle or assets/ images; before the
+    mount, every cover was served as the full-size original, up to ~700 KB).
+  - Resized copies are WebP, and the srcset is used in every environment,
+    not just production builds.
+  - The cover on a single page, and the first card on the homepage (IsFirst,
+    set by layouts/index.html), are the LCP element. They load eagerly with
+    fetchpriority=high. Every other cover stays lazy.
+  - width/height are set from the original, so the browser reserves the
+    space before the image loads.
+*/ -}}
+{{- with .cxt }}
+{{- if (and .Params.cover.image (not $.isHidden)) }}
+<figure class="entry-cover">
+    {{- $priority := or $.IsSingle $.IsFirst }}
+    {{- $loading := cond $priority "eager" "lazy" }}
+    {{- $addLink := (and site.Params.cover.linkFullImages $.IsSingle) }}
+    {{- $alt := (.Params.cover.alt | default .Params.cover.caption | plainify) }}
+    {{- $responsiveImages := (.Params.cover.responsiveImages | default site.Params.cover.responsiveImages) | default true }}
+
+    {{- $path := .Params.cover.image }}
+    {{- $cover := .Resources.GetMatch $path }}
+    {{- if not $cover }}
+        {{- $cover = resources.Get (strings.TrimPrefix "/" $path) }}
+    {{- end }}
+
+    {{- $processable := slice "jpeg" "png" "tiff" "bmp" "gif" "webp" }}
+    {{- $imgdl := $path | absURL }}
+    {{- if $cover }}{{ $imgdl = $cover.Permalink }}{{ end }}
+
+    {{- if $addLink }}
+        <a href="{{ $imgdl }}" target="_blank" rel="noopener noreferrer">
+    {{- end }}
+
+    {{- if (and $cover $responsiveImages (in $processable $cover.MediaType.SubType)) }}
+        {{- $srcset := slice }}
+        {{- $fallback := "" }}
+        {{- range $w := slice 360 480 720 840 1080 1500 }}
+            {{- if le $w $cover.Width }}
+                {{- $img := $cover.Process (printf "resize %dx webp q75" $w) }}
+                {{- $srcset = $srcset | append (printf "%s %dw" $img.RelPermalink $w) }}
+                {{- if or (eq $w 720) (not $fallback) }}{{ $fallback = $img.RelPermalink }}{{ end }}
+            {{- end }}
+        {{- end }}
+        <img loading="{{ $loading }}"{{ if $priority }} fetchpriority="high"{{ end }}
+            srcset="{{ delimit $srcset ", " }}"
+            src="{{ $fallback }}"
+            sizes="(min-width: 768px) 720px, 100vw"
+            width="{{ $cover.Width }}" height="{{ $cover.Height }}"
+            alt="{{ $alt }}">
+    {{- else }}
+        {{- /* Unprocessable or external image, or responsive images turned off */}}
+        <img loading="{{ $loading }}"{{ if $priority }} fetchpriority="high"{{ end }} src="{{ $imgdl }}" alt="{{ $alt }}">
+    {{- end }}
+
+    {{- if $addLink }}
+        </a>
+    {{- end -}}
+
+    {{- if $.IsSingle }}
+        {{ with .Params.cover.caption -}}
+            <figcaption>{{ . | markdownify }}</figcaption>
+        {{- end }}
+    {{- end }}
+</figure>
+{{- end }}
+{{- end -}}

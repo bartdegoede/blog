@@ -1,6 +1,5 @@
 {{- /* Homepage inline search functionality */ -}}
 {{- if .IsHome }}
-<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.1.0" data-cf-async="false"></script>
 {{- $js := resources.Get "js/semantic/index.js" | js.Build (dict "minify" true "target" "es2017" "format" "esm") | fingerprint -}}
 <script type="module" src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" data-cf-async="false"></script>
 <script type="module" data-cf-async="false">
@@ -109,37 +108,67 @@ document.addEventListener('DOMContentLoaded', function() {
         return semanticIndexPromise;
     }
 
+    // --- Lazy-load the keyword (Fuse.js) index on first focus ------------
+    //
+    // index.json is the full text of every post (~220 KB); fetching, parsing
+    // and indexing it on page load cost ~0.5 s of main-thread time on mobile
+    // (Lighthouse TBT) for visitors who never search. Fuse.js itself is
+    // injected here too, for the same reason. Memoized like the semantic one.
+    let keywordIndexPromise = null;
+
+    function loadFuse() {
+        if (window.Fuse) return Promise.resolve();
+        return new Promise(function(resolve, reject) {
+            const s = document.createElement('script');
+            s.src = 'https://cdn.jsdelivr.net/npm/fuse.js@7.1.0';
+            s.setAttribute('data-cf-async', 'false');
+            s.onload = resolve;
+            s.onerror = function() { reject(new Error('Failed to load Fuse.js')); };
+            document.head.appendChild(s);
+        });
+    }
+
+    function ensureKeywordIndex() {
+        if (!keywordIndexPromise) {
+            keywordIndexPromise = Promise.all([
+                loadFuse(),
+                fetch('/index.json').then(response => response.json())
+            ]).then(([, data]) => {
+                pagesIndex = data;
+
+                // Initialize Fuse.js for fuzzy search.
+                // ignoreLocation is required: with the default location/distance scoring,
+                // a match more than ~1000 characters into a field scores too poorly to
+                // survive the threshold, so terms appearing only in the body of a long
+                // post (pydub, mmh3, hnsw) were unfindable.
+                const fuseOptions = {
+                    isCaseSensitive: false,
+                    shouldSort: true,
+                    ignoreLocation: true,
+                    threshold: 0.2,
+                    minMatchCharLength: 2,
+                    keys: [
+                        { name: 'title', weight: 0.8 },
+                        { name: 'content', weight: 0.5 },
+                        { name: 'categories', weight: 0.3 }
+                    ]
+                };
+
+                searchIndex = new Fuse(data, fuseOptions);
+                return searchIndex;
+            }).catch(error => {
+                console.error('Error loading search index:', error);
+                keywordIndexPromise = null; // allow a retry on the next search
+                return null;
+            });
+        }
+        return keywordIndexPromise;
+    }
+
     searchInput.addEventListener('focus', function() {
+        ensureKeywordIndex();
         ensureSemanticIndex().catch(function() { /* already logged/handled */ });
     }, { once: true });
-
-    // --- Keyword (Fuse.js) index load ------------------------------------
-    fetch('/index.json')
-        .then(response => response.json())
-        .then(data => {
-            pagesIndex = data;
-
-            // Initialize Fuse.js for fuzzy search.
-            // ignoreLocation is required: with the default location/distance scoring,
-            // a match more than ~1000 characters into a field scores too poorly to
-            // survive the threshold, so terms appearing only in the body of a long
-            // post (pydub, mmh3, hnsw) were unfindable.
-            const fuseOptions = {
-                isCaseSensitive: false,
-                shouldSort: true,
-                ignoreLocation: true,
-                threshold: 0.2,
-                minMatchCharLength: 2,
-                keys: [
-                    { name: 'title', weight: 0.8 },
-                    { name: 'content', weight: 0.5 },
-                    { name: 'categories', weight: 0.3 }
-                ]
-            };
-
-            searchIndex = new Fuse(data, fuseOptions);
-        })
-        .catch(error => console.error('Error loading search index:', error));
 
     // --- Rendering ---------------------------------------------------
 
@@ -259,7 +288,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (effectiveMode === 'keyword') {
             if (!searchIndex) {
                 searchResults.innerHTML = '<p style="color: var(--secondary);">Loading search index...</p>';
-                return;
+                await ensureKeywordIndex();
+                if (myToken !== searchToken) return;
+                if (!searchIndex) {
+                    searchResults.innerHTML = '<p style="color: var(--secondary);">Search index failed to load.</p>';
+                    return;
+                }
             }
             const html = renderKeywordHtml(searchIndex.search(query));
             if (myToken !== searchToken) return;
@@ -275,7 +309,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         try {
-            await idxPromise;
+            // Hybrid fuses in the keyword ranking, so it needs both indexes.
+            await Promise.all([idxPromise, effectiveMode === 'hybrid' ? ensureKeywordIndex() : null]);
         } catch (e) {
             // disableSemanticModes() already flipped mode to 'keyword'.
             if (myToken !== searchToken) return;
