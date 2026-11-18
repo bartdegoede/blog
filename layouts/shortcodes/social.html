@@ -1,0 +1,11 @@
+{{- /*
+  Print the URL of a social profile from config.yml's params.socialIcons, so
+  profile links live in one place. Usage: [LinkedIn]({{< social "linkedin" >}})
+*/ -}}
+{{- $name := .Get 0 -}}
+{{- $url := "" -}}
+{{- range site.Params.socialIcons -}}
+  {{- if eq .name $name }}{{ $url = .url }}{{ end -}}
+{{- end -}}
+{{- if not $url }}{{ errorf "social shortcode: no socialIcons entry named %q (%s)" $name .Position }}{{ end -}}
+{{- $url -}}

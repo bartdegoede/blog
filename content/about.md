@@ -1,22 +1,25 @@
 ---
 title: "About"
 date: 2018-02-21T22:40:33+01:00
+lastmod: 2026-11-18T12:00:00-05:00
 draft: false
 type: "page"
 slug: "about"
 ---
 
-Hi! My name is Bart de Goede. I live in New York City and I'm the Engineering Manager for AI Commerce & Search at [StubHub](https://www.stubhub.com), helping fans find tickets to their favorite live events.
+Hi! My name is Bart de Goede. I live in New York City and I'm a member of technical staff on the Search Applications team at [Cohere](https://cohere.com).
 
-I've also been a member of the technical staff at [Perplexity AI](https://www.perplexity.ai/), building the most powerful knowledge tool on the web, search engineering lead at [OnFrontiers](https://www.onfrontiers.com/), where I helped organizations understand the knowledge and expertise their employees accrue, a software engineer at [Instacart](https://www.instacart.com/), on the search team at [Scribd](https://www.scribd.com/), and an engineer on the search and data science team at [Catawiki](https://www.catawiki.com/). I've also run my own business helping other companies build search engines.
+Before that I was the Engineering Manager for AI Commerce & Search at [StubHub](https://www.stubhub.com), helping fans find tickets to their favorite live events.
 
-For the complete professional bio, please refer to my [LinkedIn](https://www.linkedin.com/in/bart-de-goede-597a5232/) profile or my [resume](/pdf/2025-10-26-cv.pdf).
+I've also been a member of the technical staff at [Perplexity](https://www.perplexity.ai/), building the most powerful knowledge tool on the web, search engineering lead at [OnFrontiers](https://www.onfrontiers.com/), where I helped organizations understand the knowledge and expertise their employees accrue, a software engineer at [Instacart](https://www.instacart.com/), on the search team at [Scribd](https://www.scribd.com/), and an engineer on the search and data science team at [Catawiki](https://www.catawiki.com/). I've also run my own business helping other companies build search engines.
+
+For the complete professional bio, please refer to my [LinkedIn]({{< social "linkedin" >}}) profile or my [resume](/pdf/2025-10-26-cv.pdf).
 
 Besides tinkering with software, I enjoy traveling, eating (nice) food, playing D&D or going for a drink with friends.
 
 Most of the posts I write are about things related to tech and programming, or anything else I find interesting.
 
-Find me on [GitHub](https://github.com/bartdegoede), [LinkedIn](https://www.linkedin.com/in/bart-de-goede-597a5232/) or [Twitter](https://twitter.com/bartdegoede).
+Find me on [GitHub]({{< social "github" >}}), [LinkedIn]({{< social "linkedin" >}}) or [Twitter]({{< social "twitter" >}}).
 
 ### Publications
 
