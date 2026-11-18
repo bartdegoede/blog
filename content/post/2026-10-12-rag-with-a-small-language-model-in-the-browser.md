@@ -1,6 +1,7 @@
 ---
 title: "Running RAG with a (small) language model in the browser"
 date: 2026-10-12T22:57:56-04:00
+lastmod: 2026-10-16T21:44:53-04:00
 draft: false
 slug: "rag-with-a-small-language-model-in-the-browser"
 categories: ["machine learning", "ai", "search", "javascript", "hugo"]
